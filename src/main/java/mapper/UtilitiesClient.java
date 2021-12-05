@@ -1,8 +1,6 @@
 package mapper;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import mtr.MTR;
-import mtr.item.ItemNodeModifierBase;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.client.model.FabricModelPredicateProviderRegistry;
 import net.minecraft.block.entity.BlockEntityType;
@@ -23,8 +21,8 @@ import java.util.function.Function;
 
 public interface UtilitiesClient {
 
-	static void registerNodeModifierPredicate(Item item) {
-		FabricModelPredicateProviderRegistry.register(item, new Identifier(MTR.MOD_ID + ":selected"), (itemStack, clientWorld, livingEntity) -> itemStack.getOrCreateTag().contains(ItemNodeModifierBase.TAG_POS) ? 1 : 0);
+	static void registerItemModelPredicate(String id, Item item, String tag) {
+		FabricModelPredicateProviderRegistry.register(item, new Identifier(id), (itemStack, clientWorld, livingEntity) -> itemStack.getOrCreateTag().contains(tag) ? 1 : 0);
 	}
 
 	static <T extends BlockEntityMapper> void registerTileEntityRenderer(BlockEntityType<T> type, Function<BlockEntityRenderDispatcher, BlockEntityRendererMapper<T>> factory) {

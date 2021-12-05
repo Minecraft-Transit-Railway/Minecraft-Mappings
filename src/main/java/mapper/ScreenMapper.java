@@ -4,7 +4,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.Text;
 
-public class ScreenMapper extends Screen {
+public abstract class ScreenMapper extends Screen {
 
 	protected ScreenMapper(Text title) {
 		super(title);
