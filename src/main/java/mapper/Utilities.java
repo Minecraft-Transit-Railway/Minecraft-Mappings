@@ -46,10 +46,10 @@ public interface Utilities {
 	}
 
 	static void scheduleBlockTick(World world, BlockPos pos, Block block, int ticks) {
-		world.getBlockTickScheduler().schedule(pos, block, ticks);
+		world.createAndScheduleBlockTick(pos, block, ticks);
 	}
 
 	static boolean isScheduled(World world, BlockPos pos, Block block) {
-		return world.getBlockTickScheduler().isScheduled(pos, block);
+		return world.getBlockTickScheduler().isTicking(pos, block);
 	}
 }

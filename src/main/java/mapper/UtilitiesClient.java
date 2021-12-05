@@ -53,10 +53,10 @@ public interface UtilitiesClient {
 	}
 
 	static Matrix3f getNormal(MatrixStack.Entry entry) {
-		return entry.getNormal();
+		return entry.getNormalMatrix();
 	}
 
 	static Matrix4f getModel(MatrixStack.Entry entry) {
-		return entry.getModel();
+		return entry.getPositionMatrix();
 	}
 }

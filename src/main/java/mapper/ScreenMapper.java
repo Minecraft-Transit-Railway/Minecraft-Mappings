@@ -12,7 +12,7 @@ public abstract class ScreenMapper extends Screen {
 		super(title);
 	}
 
-	public <T extends Element & Drawable & Selectable> void addChild(T widgetMap) {
-		addDrawableChild(widgetMap);
+	public <T extends Element & Drawable & Selectable> void addChild(T widget) {
+		addDrawableChild(widget);
 	}
 }
