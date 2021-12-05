@@ -3,19 +3,17 @@ package mapper;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public interface BlockEntityProviderMapper extends BlockEntityProvider {
 
 	@Override
-	default BlockEntity createBlockEntity(BlockView world) {
-		return createBlockEntity(null, null);
+	default <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+		return getType() == type ? (world1, pos, state1, blockEntity) -> tick(world1, pos, blockEntity) : null;
 	}
-
-	BlockEntity createBlockEntity(BlockPos pos, BlockState state);
 
 	default <T extends BlockEntity> void tick(World world, BlockPos pos, T blockEntity) {
 	}

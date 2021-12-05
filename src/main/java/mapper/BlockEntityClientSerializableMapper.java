@@ -14,7 +14,7 @@ public abstract class BlockEntityClientSerializableMapper extends BlockEntityMap
 
 	@Override
 	public final void fromClientTag(NbtCompound nbtCompound) {
-		fromTag(world == null ? null : world.getBlockState(pos), nbtCompound);
+		readNbt(nbtCompound);
 	}
 
 	@Override

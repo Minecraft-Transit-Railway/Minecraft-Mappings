@@ -1,6 +1,6 @@
 package mapper;
 
-import net.minecraft.util.Tickable;
+public interface TickableMapper {
 
-public interface TickableMapper extends Tickable {
+	void tick();
 }

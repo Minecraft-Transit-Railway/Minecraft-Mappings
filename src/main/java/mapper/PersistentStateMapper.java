@@ -10,17 +10,20 @@ import java.util.function.Supplier;
 public abstract class PersistentStateMapper extends PersistentState {
 
 	public PersistentStateMapper(String name) {
-		super(name);
-	}
-
-	@Override
-	public void fromTag(NbtCompound tag) {
-		readNbt(tag);
+		super();
 	}
 
 	public abstract void readNbt(NbtCompound nbtCompound);
 
 	protected static <T extends PersistentStateMapper> T getInstance(World world, Supplier<T> supplier, String name) {
-		return world instanceof ServerWorld ? ((ServerWorld) world).getPersistentStateManager().getOrCreate(supplier, name) : null;
+		if (world instanceof ServerWorld) {
+			return ((ServerWorld) world).getPersistentStateManager().getOrCreate(nbtCompound -> {
+				final T railwayData = supplier.get();
+				railwayData.readNbt(nbtCompound);
+				return railwayData;
+			}, supplier, name);
+		} else {
+			return null;
+		}
 	}
 }

@@ -9,12 +9,12 @@ import net.minecraft.util.math.BlockPos;
 public abstract class BlockEntityMapper extends BlockEntity {
 
 	public BlockEntityMapper(BlockEntityType<?> type, BlockPos pos, BlockState state) {
-		super(type);
+		super(type, pos, state);
 	}
 
 	@Override
-	public final void fromTag(BlockState state, NbtCompound nbtCompound) {
-		super.fromTag(state, nbtCompound);
+	public final void readNbt(NbtCompound nbtCompound) {
+		super.readNbt(nbtCompound);
 		readNbtCompound(nbtCompound);
 	}
 

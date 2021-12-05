@@ -6,6 +6,8 @@ import net.fabricmc.fabric.api.object.builder.v1.client.model.FabricModelPredica
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.entity.model.EntityModel;
@@ -22,7 +24,7 @@ import java.util.function.Function;
 public interface UtilitiesClient {
 
 	static void registerItemModelPredicate(String id, Item item, String tag) {
-		FabricModelPredicateProviderRegistry.register(item, new Identifier(id), (itemStack, clientWorld, livingEntity) -> itemStack.getOrCreateTag().contains(tag) ? 1 : 0);
+		FabricModelPredicateProviderRegistry.register(item, new Identifier(id), (itemStack, clientWorld, livingEntity, i) -> itemStack.getOrCreateNbt().contains(tag) ? 1 : 0);
 	}
 
 	static <T extends BlockEntityMapper> void registerTileEntityRenderer(BlockEntityType<T> type, Function<BlockEntityRenderDispatcher, BlockEntityRendererMapper<T>> factory) {
@@ -30,24 +32,24 @@ public interface UtilitiesClient {
 	}
 
 	static void beginDrawingRectangle(BufferBuilder buffer) {
-		RenderSystem.disableTexture();
-		buffer.begin(7, VertexFormats.POSITION_COLOR);
+		RenderSystem.setShader(GameRenderer::getPositionColorShader);
+		buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 	}
 
 	static void finishDrawingRectangle() {
-		RenderSystem.enableTexture();
 	}
 
 	static void beginDrawingTexture(Identifier textureId) {
-		MinecraftClient.getInstance().getTextureManager().bindTexture(textureId);
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShaderTexture(0, textureId);
 	}
 
 	static void setScreen(MinecraftClient client, ScreenMapper screen) {
-		client.openScreen(screen);
+		client.setScreen(screen);
 	}
 
 	static EntityModel<MinecartEntity> getMinecartModel() {
-		return new MinecartEntityModel<>();
+		return new MinecartEntityModel<>(MinecartEntityModel.getTexturedModelData().createModel());
 	}
 
 	static Matrix3f getNormal(MatrixStack.Entry entry) {
