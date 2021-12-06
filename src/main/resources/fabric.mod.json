@@ -1,0 +1,14 @@
+{
+	"schemaVersion": 1,
+	"id": "minecraftmappings",
+	"version": "${version}",
+	"name": "Minecraft Mappings",
+	"description": "A small library for multi-version Minecraft Development.",
+	"authors": [
+		"Jonathan Ho"
+	],
+	"contact": {
+		"sources": "https://github.com/jonafanho/Minecraft-Mappings"
+	},
+	"license": "MIT"
+}
