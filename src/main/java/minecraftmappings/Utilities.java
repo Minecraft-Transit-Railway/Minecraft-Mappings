@@ -1,4 +1,4 @@
-package mapper;
+package minecraftmappings;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.Block;

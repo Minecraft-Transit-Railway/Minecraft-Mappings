@@ -1,4 +1,4 @@
-package mapper;
+package minecraftmappings;
 
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.block.BlockState;

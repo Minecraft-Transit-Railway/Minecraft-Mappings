@@ -1,4 +1,4 @@
-package mapper;
+package minecraftmappings;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;

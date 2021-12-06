@@ -1,4 +1,4 @@
-package mapper;
+package minecraftmappings;
 
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
