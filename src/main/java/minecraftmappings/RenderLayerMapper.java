@@ -1,4 +1,4 @@
-package mapper;
+package minecraftmappings;
 
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexFormat;

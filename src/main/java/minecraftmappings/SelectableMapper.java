@@ -1,4 +1,4 @@
-package mapper;
+package minecraftmappings;
 
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;

@@ -1,4 +1,4 @@
-package mapper;
+package minecraftmappings;
 
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
