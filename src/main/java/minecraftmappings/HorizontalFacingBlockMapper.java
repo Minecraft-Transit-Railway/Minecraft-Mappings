@@ -1,4 +1,4 @@
-package mapper;
+package minecraftmappings;
 
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.entity.Entity;

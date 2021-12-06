@@ -1,4 +1,4 @@
-package mapper;
+package minecraftmappings;
 
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelPart;

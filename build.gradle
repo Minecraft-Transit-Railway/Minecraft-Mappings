@@ -6,7 +6,7 @@ plugins {
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
-version = project.minecraft_version
+version = (project.minecraft_version as String) + "-" + (project.mod_version as String)
 group = project.maven_group as String
 
 dependencies {
@@ -38,7 +38,7 @@ publishing {
         mavenJava(MavenPublication) {
             groupId = project.maven_group
             artifactId = "library"
-            version = minecraft_version
+            version = project.mod_version
 
             from components.java
         }

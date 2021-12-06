@@ -1,4 +1,4 @@
-package mapper;
+package minecraftmappings;
 
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;

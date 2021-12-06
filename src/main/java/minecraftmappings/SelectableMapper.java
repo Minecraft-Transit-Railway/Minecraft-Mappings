@@ -1,4 +1,4 @@
-package mapper;
+package minecraftmappings;
 
 public interface SelectableMapper {
 }
