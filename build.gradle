@@ -32,10 +32,6 @@ tasks.withType(JavaCompile).configureEach {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            groupId = project.maven_group
-            artifactId = "library"
-            version = project.mod_version
-
             from components.java
         }
     }
