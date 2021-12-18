@@ -1,8 +1,8 @@
 package minecraftmappings;
 
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.model.geom.ModelPart;
 
 public class ModelMapper extends ModelPart {
 
@@ -13,9 +13,9 @@ public class ModelMapper extends ModelPart {
 	}
 
 	public void setRotationAngle(float rotationX, float rotationY, float rotationZ) {
-		pitch = rotationX;
-		yaw = rotationY;
-		roll = rotationZ;
+		xRot = rotationX;
+		yRot = rotationY;
+		zRot = rotationZ;
 	}
 
 	public void setModelPart() {
@@ -25,12 +25,12 @@ public class ModelMapper extends ModelPart {
 	}
 
 	public void setOffset(float x, int y, float z) {
-		setPivot(x, y, z);
+		setPos(x, y, z);
 	}
 
-	public void render(MatrixStack matrices, VertexConsumer vertices, float x, float z, float rotateY, int light, int overlay) {
-		setPivot(x, 0, z);
-		yaw = rotateY;
+	public void render(PoseStack matrices, VertexConsumer vertices, float x, float z, float rotateY, int light, int overlay) {
+		setPos(x, 0, z);
+		yRot = rotateY;
 		render(matrices, vertices, light, overlay);
 	}
 }
