@@ -1,64 +1,38 @@
 # Minecraft Mappings
 
-This is a small library for developing Minecraft mods for different Minecraft versions. Currently, this library supports Fabric 1.16.5, Fabric 1.17.1, and Fabric 1.18.
+This is a small library for developing Minecraft mods for different Minecraft versions. Currently, this library supports Architectury 1.16.5, 1.17.1, and 1.18.
 
 ## Usage
 
 Make the following changes to `build.gradle` file of your project.
 
-1. Add the library as a dependency:
+1. Add gradle tasks to download and extract this repository:
 
    ```
-   dependencies {
-   	...
-   	modImplementation "com.github.jonafanho:Minecraft-Mappings:<commit hash>"
+   task downloadMappings(type: Download) {
+       src "https://github.com/jonafanho/Minecraft-Mappings/archive/refs/heads/<version>.zip"
+       dest "common/src/main/java/minecraftmappings/files.zip"
+       overwrite true
+   }
+
+   task extractMappings(dependsOn: downloadMappings, type: Copy) {
+       outputs.upToDateWhen { false }
+       from(zipTree("common/src/main/java/minecraftmappings/files.zip")) { eachFile { file -> file.relativePath = new RelativePath(true, file.relativePath.segments.drop(1) as String[]) } }
+       into "common/src/main/java/minecraftmappings"
    }
    ```
 
-1. Add Jitpack to the list of repositories:
+1. Add the above tasks to run automatically whenever a gradle task is run:
 
    ```
    allprojects {
-   	repositories {
-   		...
-   		maven {
-   			url = "https://jitpack.io/"
-   		}
-   	}
-   }
-   ```
-
-Your mod may require the [Minecraft Transit Railway](https://github.com/jonafanho/Minecraft-Transit-Railway) mod. This will affect the configuration of `build.gradle`.
-
-### Requiring the Minecraft Transit Railway Mod
-
-1. Add the Minecraft Transit Railway as a dependency:
-
-   ```
-   dependencies {
-   	...
-   	modImplementation "com.github.jonafanho:Minecraft-Transit-Railway:<commit hash>"
-   }
-   ```
-
-1. The Minecraft Transit Railway mod already includes this library, so version conflicts may arise. Add a resolution strategy upon version conflict:
-
-   ```
-   configurations.all {
-   	resolutionStrategy {
-   		force "com.github.jonafanho:Minecraft-Mappings:<commit hash>"
-   	}
-   }
-   ```
-
-### Not Requiring the Minecraft Transit Railway Mod
-
-1. This library will have to be packaged into your final jar:
-
-   ```
-   dependencies {
-   	...
-   	include "com.github.jonafanho:Minecraft-Mappings:<commit hash>"
+       afterEvaluate {
+           for (def task in it.tasks) {
+               if (task != rootProject.tasks.downloadMappings && task != rootProject.tasks.extractMappings) {
+                   task.dependsOn rootProject.tasks.injectKey
+               }
+           }
+       }
    }
    ```
 
