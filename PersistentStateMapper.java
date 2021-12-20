@@ -1,4 +1,4 @@
-package minecraftmappings;
+package @package@;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;

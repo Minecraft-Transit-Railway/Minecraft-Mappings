@@ -1,4 +1,4 @@
-package minecraftmappings;
+package @package@;
 
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
