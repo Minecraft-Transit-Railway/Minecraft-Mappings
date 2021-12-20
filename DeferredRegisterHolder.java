@@ -1,4 +1,4 @@
-package minecraftmappings;
+package @package@;
 
 import dev.architectury.registry.registries.DeferredRegister;
 import net.minecraft.core.Registry;
