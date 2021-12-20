@@ -1,4 +1,4 @@
-package minecraftmappings;
+package @package@;
 
 import me.shedaniel.architectury.extensions.BlockEntityExtension;
 import net.minecraft.core.BlockPos;

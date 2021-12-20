@@ -1,4 +1,4 @@
-package minecraftmappings;
+package @package@;
 
 import me.shedaniel.architectury.event.events.LifecycleEvent;
 import me.shedaniel.architectury.event.events.PlayerEvent;

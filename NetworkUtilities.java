@@ -1,4 +1,4 @@
-package minecraftmappings;
+package @package@;
 
 import me.shedaniel.architectury.networking.NetworkManager;
 import net.minecraft.network.FriendlyByteBuf;

@@ -1,4 +1,4 @@
-package minecraftmappings;
+package @package@;
 
 import net.minecraft.world.level.block.entity.TickableBlockEntity;
 

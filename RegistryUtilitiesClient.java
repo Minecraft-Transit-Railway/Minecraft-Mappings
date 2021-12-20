@@ -1,4 +1,4 @@
-package minecraftmappings;
+package @package@;
 
 import me.shedaniel.architectury.event.events.TextureStitchEvent;
 import me.shedaniel.architectury.event.events.client.ClientPlayerEvent;

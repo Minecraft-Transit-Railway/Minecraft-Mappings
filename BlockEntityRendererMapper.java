@@ -1,4 +1,4 @@
-package minecraftmappings;
+package @package@;
 
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;

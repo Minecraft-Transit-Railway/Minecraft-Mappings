@@ -1,4 +1,4 @@
-package minecraftmappings;
+package @package@;
 
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
