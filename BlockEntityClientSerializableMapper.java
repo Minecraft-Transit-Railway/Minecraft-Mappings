@@ -1,25 +1,29 @@
 package @package@;
 
-import dev.architectury.extensions.BlockEntityExtension;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
-public abstract class BlockEntityClientSerializableMapper extends BlockEntityMapper implements BlockEntityExtension {
+public abstract class BlockEntityClientSerializableMapper extends BlockEntityMapper {
 
 	public BlockEntityClientSerializableMapper(BlockEntityType<?> type, BlockPos pos, BlockState state) {
 		super(type, pos, state);
 	}
 
-	@Override
-	public final void loadClientData(BlockState state, CompoundTag compoundTag) {
-		load(compoundTag);
+	public void syncData() {
+		if (level instanceof ServerLevel) {
+			((ServerLevel) level).getChunkSource().blockChanged(worldPosition);
+		}
 	}
 
 	@Override
-	public final CompoundTag saveClientData(CompoundTag compoundTag) {
-		return save(compoundTag);
+	public ClientboundBlockEntityDataPacket getUpdatePacket() {
+		final CompoundTag compoundTag = new CompoundTag();
+		writeCompoundTag(compoundTag);
+		return new ClientboundBlockEntityDataPacket(worldPosition, 127, compoundTag);
 	}
 
 	@Override
