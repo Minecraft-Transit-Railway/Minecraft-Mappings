@@ -1,5 +1,6 @@
 package @package@;
 
+import me.shedaniel.architectury.event.events.CommandRegistrationEvent;
 import me.shedaniel.architectury.event.events.LifecycleEvent;
 import me.shedaniel.architectury.event.events.PlayerEvent;
 import me.shedaniel.architectury.event.events.TickEvent;
@@ -20,6 +21,10 @@ public interface RegistryUtilities {
 
 	static <T extends BlockEntityMapper> BlockEntityType<T> getBlockEntityType(Utilities.TileEntitySupplier<T> supplier, Block block) {
 		return new BlockEntityType<>(() -> supplier.supplier(null, null), Collections.singleton(block), null);
+	}
+
+	static <T extends CommandRegistrationEvent> void registerCommand(T listener) {
+		CommandRegistrationEvent.EVENT.register(listener);
 	}
 
 	static void registerPlayerJoinEvent(Consumer<ServerPlayer> consumer) {
