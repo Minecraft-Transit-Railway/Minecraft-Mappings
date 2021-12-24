@@ -1,5 +1,6 @@
 package @package@;
 
+import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.event.events.common.TickEvent;
@@ -20,6 +21,10 @@ public interface RegistryUtilities {
 
 	static <T extends BlockEntityMapper> BlockEntityType<T> getBlockEntityType(Utilities.TileEntitySupplier<T> supplier, Block block) {
 		return new BlockEntityType<>(supplier::supplier, Collections.singleton(block), null);
+	}
+
+	static <T extends CommandRegistrationEvent> void registerCommand(T listener) {
+		CommandRegistrationEvent.EVENT.register(listener);
 	}
 
 	static void registerPlayerJoinEvent(Consumer<ServerPlayer> consumer) {
