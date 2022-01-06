@@ -14,21 +14,21 @@ public abstract class BlockEntityClientSerializableMapper extends BlockEntityMap
 
 	@Override
 	public void loadClientData(BlockState pos, CompoundTag tag) {
-		readCompoundTag(tag);
+		load(getBlockState(), tag);
 	}
 
 	@Override
 	public CompoundTag saveClientData(CompoundTag tag) {
-		writeCompoundTag(tag);
+		save(tag);
 		return tag;
 	}
 
 	public final void fromClientTag(CompoundTag tag) {
-		readCompoundTag(tag);
+		load(getBlockState(), tag);
 	}
 
 	public final CompoundTag toClientTag(CompoundTag tag) {
-		writeCompoundTag(tag);
+		save(tag);
 		return tag;
 	}
 }
