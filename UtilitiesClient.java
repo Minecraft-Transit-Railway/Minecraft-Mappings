@@ -6,10 +6,12 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.model.BoatModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.MinecartModel;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.entity.vehicle.Minecart;
 
 public interface UtilitiesClient {
@@ -33,6 +35,10 @@ public interface UtilitiesClient {
 
 	static EntityModel<Minecart> getMinecartModel() {
 		return new MinecartModel<>(MinecartModel.createBodyLayer().bakeRoot());
+	}
+
+	static EntityModel<Boat> getBoatModel() {
+		return new BoatModel(BoatModel.createBodyModel().bakeRoot());
 	}
 
 	static boolean isHovered(AbstractWidget widget) {
