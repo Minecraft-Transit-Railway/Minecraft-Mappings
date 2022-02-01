@@ -2,11 +2,13 @@ package @package@;
 
 import me.shedaniel.architectury.event.events.TextureStitchEvent;
 import me.shedaniel.architectury.event.events.client.ClientPlayerEvent;
+import me.shedaniel.architectury.event.events.client.ClientTickEvent;
 import me.shedaniel.architectury.registry.BlockEntityRenderers;
 import me.shedaniel.architectury.registry.ColorHandlers;
 import me.shedaniel.architectury.registry.ItemPropertiesRegistry;
 import me.shedaniel.architectury.registry.RenderTypes;
 import me.shedaniel.architectury.registry.entity.EntityRenderers;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderType;
@@ -47,6 +49,10 @@ public interface RegistryUtilitiesClient {
 
 	static void registerPlayerJoinEvent(Consumer<LocalPlayer> consumer) {
 		ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(consumer::accept);
+	}
+
+	static void registerClientTickEvent(Consumer<Minecraft> consumer) {
+		ClientTickEvent.CLIENT_PRE.register(consumer::accept);
 	}
 
 	static void registerTextureStitchEvent(Consumer<TextureAtlas> consumer) {
