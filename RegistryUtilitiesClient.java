@@ -7,7 +7,6 @@ import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
 import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
 import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import dev.architectury.registry.item.ItemPropertiesRegistry;
-import dev.architectury.registry.level.entity.EntityRendererRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.client.player.LocalPlayer;
@@ -36,7 +35,6 @@ public interface RegistryUtilitiesClient {
 	}
 
 	static <T extends Entity> void registerEntityRenderer(EntityType<T> type, Function<EntityRendererProvider.Context, EntityRendererMapper<T>> factory) {
-		EntityRendererRegistry.register(() -> type, factory::apply);
 	}
 
 	static void registerRenderType(RenderType renderType, Block block) {
