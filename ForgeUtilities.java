@@ -15,6 +15,8 @@ import java.util.Set;
 
 public class ForgeUtilities {
 
+	private static Runnable renderTickAction = () -> {
+	};
 	private static final Set<EntityRendererPair<?>> ENTITY_RENDERER_PAIRS = new HashSet<>();
 
 	public static void registerModEventBus(String modId, IEventBus eventBus) {
@@ -25,8 +27,20 @@ public class ForgeUtilities {
 		return NetworkHooks.getEntitySpawningPacket(entity);
 	}
 
+	public static void renderTickAction(Runnable runnable) {
+		renderTickAction = runnable;
+	}
+
 	public static <T extends Entity> void registerEntityRenderer(EntityType<? extends T> entityType, EntityRendererProvider<T> entityRendererProvider) {
 		ENTITY_RENDERER_PAIRS.add(new EntityRendererPair<>(entityType, entityRendererProvider));
+	}
+
+	public static class RenderTick {
+
+		@SubscribeEvent
+		public static void onRenderTickEvent(net.minecraftforge.client.event.RenderWorldLastEvent event) {
+			renderTickAction.run();
+		}
 	}
 
 	public static class RegisterEntityRenderer {
