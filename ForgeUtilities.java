@@ -5,23 +5,39 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import java.util.function.Function;
 
-public interface ForgeUtilities {
+public class ForgeUtilities {
 
-	static void registerModEventBus(String modId, IEventBus eventBus) {
+	private static Runnable renderTickAction = () -> {
+	};
+
+	public static void registerModEventBus(String modId, IEventBus eventBus) {
 		EventBuses.registerModEventBus(modId, eventBus);
 	}
 
-	static Packet<?> createAddEntityPacket(Entity entity) {
+	public static Packet<?> createAddEntityPacket(Entity entity) {
 		return NetworkHooks.getEntitySpawningPacket(entity);
 	}
 
-	static <T extends Entity> void registerEntityRenderer(EntityType<? extends T> entityType, Function<Object, EntityRendererMapper<T>> entityRendererProvider) {
+	public static void renderTickAction(Runnable runnable) {
+		renderTickAction = runnable;
 	}
 
-	class RegisterEntityRenderer {
+	public static <T extends Entity> void registerEntityRenderer(EntityType<? extends T> entityType, Function<Object, EntityRendererMapper<T>> entityRendererProvider) {
+	}
+
+	public static class RenderTick {
+
+		@SubscribeEvent
+		public static void onRenderTickEvent(net.minecraftforge.client.event.RenderWorldLastEvent event) {
+			renderTickAction.run();
+		}
+	}
+
+	public static class RegisterEntityRenderer {
 	}
 }
