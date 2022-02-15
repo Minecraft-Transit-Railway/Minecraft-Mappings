@@ -37,6 +37,10 @@ public interface Utilities {
 		world.getBlockTicks().scheduleTick(pos, block, ticks);
 	}
 
+	static boolean entityRemoved(Entity entity) {
+		return entity == null || entity.removed;
+	}
+
 	@FunctionalInterface
 	interface TileEntitySupplier<T extends BlockEntityMapper> {
 		T supplier(BlockPos pos, BlockState state);
