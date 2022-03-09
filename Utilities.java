@@ -2,6 +2,7 @@ package @package@;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -31,6 +32,10 @@ public interface Utilities {
 
 	static Inventory getInventory(Player player) {
 		return player.inventory;
+	}
+
+	static Abilities getAbilities(Player player) {
+		return player.abilities;
 	}
 
 	static void scheduleBlockTick(Level world, BlockPos pos, Block block, int ticks) {
