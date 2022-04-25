@@ -12,6 +12,7 @@ import net.minecraftforge.fmllegacy.network.NetworkHooks;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public class ForgeUtilities {
 
@@ -31,7 +32,7 @@ public class ForgeUtilities {
 		renderTickAction = runnable;
 	}
 
-	public static <T extends Entity> void registerEntityRenderer(EntityType<? extends T> entityType, EntityRendererProvider<T> entityRendererProvider) {
+	public static <T extends Entity> void registerEntityRenderer(Supplier<EntityType<? extends T>> entityType, EntityRendererProvider<T> entityRendererProvider) {
 		ENTITY_RENDERER_PAIRS.add(new EntityRendererPair<>(entityType, entityRendererProvider));
 	}
 
@@ -53,16 +54,16 @@ public class ForgeUtilities {
 
 	private static class EntityRendererPair<T extends Entity> {
 
-		private final EntityType<? extends T> entityType;
+		private final Supplier<EntityType<? extends T>> entityTypeSupplier;
 		private final EntityRendererProvider<T> entityRendererProvider;
 
-		private EntityRendererPair(EntityType<? extends T> entityType, EntityRendererProvider<T> entityRendererProvider) {
-			this.entityType = entityType;
+		private EntityRendererPair(Supplier<EntityType<? extends T>> entityTypeSupplier, EntityRendererProvider<T> entityRendererProvider) {
+			this.entityTypeSupplier = entityTypeSupplier;
 			this.entityRendererProvider = entityRendererProvider;
 		}
 
 		private void register(EntityRenderersEvent.RegisterRenderers event) {
-			event.registerEntityRenderer(entityType, entityRendererProvider);
+			event.registerEntityRenderer(entityTypeSupplier.get(), entityRendererProvider);
 		}
 	}
 }
