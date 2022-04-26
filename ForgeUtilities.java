@@ -9,6 +9,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class ForgeUtilities {
 
@@ -27,7 +28,7 @@ public class ForgeUtilities {
 		renderTickAction = runnable;
 	}
 
-	public static <T extends Entity> void registerEntityRenderer(EntityType<? extends T> entityType, Function<Object, EntityRendererMapper<T>> entityRendererProvider) {
+	public static <T extends Entity> void registerEntityRenderer(Supplier<EntityType<? extends T>> entityType, Function<Object, EntityRendererMapper<T>> entityRendererProvider) {
 	}
 
 	public static class RenderTick {
