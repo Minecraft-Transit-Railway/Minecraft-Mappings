@@ -1,11 +1,13 @@
 package @package@;
 
 import me.shedaniel.architectury.platform.forge.EventBuses;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import java.util.function.Function;
@@ -18,6 +20,10 @@ public class ForgeUtilities {
 
 	public static void registerModEventBus(String modId, IEventBus eventBus) {
 		EventBuses.registerModEventBus(modId, eventBus);
+	}
+
+	public static void registerKeyBinding(KeyMapping keyMapping) {
+		ClientRegistry.registerKeyBinding(keyMapping);
 	}
 
 	public static Packet<?> createAddEntityPacket(Entity entity) {
