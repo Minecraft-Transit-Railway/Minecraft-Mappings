@@ -1,6 +1,7 @@
 package @package@;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Inventory;
@@ -9,7 +10,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import org.apache.commons.io.IOUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.util.Optional;
 import java.util.function.Function;
 
 public interface Utilities {
@@ -44,6 +50,22 @@ public interface Utilities {
 
 	static boolean entityRemoved(Entity entity) {
 		return entity == null || entity.isRemoved();
+	}
+
+	static InputStream getInputStream(Resource resource) throws IOException {
+		return resource.getInputStream();
+	}
+
+	static InputStream getInputStream(Optional<Resource> optionalResource) throws IOException {
+		if (optionalResource.isPresent()) {
+			return optionalResource.get().getInputStream();
+		} else {
+			return IOUtils.toInputStream("", Charset.defaultCharset());
+		}
+	}
+
+	static void closeResource(Resource resource) throws IOException {
+		resource.close();
 	}
 
 	@FunctionalInterface
