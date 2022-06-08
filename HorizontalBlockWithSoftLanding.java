@@ -3,9 +3,8 @@ package @package@;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 
-public abstract class HorizontalBlockWithSoftLanding extends HorizontalDirectionalBlock {
+public abstract class HorizontalBlockWithSoftLanding extends BlockDirectionalMapper {
 
 	public HorizontalBlockWithSoftLanding(Properties settings) {
 		super(settings);
