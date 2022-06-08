@@ -10,9 +10,16 @@ import net.minecraft.client.model.BoatModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.MinecartModel;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.entity.vehicle.Minecart;
+
+import java.io.IOException;
+import java.util.List;
 
 public interface UtilitiesClient {
 
@@ -38,7 +45,27 @@ public interface UtilitiesClient {
 	}
 
 	static EntityModel<Boat> getBoatModel() {
-		return new BoatModel(BoatModel.createBodyModel().bakeRoot());
+		return new BoatModel(BoatModel.createBodyModel(false).bakeRoot(), false);
+	}
+
+	static void setPacketCoordinates(Entity entity, double x, double y, double z) {
+		entity.syncPacketPositionCodec(x, y, z);
+	}
+
+	static float getPacketYaw(ClientboundAddEntityPacket packet) {
+		return packet.getYRot();
+	}
+
+	static int getRenderDistance() {
+		return Minecraft.getInstance().options.renderDistance().get();
+	}
+
+	static List<Resource> getResources(ResourceManager resourceManager, ResourceLocation resourceLocation) throws IOException {
+		return resourceManager.getResourceStack(resourceLocation);
+	}
+
+	static boolean hasResource(ResourceLocation resourceLocation) {
+		return Minecraft.getInstance().getResourceManager().getResource(resourceLocation).isPresent();
 	}
 
 	static boolean isHovered(AbstractWidget widget) {
