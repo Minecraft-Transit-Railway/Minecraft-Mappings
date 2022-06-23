@@ -5,7 +5,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 
-public class SoundInstanceMapper extends AbstractSoundInstance {
+public abstract class SoundInstanceMapper extends AbstractSoundInstance {
 
 	public SoundInstanceMapper(SoundEvent soundEvent, SoundSource soundSource) {
 		super(soundEvent, soundSource, RandomSource.create());
