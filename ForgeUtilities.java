@@ -8,17 +8,21 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.network.NetworkHooks;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ForgeUtilities {
 
 	private static Runnable renderTickAction = () -> {
+	};
+	private static Consumer<Object> renderGameOverlayAction = matrices -> {
 	};
 	private static final Set<EntityRendererPair<?>> ENTITY_RENDERER_PAIRS = new HashSet<>();
 
@@ -38,22 +42,31 @@ public class ForgeUtilities {
 		renderTickAction = runnable;
 	}
 
+	public static void renderGameOverlayAction(Consumer<Object> consumer) {
+		renderGameOverlayAction = consumer;
+	}
+
 	public static <T extends Entity> void registerEntityRenderer(Supplier<EntityType<? extends T>> entityType, EntityRendererProvider<T> entityRendererProvider) {
 		ENTITY_RENDERER_PAIRS.add(new EntityRendererPair<>(entityType, entityRendererProvider));
 	}
 
-	public static class RenderTick {
+	public static class Events {
 
 		@SubscribeEvent
 		public static void onRenderTickEvent(net.minecraftforge.client.event.RenderLevelLastEvent event) {
 			renderTickAction.run();
+		}
+
+		@SubscribeEvent
+		public static void onRenderGameOverlayEvent(RenderGameOverlayEvent.Post event) {
+			renderGameOverlayAction.accept(event.getMatrixStack());
 		}
 	}
 
 	public static class RegisterEntityRenderer {
 
 		@SubscribeEvent
-		public static void onRegisterEntityRendererEvent(EntityRenderersEvent.RegisterRenderers event) {
+		public static void onEntityRendererEvent(EntityRenderersEvent.RegisterRenderers event) {
 			ENTITY_RENDERER_PAIRS.forEach(entityRendererPair -> entityRendererPair.register(event));
 		}
 	}
