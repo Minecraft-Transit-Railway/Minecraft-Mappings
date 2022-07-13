@@ -1,14 +1,15 @@
 package @package@;
 
 import dev.architectury.platform.forge.EventBuses;
+import dev.architectury.registry.client.keymappings.KeyMappingRegistry;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.network.NetworkHooks;
@@ -31,7 +32,7 @@ public class ForgeUtilities {
 	}
 
 	public static void registerKeyBinding(KeyMapping keyMapping) {
-		ClientRegistry.registerKeyBinding(keyMapping);
+		KeyMappingRegistry.register(keyMapping);
 	}
 
 	public static Packet<?> createAddEntityPacket(Entity entity) {
@@ -53,12 +54,14 @@ public class ForgeUtilities {
 	public static class Events {
 
 		@SubscribeEvent
-		public static void onRenderTickEvent(net.minecraftforge.client.event.RenderLevelLastEvent event) {
-			renderTickAction.run();
+		public static void onRenderTickEvent(RenderLevelStageEvent event) {
+			if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_CUTOUT_BLOCKS) {
+				renderTickAction.run();
+			}
 		}
 
 		@SubscribeEvent
-		public static void onRenderGameOverlayEvent(RenderGameOverlayEvent.Post event) {
+		public static void onRenderGameOverlayEvent(RenderGuiOverlayEvent.Post event) {
 			renderGameOverlayAction.accept(event.getPoseStack());
 		}
 	}
