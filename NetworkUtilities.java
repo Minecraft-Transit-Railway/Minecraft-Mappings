@@ -23,6 +23,7 @@ public interface NetworkUtilities {
 	}
 
 	static void sendToPlayer(ServerPlayer player, ResourceLocation id, FriendlyByteBuf packet) {
+		packet.resetReaderIndex();
 		NetworkManager.sendToPlayer(player, id, packet);
 	}
 
