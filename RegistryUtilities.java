@@ -1,10 +1,12 @@
 package @package@;
 
+import com.mojang.brigadier.CommandDispatcher;
 import me.shedaniel.architectury.event.events.CommandRegistrationEvent;
 import me.shedaniel.architectury.event.events.LifecycleEvent;
 import me.shedaniel.architectury.event.events.PlayerEvent;
 import me.shedaniel.architectury.event.events.TickEvent;
 import me.shedaniel.architectury.registry.CreativeTabs;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,8 +25,8 @@ public interface RegistryUtilities {
 		return new BlockEntityType<>(() -> supplier.supplier(null, null), Collections.singleton(block), null);
 	}
 
-	static <T extends CommandRegistrationEvent> void registerCommand(T listener) {
-		CommandRegistrationEvent.EVENT.register(listener);
+	static void registerCommand(Consumer<CommandDispatcher<CommandSourceStack>> callback) {
+		CommandRegistrationEvent.EVENT.register((dispatcher, dedicated) -> callback.accept(dispatcher));
 	}
 
 	static void registerPlayerJoinEvent(Consumer<ServerPlayer> consumer) {
