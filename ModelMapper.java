@@ -80,7 +80,11 @@ public class ModelMapper {
 	}
 
 	public void render(PoseStack matrices, VertexConsumer vertices, float x, float z, float rotateY, int light, int overlay) {
-		modelPart.setPos(x, 0, z);
+		render(matrices, vertices, x, 0, z, rotateY, light, overlay);
+	}
+
+	public void render(PoseStack matrices, VertexConsumer vertices, float x, float y, float z, float rotateY, int light, int overlay) {
+		modelPart.setPos(x, y, z);
 		modelPart.yRot = rotateY;
 		modelPart.render(matrices, vertices, light, overlay);
 	}
