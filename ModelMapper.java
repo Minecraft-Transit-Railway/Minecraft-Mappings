@@ -29,7 +29,11 @@ public class ModelMapper extends ModelPart {
 	}
 
 	public void render(PoseStack matrices, VertexConsumer vertices, float x, float z, float rotateY, int light, int overlay) {
-		setPos(x, 0, z);
+		render(matrices, vertices, x, 0, z, rotateY, light, overlay);
+	}
+
+	public void render(PoseStack matrices, VertexConsumer vertices, float x, float y, float z, float rotateY, int light, int overlay) {
+		setPos(x, y, z);
 		yRot = rotateY;
 		render(matrices, vertices, light, overlay);
 	}
