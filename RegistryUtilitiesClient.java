@@ -1,5 +1,6 @@
 package @package@;
 
+import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientTextureStitchEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
@@ -47,6 +48,10 @@ public interface RegistryUtilitiesClient {
 
 	static void registerPlayerJoinEvent(Consumer<LocalPlayer> consumer) {
 		ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(consumer::accept);
+	}
+
+	static void registerClientStoppingEvent(Consumer<Minecraft> consumer) {
+		ClientLifecycleEvent.CLIENT_STOPPING.register(consumer::accept);
 	}
 
 	static void registerClientTickEvent(Consumer<Minecraft> consumer) {
