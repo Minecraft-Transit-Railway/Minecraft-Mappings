@@ -4,10 +4,12 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -72,6 +74,14 @@ public interface Utilities {
 
 	static void sendCommand(MinecraftServer server, CommandSourceStack commandSourceStack, String command) {
 		server.getCommands().performCommand(commandSourceStack, command);
+	}
+
+	static CreativeModeTab getDefaultTab() {
+		return CreativeModeTab.TAB_MISC;
+	}
+
+	static SoundEvent unwrapSoundEvent(SoundEvent soundEvent) {
+		return soundEvent;
 	}
 
 	@FunctionalInterface

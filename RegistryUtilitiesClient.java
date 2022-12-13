@@ -1,6 +1,5 @@
 package @package@;
 
-import me.shedaniel.architectury.event.events.TextureStitchEvent;
 import me.shedaniel.architectury.event.events.client.ClientLifecycleEvent;
 import me.shedaniel.architectury.event.events.client.ClientPlayerEvent;
 import me.shedaniel.architectury.event.events.client.ClientTickEvent;
@@ -15,7 +14,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -58,9 +56,5 @@ public interface RegistryUtilitiesClient {
 
 	static void registerClientTickEvent(Consumer<Minecraft> consumer) {
 		ClientTickEvent.CLIENT_PRE.register(consumer::accept);
-	}
-
-	static void registerTextureStitchEvent(Consumer<TextureAtlas> consumer) {
-		TextureStitchEvent.POST.register(consumer::accept);
 	}
 }
