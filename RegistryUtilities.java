@@ -5,7 +5,6 @@ import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.event.events.common.TickEvent;
-import dev.architectury.registry.CreativeTabRegistry;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.Registry;
@@ -17,7 +16,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
@@ -59,15 +57,11 @@ public interface RegistryUtilities {
 		TickEvent.SERVER_PRE.register(consumer::accept);
 	}
 
-	static CreativeModeTab createCreativeTab(ResourceLocation name, Supplier<ItemStack> icon) {
-		return CreativeTabRegistry.create(name, icon).get();
-	}
-
 	static SoundEvent createSoundEvent(ResourceLocation resourceLocation) {
 		return SoundEvent.createVariableRangeEvent(resourceLocation);
 	}
 
-	static Item.Properties createItemProperties(CreativeModeTab creativeModeTab) {
+	static Item.Properties createItemProperties(Supplier<CreativeModeTab> creativeModeTab) {
 		return new Item.Properties();
 	}
 
