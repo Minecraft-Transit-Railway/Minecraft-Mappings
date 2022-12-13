@@ -2,7 +2,6 @@ package @package@;
 
 import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
-import dev.architectury.event.events.client.ClientTextureStitchEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
 import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
@@ -14,7 +13,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -56,9 +54,5 @@ public interface RegistryUtilitiesClient {
 
 	static void registerClientTickEvent(Consumer<Minecraft> consumer) {
 		ClientTickEvent.CLIENT_PRE.register(consumer::accept);
-	}
-
-	static void registerTextureStitchEvent(Consumer<TextureAtlas> consumer) {
-		ClientTextureStitchEvent.POST.register(consumer::accept);
 	}
 }
