@@ -5,7 +5,6 @@ import me.shedaniel.architectury.event.events.CommandRegistrationEvent;
 import me.shedaniel.architectury.event.events.LifecycleEvent;
 import me.shedaniel.architectury.event.events.PlayerEvent;
 import me.shedaniel.architectury.event.events.TickEvent;
-import me.shedaniel.architectury.registry.CreativeTabs;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.Registry;
@@ -16,7 +15,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
@@ -58,16 +56,12 @@ public interface RegistryUtilities {
 		TickEvent.SERVER_PRE.register(consumer::accept);
 	}
 
-	static CreativeModeTab createCreativeTab(ResourceLocation name, Supplier<ItemStack> icon) {
-		return CreativeTabs.create(name, icon);
-	}
-
 	static SoundEvent createSoundEvent(ResourceLocation resourceLocation) {
 		return new SoundEvent(resourceLocation);
 	}
 
-	static Item.Properties createItemProperties(CreativeModeTab creativeModeTab) {
-		return new Item.Properties().tab(creativeModeTab);
+	static Item.Properties createItemProperties(Supplier<CreativeModeTab> creativeModeTab) {
+		return new Item.Properties().tab(creativeModeTab.get());
 	}
 
 	static DefaultedRegistry<Item> registryGetItem() {
