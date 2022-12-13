@@ -3,13 +3,17 @@ package @package@;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.model.BoatModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.MinecartModel;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
@@ -18,6 +22,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.entity.vehicle.Minecart;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -45,7 +50,7 @@ public interface UtilitiesClient {
 	}
 
 	static EntityModel<Boat> getBoatModel() {
-		return new BoatModel(BoatModel.createBodyModel(false).bakeRoot(), false);
+		return new BoatModel(BoatModel.createBodyModel().bakeRoot());
 	}
 
 	static void setPacketCoordinates(Entity entity, double x, double y, double z) {
@@ -70,5 +75,61 @@ public interface UtilitiesClient {
 
 	static boolean isHovered(AbstractWidget widget) {
 		return widget.isHoveredOrFocused();
+	}
+
+	static File getResourcePackDirectory(Minecraft minecraft) {
+		return minecraft.getResourcePackDirectory().toFile();
+	}
+
+	static Button newButton(Button.OnPress onPress) {
+		return newButton(Text.literal(""), onPress);
+	}
+
+	static Button newButton(Component component, Button.OnPress onPress) {
+		return Button.builder(component, onPress).build();
+	}
+
+	static Button newButton(int height, Component component, Button.OnPress onPress) {
+		return Button.builder(component, onPress).size(0, height).build();
+	}
+
+	static int getWidgetX(AbstractWidget widget) {
+		return widget.getX();
+	}
+
+	static void setWidgetX(AbstractWidget widget, int x) {
+		widget.setX(x);
+	}
+
+	static void setWidgetY(AbstractWidget widget, int y) {
+		widget.setY(y);
+	}
+
+	static int getWidgetY(AbstractWidget widget) {
+		return widget.getY();
+	}
+
+	static void rotateX(PoseStack matrices, float angle) {
+		matrices.mulPose(Axis.XP.rotation(angle));
+	}
+
+	static void rotateXDegrees(PoseStack matrices, float angle) {
+		matrices.mulPose(Axis.XP.rotationDegrees(angle));
+	}
+
+	static void rotateY(PoseStack matrices, float angle) {
+		matrices.mulPose(Axis.YP.rotation(angle));
+	}
+
+	static void rotateYDegrees(PoseStack matrices, float angle) {
+		matrices.mulPose(Axis.YP.rotationDegrees(angle));
+	}
+
+	static void rotateZ(PoseStack matrices, float angle) {
+		matrices.mulPose(Axis.ZP.rotation(angle));
+	}
+
+	static void rotateZDegrees(PoseStack matrices, float angle) {
+		matrices.mulPose(Axis.ZP.rotationDegrees(angle));
 	}
 }

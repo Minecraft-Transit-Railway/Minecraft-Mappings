@@ -7,10 +7,16 @@ import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.event.events.common.TickEvent;
 import dev.architectury.registry.CreativeTabRegistry;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.DefaultedRegistry;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -54,6 +60,34 @@ public interface RegistryUtilities {
 	}
 
 	static CreativeModeTab createCreativeTab(ResourceLocation name, Supplier<ItemStack> icon) {
-		return CreativeTabRegistry.create(name, icon);
+		return CreativeTabRegistry.create(name, icon).get();
+	}
+
+	static SoundEvent createSoundEvent(ResourceLocation resourceLocation) {
+		return SoundEvent.createVariableRangeEvent(resourceLocation);
+	}
+
+	static Item.Properties createItemProperties(CreativeModeTab creativeModeTab) {
+		return new Item.Properties();
+	}
+
+	static DefaultedRegistry<Item> registryGetItem() {
+		return BuiltInRegistries.ITEM;
+	}
+
+	static DefaultedRegistry<Block> registryGetBlock() {
+		return BuiltInRegistries.BLOCK;
+	}
+
+	static Registry<BlockEntityType<?>> registryGetBlockEntityType() {
+		return BuiltInRegistries.BLOCK_ENTITY_TYPE;
+	}
+
+	static DefaultedRegistry<EntityType<?>> registryGetEntityType() {
+		return BuiltInRegistries.ENTITY_TYPE;
+	}
+
+	static Registry<SoundEvent> registryGetSoundEvent() {
+		return BuiltInRegistries.SOUND_EVENT;
 	}
 }
