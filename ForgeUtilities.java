@@ -6,6 +6,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.Registry;
+import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -88,6 +89,10 @@ public class ForgeUtilities {
 
 	public static ResourceKey<Registry<SoundEvent>> registryGetSoundEvent() {
 		return Registries.SOUND_EVENT;
+	}
+
+	public static ResourceKey<Registry<ParticleType<?>>> registryGetParticleType() {
+		return Registries.PARTICLE_TYPE;
 	}
 
 	public static void renderTickAction(Runnable runnable) {

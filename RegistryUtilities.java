@@ -8,6 +8,7 @@ import dev.architectury.event.events.common.TickEvent;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.Registry;
+import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -83,5 +84,9 @@ public interface RegistryUtilities {
 
 	static Registry<SoundEvent> registryGetSoundEvent() {
 		return BuiltInRegistries.SOUND_EVENT;
+	}
+
+	static Registry<ParticleType<?>> registryGetParticleType() {
+		return BuiltInRegistries.PARTICLE_TYPE;
 	}
 }
