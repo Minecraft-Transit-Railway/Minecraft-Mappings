@@ -8,6 +8,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.Registry;
+import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -82,6 +83,10 @@ public class ForgeUtilities {
 
 	public static ResourceKey<Registry<SoundEvent>> registryGetSoundEvent() {
 		return Registry.SOUND_EVENT_REGISTRY;
+	}
+
+	public static ResourceKey<Registry<ParticleType<?>>> registryGetParticleType() {
+		return Registry.PARTICLE_TYPE_REGISTRY;
 	}
 
 	public static void renderTickAction(Runnable runnable) {
