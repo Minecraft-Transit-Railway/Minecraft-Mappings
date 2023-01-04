@@ -4,7 +4,6 @@ import dev.architectury.platform.forge.EventBuses;
 import dev.architectury.registry.client.keymappings.KeyMappingRegistry;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.Registries;
@@ -39,7 +38,7 @@ public class ForgeUtilities {
 	};
 	private static Consumer<Object> renderGameOverlayAction = matrices -> {
 	};
-	private static Consumer<TextureAtlas> textureStitchEvent = atlas -> {
+	private static Consumer<Object> textureStitchEvent = atlas -> {
 	};
 	private static final List<ResourceLocation> CREATIVE_TAB_ORDER = new ArrayList<>();
 	private static final Map<ResourceLocation, CreativeModeTabWrapper> CREATIVE_TABS = new HashMap<>();
@@ -103,7 +102,7 @@ public class ForgeUtilities {
 		renderGameOverlayAction = consumer;
 	}
 
-	public static void registerTextureStitchEvent(Consumer<TextureAtlas> consumer) {
+	public static void registerTextureStitchEvent(Consumer<Object> consumer) {
 		textureStitchEvent = consumer;
 	}
 
