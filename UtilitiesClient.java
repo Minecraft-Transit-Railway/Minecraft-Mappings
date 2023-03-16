@@ -5,19 +5,23 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.model.BoatModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.MinecartModel;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.entity.vehicle.Minecart;
@@ -39,6 +43,10 @@ public interface UtilitiesClient {
 	static void beginDrawingTexture(ResourceLocation textureId) {
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderTexture(0, textureId);
+	}
+
+	static int drawInBatch(Font textRenderer, FormattedCharSequence formattedCharSequence, float x, float y, int color, boolean shadow, Matrix4f matrix4f, MultiBufferSource immediate, int overlay, int light) {
+		return textRenderer.drawInBatch(formattedCharSequence, x, y, color, shadow, matrix4f, immediate, false, overlay, light);
 	}
 
 	static void setScreen(Minecraft client, ScreenMapper screen) {
