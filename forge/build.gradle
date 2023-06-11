@@ -1,0 +1,21 @@
+import org.mtr.core.Versions
+
+plugins {
+	id "net.minecraftforge.gradle" version "+" apply false
+}
+
+subprojects {
+	apply plugin: "net.minecraftforge.gradle"
+
+	final minecraftVersion = getProperty("minecraftVersion").toString()
+
+	minecraft {
+		mappings channel: "official", version: minecraftVersion
+	}
+
+	sourceSets.main.resources { srcDir "src/generated/resources" }
+
+	dependencies {
+		minecraft "net.minecraftforge:forge:${minecraftVersion}-${Versions.getForgeVersion(minecraftVersion)}"
+	}
+}

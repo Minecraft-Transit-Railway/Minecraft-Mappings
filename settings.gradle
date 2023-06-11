@@ -1,0 +1,25 @@
+pluginManagement {
+	repositories {
+		maven { url = "https://maven.fabricmc.net/" }
+		maven { url = "https://maven.minecraftforge.net/" }
+		mavenCentral()
+		gradlePluginPortal()
+	}
+}
+
+include("fabric:1.16.5")
+include("fabric:1.17.1")
+include("fabric:1.18.2")
+include("fabric:1.19.2")
+include("fabric:1.19.3")
+include("fabric:1.19.4")
+include("fabric:1.20")
+include("forge:1.16.5")
+include("forge:1.17.1")
+include("forge:1.18.2")
+include("forge:1.19.2")
+include("forge:1.19.3")
+include("forge:1.19.4")
+include("forge:1.20")
+
+rootProject.name = "Minecraft-Mappings"

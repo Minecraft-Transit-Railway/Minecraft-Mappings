@@ -1,0 +1,18 @@
+import org.mtr.core.Versions
+
+plugins {
+	id "fabric-loom" version "+" apply false
+}
+
+subprojects {
+	apply plugin: "fabric-loom"
+
+	final minecraftVersion = getProperty("minecraftVersion").toString()
+
+	dependencies {
+		minecraft "com.mojang:minecraft:${minecraftVersion}"
+		mappings "net.fabricmc:yarn:${Versions.getYarnVersion(minecraftVersion)}:v2"
+		modImplementation "net.fabricmc:fabric-loader:${Versions.getFabricVersion(minecraftVersion)}"
+		modImplementation "net.fabricmc.fabric-api:fabric-api:${Versions.getFabricApiVersion(minecraftVersion)}"
+	}
+}

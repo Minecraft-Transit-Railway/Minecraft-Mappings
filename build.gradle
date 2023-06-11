@@ -1,0 +1,27 @@
+plugins {
+	id "java"
+	id "maven-publish"
+}
+
+group "org.mtr.core"
+version rootProject.properties.version
+
+repositories {
+	mavenCentral()
+}
+
+java {
+	toolchain {
+		languageVersion.set(JavaLanguageVersion.of(8))
+	}
+	withSourcesJar()
+	withJavadocJar()
+}
+
+publishing {
+	publications {
+		maven(MavenPublication) {
+			from components.java
+		}
+	}
+}
