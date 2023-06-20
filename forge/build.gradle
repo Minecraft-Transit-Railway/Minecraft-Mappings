@@ -1,13 +1,19 @@
-import org.mtr.core.Versions
+import org.mtr.mapping.TestHelper
+import org.mtr.mapping.Versions
 
 plugins {
+	id "java"
+	id "maven-publish"
 	id "net.minecraftforge.gradle" version "+" apply false
 }
 
 subprojects {
+	apply plugin: "java"
+	apply plugin: "maven-publish"
 	apply plugin: "net.minecraftforge.gradle"
 
 	final minecraftVersion = getProperty("minecraftVersion").toString()
+	TestHelper.copyTest(projectDir, "forge-${minecraftVersion}")
 
 	minecraft {
 		mappings channel: "official", version: minecraftVersion
@@ -16,6 +22,31 @@ subprojects {
 	sourceSets.main.resources { srcDir "src/generated/resources" }
 
 	dependencies {
+		implementation project(":common")
 		minecraft "net.minecraftforge:forge:${minecraftVersion}-${Versions.getForgeVersion(minecraftVersion)}"
+		testImplementation "org.junit.jupiter:junit-jupiter-api:+"
+		testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:+"
+		testImplementation "org.reflections:reflections:+"
+	}
+
+	java {
+		toolchain {
+			languageVersion.set(JavaLanguageVersion.of(getProperty("javaLanguageVersion").toString()))
+		}
+		withSourcesJar()
+		withJavadocJar()
+	}
+
+	test {
+		useJUnitPlatform()
+		testLogging { showStandardStreams = true }
+	}
+
+	publishing {
+		publications {
+			maven(MavenPublication) {
+				from components.java
+			}
+		}
 	}
 }

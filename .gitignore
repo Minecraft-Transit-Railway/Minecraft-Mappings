@@ -29,5 +29,9 @@ bin/
 *.DS_Store
 
 run/
+logs/
+holder/
+fabric/*/src/test/java/org/mtr/mapping/test/SearchForMappedMethodsTest.java
+forge/*/src/test/java/org/mtr/mapping/test/SearchForMappedMethodsTest.java
 latest.log
 forge*changelog.txt

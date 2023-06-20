@@ -1,0 +1,25 @@
+plugins {
+	id "java"
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	testImplementation "org.junit.jupiter:junit-jupiter-api:+"
+	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:+"
+	testImplementation "commons-io:commons-io:+"
+	testImplementation "org.reflections:reflections:+"
+}
+
+java {
+	toolchain {
+		languageVersion.set(JavaLanguageVersion.of(8))
+	}
+}
+
+test {
+	useJUnitPlatform()
+	testLogging { showStandardStreams = true }
+}

@@ -1,18 +1,50 @@
-import org.mtr.core.Versions
+import org.mtr.mapping.TestHelper
+import org.mtr.mapping.Versions
 
 plugins {
+	id "java"
+	id "maven-publish"
 	id "fabric-loom" version "+" apply false
 }
 
 subprojects {
+	apply plugin: "java"
+	apply plugin: "maven-publish"
 	apply plugin: "fabric-loom"
 
 	final minecraftVersion = getProperty("minecraftVersion").toString()
+	TestHelper.copyTest(projectDir, "fabric-${minecraftVersion}")
 
 	dependencies {
+		implementation project(":common")
 		minecraft "com.mojang:minecraft:${minecraftVersion}"
 		mappings "net.fabricmc:yarn:${Versions.getYarnVersion(minecraftVersion)}:v2"
 		modImplementation "net.fabricmc:fabric-loader:${Versions.getFabricVersion(minecraftVersion)}"
 		modImplementation "net.fabricmc.fabric-api:fabric-api:${Versions.getFabricApiVersion(minecraftVersion)}"
+		implementation "com.google.code.findbugs:jsr305:+"
+		testImplementation "org.junit.jupiter:junit-jupiter-api:+"
+		testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:+"
+		testImplementation "org.reflections:reflections:+"
+	}
+
+	java {
+		toolchain {
+			languageVersion.set(JavaLanguageVersion.of(getProperty("javaLanguageVersion").toString()))
+		}
+		withSourcesJar()
+		withJavadocJar()
+	}
+
+	test {
+		useJUnitPlatform()
+		testLogging { showStandardStreams = true }
+	}
+
+	publishing {
+		publications {
+			maven(MavenPublication) {
+				from components.java
+			}
+		}
 	}
 }
