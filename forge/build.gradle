@@ -1,4 +1,4 @@
-import org.mtr.mapping.TestHelper
+import org.mtr.mapping.FileHelper
 import org.mtr.mapping.Versions
 
 plugins {
@@ -13,7 +13,7 @@ subprojects {
 	apply plugin: "net.minecraftforge.gradle"
 
 	final minecraftVersion = getProperty("minecraftVersion").toString()
-	TestHelper.copyTest(projectDir, "forge-${minecraftVersion}")
+	FileHelper.copyTest(projectDir, "forge-${minecraftVersion}")
 
 	minecraft {
 		mappings channel: "official", version: minecraftVersion
@@ -35,6 +35,12 @@ subprojects {
 		}
 		withSourcesJar()
 		withJavadocJar()
+	}
+
+	build {
+		doLast {
+			FileHelper.copyBuildFile(projectDir, "forge", minecraftVersion, project.version.toString())
+		}
 	}
 
 	test {

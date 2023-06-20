@@ -1,0 +1,29 @@
+name: Build
+on: [ pull_request, push ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@main
+      - name: Validate gradle wrapper
+        uses: gradle/wrapper-validation-action@main
+      - name: Setup JDK 17
+        uses: actions/setup-java@main
+        with:
+          java-version: 17
+          distribution: 'zulu'
+      - name: Make gradle wrapper executable
+        run: chmod +x ./gradlew
+      - name: Search for mapped methods
+        run: ./gradlew test -x common:test --rerun-tasks
+      - name: Validate mapped methods
+        run: ./gradlew common:test --rerun-tasks
+      - name: Build
+        run: ./gradlew build -x test
+      - name: Capture build artifacts
+        uses: actions/upload-artifact@main
+        with:
+          name: Artifact
+          path: build/release/
