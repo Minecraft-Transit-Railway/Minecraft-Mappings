@@ -1,7 +1,7 @@
 import org.mtr.mapping.HolderGenerator
 
 HolderGenerator.cleanFolder(projectDir)
+HolderGenerator.generate(projectDir, "net.minecraft.tileentity.TileEntityType", "BlockEntityType", "extends org.mtr.mapping.mapper.BlockEntity")
 HolderGenerator.generate(projectDir, "net.minecraft.util.math.BlockPos", "BlockPos", null)
 HolderGenerator.generate(projectDir, "net.minecraft.block.BlockState", "BlockState", null)
-HolderGenerator.generate(projectDir, "net.minecraft.tileentity.TileEntityType", "BlockEntityType", "extends net.minecraft.tileentity.TileEntity")
 HolderGenerator.generate(projectDir, "net.minecraft.nbt.CompoundNBT", "CompoundTag", null)
