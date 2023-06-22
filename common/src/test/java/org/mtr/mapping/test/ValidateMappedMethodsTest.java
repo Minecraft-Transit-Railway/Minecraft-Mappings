@@ -11,7 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class ValidateMappedMethodsTest {
+public final class ValidateMappedMethodsTest {
 
 	@Test
 	public void validateMappedMethods() throws IOException {

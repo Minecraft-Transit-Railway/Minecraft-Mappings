@@ -19,12 +19,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class SearchForMappedMethodsTest {
+public final class SearchForMappedMethodsTest {
 
 	private static final String NAMESPACE = "@namespace@";
 
 	@Test
-	public final void searchForMappedMethods() throws IOException, ClassNotFoundException {
+	public void searchForMappedMethods() throws IOException, ClassNotFoundException {
 		Assumptions.assumeFalse(NAMESPACE.contains("@"));
 		final List<String> signatures = new ArrayList<>();
 

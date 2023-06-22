@@ -16,6 +16,9 @@ jobs:
           distribution: 'zulu'
       - name: Make gradle wrapper executable
         run: chmod +x ./gradlew
+      - name: Generate holders
+        run: ./gradlew test -x common:test --rerun-tasks --continue
+        continue-on-error: true
       - name: Search for mapped methods
         run: ./gradlew test -x common:test --rerun-tasks
       - name: Validate mapped methods

@@ -1,19 +1,16 @@
-import org.mtr.mapping.FileHelper
-import org.mtr.mapping.Versions
+import org.mtr.mapping.BuildTools
 
 plugins {
 	id "java"
-	id "maven-publish"
 	id "net.minecraftforge.gradle" version "+" apply false
 }
 
 subprojects {
 	apply plugin: "java"
-	apply plugin: "maven-publish"
 	apply plugin: "net.minecraftforge.gradle"
 
-	final minecraftVersion = getProperty("minecraftVersion").toString()
-	FileHelper.copyTest(projectDir, "forge-${minecraftVersion}")
+	final BuildTools buildTools = new BuildTools(project)
+	final minecraftVersion = buildTools.minecraftVersion
 
 	minecraft {
 		mappings channel: "official", version: minecraftVersion
@@ -23,7 +20,7 @@ subprojects {
 
 	dependencies {
 		implementation project(":common")
-		minecraft "net.minecraftforge:forge:${minecraftVersion}-${Versions.getForgeVersion(minecraftVersion)}"
+		minecraft "net.minecraftforge:forge:${minecraftVersion}-${buildTools.getForgeVersion()}"
 		testImplementation "org.junit.jupiter:junit-jupiter-api:+"
 		testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:+"
 		testImplementation "org.reflections:reflections:+"
@@ -31,7 +28,7 @@ subprojects {
 
 	java {
 		toolchain {
-			languageVersion.set(JavaLanguageVersion.of(getProperty("javaLanguageVersion").toString()))
+			languageVersion.set(JavaLanguageVersion.of(buildTools.javaLanguageVersion))
 		}
 		withSourcesJar()
 		withJavadocJar()
@@ -39,20 +36,12 @@ subprojects {
 
 	build {
 		doLast {
-			FileHelper.copyBuildFile(projectDir, "forge", minecraftVersion, project.version.toString())
+			buildTools.copyBuildFile()
 		}
 	}
 
 	test {
 		useJUnitPlatform()
 		testLogging { showStandardStreams = true }
-	}
-
-	publishing {
-		publications {
-			maven(MavenPublication) {
-				from components.java
-			}
-		}
 	}
 }

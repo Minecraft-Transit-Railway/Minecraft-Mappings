@@ -1,26 +1,22 @@
-import org.mtr.mapping.FileHelper
-import org.mtr.mapping.Versions
+import org.mtr.mapping.BuildTools
 
 plugins {
 	id "java"
-	id "maven-publish"
 	id "fabric-loom" version "+" apply false
 }
 
 subprojects {
 	apply plugin: "java"
-	apply plugin: "maven-publish"
 	apply plugin: "fabric-loom"
 
-	final minecraftVersion = getProperty("minecraftVersion").toString()
-	FileHelper.copyTest(projectDir, "fabric-${minecraftVersion}")
+	final BuildTools buildTools = new BuildTools(project)
 
 	dependencies {
 		implementation project(":common")
-		minecraft "com.mojang:minecraft:${minecraftVersion}"
-		mappings "net.fabricmc:yarn:${Versions.getYarnVersion(minecraftVersion)}:v2"
-		modImplementation "net.fabricmc:fabric-loader:${Versions.getFabricVersion(minecraftVersion)}"
-		modImplementation "net.fabricmc.fabric-api:fabric-api:${Versions.getFabricApiVersion(minecraftVersion)}"
+		minecraft "com.mojang:minecraft:${buildTools.minecraftVersion}"
+		mappings "net.fabricmc:yarn:${buildTools.getYarnVersion()}:v2"
+		modImplementation "net.fabricmc:fabric-loader:${buildTools.getFabricVersion()}"
+		modImplementation "net.fabricmc.fabric-api:fabric-api:${buildTools.getFabricApiVersion()}"
 		implementation "com.google.code.findbugs:jsr305:+"
 		testImplementation "org.junit.jupiter:junit-jupiter-api:+"
 		testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:+"
@@ -29,7 +25,7 @@ subprojects {
 
 	java {
 		toolchain {
-			languageVersion.set(JavaLanguageVersion.of(getProperty("javaLanguageVersion").toString()))
+			languageVersion.set(JavaLanguageVersion.of(buildTools.javaLanguageVersion))
 		}
 		withSourcesJar()
 		withJavadocJar()
@@ -37,20 +33,12 @@ subprojects {
 
 	build {
 		doLast {
-			FileHelper.copyBuildFile(projectDir, "fabric", minecraftVersion, project.version.toString())
+			buildTools.copyBuildFile()
 		}
 	}
 
 	test {
 		useJUnitPlatform()
 		testLogging { showStandardStreams = true }
-	}
-
-	publishing {
-		publications {
-			maven(MavenPublication) {
-				from components.java
-			}
-		}
 	}
 }
