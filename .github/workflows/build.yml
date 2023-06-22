@@ -17,16 +17,16 @@ jobs:
       - name: Make gradle wrapper executable
         run: chmod +x ./gradlew
       - name: Generate holders
-        run: ./gradlew test -x common:test --rerun-tasks --continue
+        run: ./gradlew hideOfficialWarningUntilChanged test -x common:test --continue
         continue-on-error: true
       - name: Search for mapped methods
         run: ./gradlew test -x common:test --rerun-tasks
       - name: Validate mapped methods
-        run: ./gradlew common:test --rerun-tasks
+        run: ./gradlew common:test
       - name: Build
         run: ./gradlew build -x test
       - name: Capture build artifacts
         uses: actions/upload-artifact@main
         with:
-          name: Artifact
+          name: Mappings
           path: build/release/

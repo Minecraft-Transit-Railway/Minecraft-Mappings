@@ -38,6 +38,7 @@ public final class GenerationUtilities {
 			processMethods(classObject.getDeclaredConstructors(), mainStringBuilder, className, staticClassName, newClassName);
 			processMethods(classObject.getDeclaredMethods(), mainStringBuilder, className, staticClassName, newClassName);
 			mainStringBuilder.append("}");
+			Files.createDirectories(path);
 			Files.write(path.resolve(String.format("%s.java", newClassName)), mainStringBuilder.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 		}
 	}

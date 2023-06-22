@@ -47,7 +47,9 @@ public class BuildTools {
 
 		if (!isGenerator) {
 			final String testFile = FileUtils.readFileToString(rootPath.resolve("common/src/test/java/org/mtr/mapping/test/SearchForMappedMethodsTest.java").toFile(), StandardCharsets.UTF_8);
-			Files.write(path.resolve("src/test/java/org/mtr/mapping/test/SearchForMappedMethodsTest.java"), testFile.replace("@namespace@", String.format("%s-%s", loader, minecraftVersion)).getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+			final Path testFolder = path.resolve("src/test/java/org/mtr/mapping/test");
+			Files.createDirectories(testFolder);
+			Files.write(testFolder.resolve("SearchForMappedMethodsTest.java"), testFile.replace("@namespace@", String.format("%s-%s", loader, minecraftVersion)).getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 			Files.write(parentPath.resolve(String.format("%s-generator/src/test/java/org/mtr/mapping/test/HolderPath.java", minecraftVersion)), String.format("package org.mtr.mapping.test;public interface HolderPath{java.nio.file.Path PATH=java.nio.file.Paths.get(\"%s/src/main/java/org/mtr/mapping/holder\");}", path.toString().replace("\\", "/")).getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 		}
 	}
@@ -73,7 +75,7 @@ public class BuildTools {
 		if (!isGenerator) {
 			final Path directory = rootPath.resolve("build/release");
 			Files.createDirectories(directory);
-			Files.copy(path.resolve(String.format("build/libs/%s-%s.jar", minecraftVersion, version)), directory.resolve(String.format("Minecraft-Mappings-%s-%s-%s.jar", loader, minecraftVersion, version)), StandardCopyOption.REPLACE_EXISTING);
+			Files.copy(path.resolve(String.format("build/libs/%s-mapping-%s.jar", minecraftVersion, version)), directory.resolve(String.format("Minecraft-Mappings-%s-%s-%s.jar", loader, minecraftVersion, version)), StandardCopyOption.REPLACE_EXISTING);
 		}
 	}
 
