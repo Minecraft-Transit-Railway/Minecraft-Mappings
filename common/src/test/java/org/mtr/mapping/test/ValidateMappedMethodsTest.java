@@ -19,12 +19,10 @@ public final class ValidateMappedMethodsTest {
 		try (final DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get("../build/mappedMethods"))) {
 			for (Path path : directoryStream) {
 				final String newData = FileUtils.readFileToString(path.toFile(), StandardCharsets.UTF_8);
-				if (!newData.isEmpty()) {
-					if (existingData != null) {
-						Assertions.assertEquals(existingData, newData, path.getFileName().toString());
-					}
-					existingData = newData;
+				if (existingData != null) {
+					Assertions.assertEquals(existingData, newData, path.getFileName().toString());
 				}
+				existingData = newData;
 			}
 		}
 	}

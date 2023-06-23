@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 public abstract class BlockWithEntity extends net.minecraft.block.BlockWithEntity {
 
 	@MappedMethod
-	public BlockWithEntity(Properties properties) {
+	public BlockWithEntity(Block.Properties properties) {
 		super(properties.blockSettings);
 	}
 

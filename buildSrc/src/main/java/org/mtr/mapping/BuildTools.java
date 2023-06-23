@@ -46,11 +46,12 @@ public class BuildTools {
 		System.out.printf("%s%n", path);
 
 		if (!isGenerator) {
-			final String testFile = FileUtils.readFileToString(rootPath.resolve("common/src/test/java/org/mtr/mapping/test/SearchForMappedMethodsTest.java").toFile(), StandardCharsets.UTF_8);
 			final Path testFolder = path.resolve("src/test/java/org/mtr/mapping/test");
 			Files.createDirectories(testFolder);
+			final String testFile = FileUtils.readFileToString(rootPath.resolve("common/src/test/java/org/mtr/mapping/test/SearchForMappedMethodsTest.java").toFile(), StandardCharsets.UTF_8);
 			Files.write(testFolder.resolve("SearchForMappedMethodsTest.java"), testFile.replace("@namespace@", String.format("%s-%s", loader, minecraftVersion)).getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-			Files.write(parentPath.resolve(String.format("%s-generator/src/test/java/org/mtr/mapping/test/HolderPath.java", minecraftVersion)), String.format("package org.mtr.mapping.test;public interface HolderPath{java.nio.file.Path PATH=java.nio.file.Paths.get(\"%s/src/main/java/org/mtr/mapping/holder\");}", path.toString().replace("\\", "/")).getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+			final String generateFile = FileUtils.readFileToString(rootPath.resolve("common/src/test/java/org/mtr/mapping/test/GenerateHolders.java").toFile(), StandardCharsets.UTF_8);
+			Files.write(parentPath.resolve(String.format("%s-generator/src/test/java/org/mtr/mapping/test/GenerateHolders.java", minecraftVersion)), generateFile.replace("@path@", path.resolve("src/main/java/org/mtr/mapping/holder").toString().replace("\\", "/")).getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 		}
 	}
 

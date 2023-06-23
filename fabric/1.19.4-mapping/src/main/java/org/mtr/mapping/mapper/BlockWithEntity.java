@@ -10,7 +10,7 @@ import org.mtr.mapping.holder.BlockState;
 public abstract class BlockWithEntity extends net.minecraft.block.BlockWithEntity {
 
 	@MappedMethod
-	public BlockWithEntity(Properties properties) {
+	public BlockWithEntity(Block.Properties properties) {
 		super(properties.blockSettings);
 	}
 

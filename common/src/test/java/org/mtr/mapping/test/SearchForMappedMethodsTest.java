@@ -31,19 +31,7 @@ public final class SearchForMappedMethodsTest {
 		for (final String className : new Reflections("org.mtr").getAll(Scanners.SubTypes)) {
 			final Class<?> classObject = ClassLoader.getSystemClassLoader().loadClass(className);
 			if (classObject.getPackage().getName().startsWith("org.mtr")) {
-				for (final Method method : classObject.getDeclaredMethods()) {
-					if (method.isAnnotationPresent(MappedMethod.class)) {
-						signatures.add(method.toString());
-					} else {
-						final int modifiers = method.getModifiers();
-						Assertions.assertTrue(Modifier.isFinal(modifiers) || !Modifier.isPublic(modifiers), String.format("%s\n%s\n%s", NAMESPACE, className, method));
-					}
-				}
-				for (final Constructor<?> constructor : classObject.getDeclaredConstructors()) {
-					if (constructor.isAnnotationPresent(MappedMethod.class)) {
-						signatures.add(constructor.toString());
-					}
-				}
+				searchClass(classObject, signatures);
 			}
 		}
 
@@ -51,5 +39,26 @@ public final class SearchForMappedMethodsTest {
 		final Path directory = Paths.get("../../build/mappedMethods/");
 		Files.createDirectories(directory);
 		Files.write(directory.resolve(NAMESPACE + ".txt"), signatures, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+	}
+
+	private static void searchClass(Class<?> classObject, List<String> signatures) {
+		for (final Method method : classObject.getDeclaredMethods()) {
+			if (method.isAnnotationPresent(MappedMethod.class)) {
+				signatures.add(method.toString());
+			} else {
+				final int modifiers = method.getModifiers();
+				Assertions.assertTrue(Modifier.isFinal(classObject.getModifiers()) || Modifier.isFinal(modifiers) || !Modifier.isPublic(modifiers), String.format("%s\n%s\n%s", NAMESPACE, classObject.getName(), method));
+			}
+		}
+
+		for (final Constructor<?> constructor : classObject.getDeclaredConstructors()) {
+			if (constructor.isAnnotationPresent(MappedMethod.class)) {
+				signatures.add(constructor.toString());
+			}
+		}
+
+		for (final Class<?> subClass : classObject.getDeclaredClasses()) {
+			searchClass(subClass, signatures);
+		}
 	}
 }

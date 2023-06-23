@@ -1,7 +1,6 @@
 package org.mtr.mapping.mapper;
 
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import org.mtr.mapping.annotation.MappedMethod;
@@ -12,8 +11,8 @@ import org.mtr.mapping.holder.BlockState;
 public abstract class BlockWithEntity extends Block implements EntityBlock {
 
 	@MappedMethod
-	public BlockWithEntity(org.mtr.mapping.mapper.Properties properties) {
-		super(properties.blockSettings);
+	public BlockWithEntity(Block.Properties properties) {
+		super(properties);
 	}
 
 	@MappedMethod

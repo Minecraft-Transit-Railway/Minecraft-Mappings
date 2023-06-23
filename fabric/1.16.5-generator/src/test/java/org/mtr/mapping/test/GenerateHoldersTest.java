@@ -12,19 +12,19 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-public final class GenerateHoldersTest implements HolderPath {
+public final class GenerateHoldersTest {
 
 	@Test
 	public void generate() throws IOException {
-		final GenerationUtilities generationUtilities = new GenerationUtilities();
-		generationUtilities.put(BlockEntityType.class, "BlockEntityType");
-		generationUtilities.put(BlockPos.class, "BlockPos");
-		generationUtilities.put(BlockState.class, "BlockState");
-		generationUtilities.put(NbtCompound.class, "CompoundTag");
-		generationUtilities.put(Identifier.class, "ResourceLocation");
-		generationUtilities.put(Vec3d.class, "Vector3d");
-		generationUtilities.put(Vec3f.class, "Vector3f");
-		generationUtilities.put(Vec3i.class, "Vector3i");
-		generationUtilities.generate(PATH);
+		final GenerateHolders generateHolders = new GenerateHolders();
+		generateHolders.put(BlockEntityType.class, "BlockEntityType");
+		generateHolders.put(BlockPos.class, "BlockPos");
+		generateHolders.put(BlockState.class, "BlockState");
+		generateHolders.put(NbtCompound.class, "CompoundTag");
+		generateHolders.put(Identifier.class, "ResourceLocation");
+		generateHolders.put(Vec3d.class, "Vector3d");
+		generateHolders.put(Vec3f.class, "Vector3f");
+		generateHolders.put(Vec3i.class, "Vector3i");
+		generateHolders.generate();
 	}
 }

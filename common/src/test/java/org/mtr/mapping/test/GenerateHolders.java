@@ -1,23 +1,29 @@
 package org.mtr.mapping.test;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.IOException;
 import java.lang.reflect.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.function.Function;
 
-public final class GenerationUtilities {
+public final class GenerateHolders {
 
 	private final Map<Class<?>, String> classMap = new HashMap<>();
+	private static final Path PATH = Paths.get("@path@");
 
 	public void put(Class<?> classObject, String newClassName) {
 		classMap.put(classObject, newClassName);
 	}
 
-	public void generate(Path path) throws IOException {
+	public void generate() throws IOException {
+		FileUtils.deleteDirectory(PATH.toFile());
+
 		for (Map.Entry<Class<?>, String> classEntry : classMap.entrySet()) {
 			final Class<?> classObject = classEntry.getKey();
 			final String newClassName = classEntry.getValue();
@@ -38,8 +44,8 @@ public final class GenerationUtilities {
 			processMethods(classObject.getDeclaredConstructors(), mainStringBuilder, className, staticClassName, newClassName);
 			processMethods(classObject.getDeclaredMethods(), mainStringBuilder, className, staticClassName, newClassName);
 			mainStringBuilder.append("}");
-			Files.createDirectories(path);
-			Files.write(path.resolve(String.format("%s.java", newClassName)), mainStringBuilder.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+			Files.createDirectories(PATH);
+			Files.write(PATH.resolve(String.format("%s.java", newClassName)), mainStringBuilder.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 		}
 	}
 
@@ -81,6 +87,11 @@ public final class GenerationUtilities {
 				}
 
 				if (isMethod) {
+					appendIfNotEmpty(mainStringBuilder, ((Method) executable).getTypeParameters(), "<", ">", typeVariable -> {
+						final StringBuilder typeParametersStringBuilder = new StringBuilder();
+						appendIfNotEmpty(typeParametersStringBuilder, typeVariable.getBounds(), " extends ", "", Type::getTypeName);
+						return String.format("%s%s", typeVariable.getName(), typeParametersStringBuilder);
+					});
 					returnTypeClass = ((Method) executable).getGenericReturnType();
 					isVoid = returnTypeClass == Void.TYPE;
 					mainStringBuilder.append(resolveType(returnTypeClass)).append(" ").append(executable.getName());

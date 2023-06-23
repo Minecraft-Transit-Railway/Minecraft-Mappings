@@ -1,6 +1,5 @@
 package org.mtr.mapping.mapper;
 
-import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockReader;
 import org.mtr.mapping.annotation.MappedMethod;
@@ -13,8 +12,8 @@ import javax.annotation.Nullable;
 public abstract class BlockWithEntity extends Block {
 
 	@MappedMethod
-	public BlockWithEntity(org.mtr.mapping.mapper.Properties properties) {
-		super(properties.blockSettings);
+	public BlockWithEntity(Block.Properties properties) {
+		super(properties);
 	}
 
 	@MappedMethod
