@@ -36,7 +36,7 @@ public final class GenerateHolders {
 				return String.format("%s%s", typeVariable.getName(), extendsStringBuilder);
 			});
 
-			final String staticClassName = classObject.getName();
+			final String staticClassName = formatClassName(classObject.getName());
 			final StringBuilder classNameStringBuilder = new StringBuilder(staticClassName);
 			appendIfNotEmpty(classNameStringBuilder, classObject.getTypeParameters(), "<", ">", TypeVariable::getName);
 			final String className = classNameStringBuilder.toString();
@@ -152,10 +152,14 @@ public final class GenerateHolders {
 	}
 
 	private String resolveType(Type type) {
-		return (isResolvable(type) && type instanceof Class ? classMap.get(type) : type.getTypeName()).replace("$", ".");
+		return formatClassName(isResolvable(type) && type instanceof Class ? classMap.get(type) : type.getTypeName());
 	}
 
 	private boolean isResolvable(Type type) {
 		return type instanceof Class && classMap.containsKey(type);
+	}
+
+	private static String formatClassName(String className) {
+		return className.replace("$", ".");
 	}
 }

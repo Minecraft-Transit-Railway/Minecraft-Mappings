@@ -1,57 +1,56 @@
 package org.mtr.mapping.registry;
 
-import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
 import org.mtr.mapping.mapper.Block;
 import org.mtr.mapping.mapper.BlockEntity;
+import org.mtr.mapping.mapper.BlockItem;
 import org.mtr.mapping.mapper.Item;
+import org.mtr.mapping.tool.Dummy;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
-public final class Registry implements ModInitializer {
+public final class Registry extends Dummy {
 
-	private static final Map<ResourceLocation, Block> BLOCKS = new HashMap<>();
-	private static final Map<ResourceLocation, Item> ITEMS = new HashMap<>();
-	private static final Map<ResourceLocation, net.minecraft.block.entity.BlockEntityType<? extends BlockEntity>> BLOCK_ENTITY_TYPES = new HashMap<>();
+	private static final List<Runnable> OBJECTS_TO_REGISTER = new ArrayList<>();
 
 	@MappedMethod
 	public static void init() {
-	}
-
-	@Override
-	public void onInitialize() {
-		BLOCKS.forEach((resourceLocation, block) -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.BLOCK, resourceLocation.data, block));
-		ITEMS.forEach((resourceLocation, item) -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.ITEM, resourceLocation.data, item));
-		BLOCK_ENTITY_TYPES.forEach((resourceLocation, item) -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.BLOCK_ENTITY_TYPE, resourceLocation.data, item));
+		OBJECTS_TO_REGISTER.forEach(Runnable::run);
 	}
 
 	@MappedMethod
 	public static BlockRegistryObject registerBlock(ResourceLocation resourceLocation, Supplier<Block> supplier) {
-		return new BlockRegistryObject(register(BLOCKS, resourceLocation, supplier));
+		final Block block = supplier.get();
+		OBJECTS_TO_REGISTER.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.BLOCK, resourceLocation.data, block));
+		return new BlockRegistryObject(block);
+	}
+
+	@MappedMethod
+	public static BlockRegistryObject registerBlockWithBlockItem(ResourceLocation resourceLocation, Supplier<Block> supplier) {
+		final Block block = supplier.get();
+		OBJECTS_TO_REGISTER.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.BLOCK, resourceLocation.data, block));
+		OBJECTS_TO_REGISTER.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.ITEM, resourceLocation.data, new BlockItem(block, new Item.Properties())));
+		return new BlockRegistryObject(block);
 	}
 
 	@MappedMethod
 	public static ItemRegistryObject registerItem(ResourceLocation resourceLocation, Supplier<Item> supplier) {
-		return new ItemRegistryObject(register(ITEMS, resourceLocation, supplier));
+		final Item item = supplier.get();
+		OBJECTS_TO_REGISTER.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.ITEM, resourceLocation.data, item));
+		return new ItemRegistryObject(item);
 	}
 
 	@MappedMethod
 	public static <T extends BlockEntity> BlockEntityTypeRegistryObject<T> registerBlockEntityType(ResourceLocation resourceLocation, BiFunction<BlockPos, BlockState, T> function, Block... blocks) {
 		final net.minecraft.block.entity.BlockEntityType<T> blockEntityType = FabricBlockEntityTypeBuilder.create((pos, state) -> function.apply(new BlockPos(pos), new BlockState(state)), blocks).build(null);
-		BLOCK_ENTITY_TYPES.put(resourceLocation, blockEntityType);
+		OBJECTS_TO_REGISTER.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.BLOCK_ENTITY_TYPE, resourceLocation.data, blockEntityType));
 		return new BlockEntityTypeRegistryObject<>(new BlockEntityType<>(blockEntityType));
-	}
-
-	private static <T> T register(Map<ResourceLocation, T> map, ResourceLocation resourceLocation, Supplier<T> supplier) {
-		final T data = supplier.get();
-		map.put(resourceLocation, data);
-		return data;
 	}
 
 	@MappedMethod

@@ -1,5 +1,6 @@
 package org.mtr.mapping.test;
 
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
@@ -18,6 +19,7 @@ public final class GenerateHoldersTest {
 	@Test
 	public void generate() throws IOException {
 		final GenerateHolders generateHolders = new GenerateHolders();
+		generateHolders.put(BlockEntityRendererProvider.Context.class, "BlockEntityRendererArgument");
 		generateHolders.put(BlockEntityType.class, "BlockEntityType");
 		generateHolders.put(BlockPos.class, "BlockPos");
 		generateHolders.put(BlockState.class, "BlockState");

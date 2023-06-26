@@ -2,6 +2,7 @@ package org.mtr.mapping.test;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
@@ -18,6 +19,7 @@ public final class GenerateHoldersTest {
 	@Test
 	public void generate() throws IOException {
 		final GenerateHolders generateHolders = new GenerateHolders();
+		generateHolders.put(BlockEntityRenderDispatcher.class, "BlockEntityRendererArgument");
 		generateHolders.put(BlockEntityType.class, "BlockEntityType");
 		generateHolders.put(BlockPos.class, "BlockPos");
 		generateHolders.put(BlockState.class, "BlockState");

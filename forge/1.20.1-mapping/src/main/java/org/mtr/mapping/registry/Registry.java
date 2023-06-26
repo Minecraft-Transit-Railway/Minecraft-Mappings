@@ -9,6 +9,7 @@ import org.mtr.mapping.holder.ItemStack;
 import org.mtr.mapping.holder.ResourceLocation;
 import org.mtr.mapping.mapper.Block;
 import org.mtr.mapping.mapper.BlockEntity;
+import org.mtr.mapping.mapper.BlockItem;
 import org.mtr.mapping.mapper.Item;
 import org.mtr.mapping.tool.Dummy;
 
@@ -27,6 +28,14 @@ public final class Registry extends Dummy {
 	public static BlockRegistryObject registerBlock(ResourceLocation resourceLocation, Supplier<Block> supplier) {
 		ModEventBus.BLOCKS.put(resourceLocation, supplier);
 		return new BlockRegistryObject(resourceLocation);
+	}
+
+	@MappedMethod
+	public static BlockRegistryObject registerBlockWithBlockItem(ResourceLocation resourceLocation, Supplier<Block> supplier) {
+		ModEventBus.BLOCKS.put(resourceLocation, supplier);
+		final BlockRegistryObject blockRegistryObject = new BlockRegistryObject(resourceLocation);
+		ModEventBus.BLOCK_ITEMS.put(resourceLocation, () -> new BlockItem(blockRegistryObject.get(), new Item.Properties()));
+		return blockRegistryObject;
 	}
 
 	@MappedMethod

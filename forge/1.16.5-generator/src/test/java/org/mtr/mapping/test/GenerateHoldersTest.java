@@ -1,6 +1,7 @@
 package org.mtr.mapping.test;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntityType;
@@ -18,6 +19,7 @@ public final class GenerateHoldersTest {
 	@Test
 	public void generate() throws IOException {
 		final GenerateHolders generateHolders = new GenerateHolders();
+		generateHolders.put(TileEntityRendererDispatcher.class, "BlockEntityRendererArgument");
 		generateHolders.put(TileEntityType.class, "BlockEntityType");
 		generateHolders.put(BlockPos.class, "BlockPos");
 		generateHolders.put(BlockState.class, "BlockState");
