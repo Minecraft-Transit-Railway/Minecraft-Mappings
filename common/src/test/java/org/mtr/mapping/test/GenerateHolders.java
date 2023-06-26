@@ -27,26 +27,34 @@ public final class GenerateHolders {
 		for (Map.Entry<Class<?>, String> classEntry : classMap.entrySet()) {
 			final Class<?> classObject = classEntry.getKey();
 			final String newClassName = classEntry.getValue();
-			final StringBuilder mainStringBuilder = new StringBuilder("package org.mtr.mapping.holder;public final class ");
-			mainStringBuilder.append(newClassName);
-
-			appendIfNotEmpty(mainStringBuilder, classObject.getTypeParameters(), "<", ">", typeVariable -> {
-				final StringBuilder extendsStringBuilder = new StringBuilder();
-				appendIfNotEmpty(extendsStringBuilder, typeVariable.getBounds(), " extends ", "", Type::getTypeName);
-				return String.format("%s%s", typeVariable.getName(), extendsStringBuilder);
-			});
-
+			final StringBuilder mainStringBuilder = new StringBuilder("package org.mtr.mapping.holder;public ");
 			final String staticClassName = formatClassName(classObject.getName());
-			final StringBuilder classNameStringBuilder = new StringBuilder(staticClassName);
-			appendIfNotEmpty(classNameStringBuilder, classObject.getTypeParameters(), "<", ">", TypeVariable::getName);
-			final String className = classNameStringBuilder.toString();
-			mainStringBuilder.append("{public final ").append(className).append(" data;public ").append(newClassName).append("(").append(className).append(" data){this.data=data;}");
 
-			if (!Modifier.isAbstract(classObject.getModifiers())) {
-				processMethods(classObject.getDeclaredConstructors(), mainStringBuilder, className, staticClassName, newClassName);
+			if (classObject.isEnum()) {
+				mainStringBuilder.append("enum ").append(newClassName).append("{");
+				appendIfNotEmpty(mainStringBuilder, classObject.getEnumConstants(), "", "", enumConstant -> String.format("%1$s(%2$s.%1$s)", ((Enum<?>) enumConstant).name(), staticClassName));
+				mainStringBuilder.append(";public final ").append(staticClassName).append(" data;").append(newClassName).append("(").append(staticClassName).append(" data){this.data=data;}");
+			} else {
+				mainStringBuilder.append("final class ").append(newClassName);
+
+				appendIfNotEmpty(mainStringBuilder, classObject.getTypeParameters(), "<", ">", typeVariable -> {
+					final StringBuilder extendsStringBuilder = new StringBuilder();
+					appendIfNotEmpty(extendsStringBuilder, typeVariable.getBounds(), " extends ", "", Type::getTypeName);
+					return String.format("%s%s", typeVariable.getName(), extendsStringBuilder);
+				});
+
+				final StringBuilder classNameStringBuilder = new StringBuilder(staticClassName);
+				appendIfNotEmpty(classNameStringBuilder, classObject.getTypeParameters(), "<", ">", TypeVariable::getName);
+				final String className = classNameStringBuilder.toString();
+				mainStringBuilder.append("{public final ").append(className).append(" data;public ").append(newClassName).append("(").append(className).append(" data){this.data=data;}");
+
+				if (!Modifier.isAbstract(classObject.getModifiers())) {
+					processMethods(classObject.getDeclaredConstructors(), mainStringBuilder, className, staticClassName, newClassName);
+				}
+
+				processMethods(classObject.getDeclaredMethods(), mainStringBuilder, className, staticClassName, newClassName);
 			}
 
-			processMethods(classObject.getDeclaredMethods(), mainStringBuilder, className, staticClassName, newClassName);
 			mainStringBuilder.append("}");
 			Files.createDirectories(PATH);
 			Files.write(PATH.resolve(String.format("%s.java", newClassName)), mainStringBuilder.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
