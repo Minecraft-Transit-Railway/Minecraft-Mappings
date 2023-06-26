@@ -1,11 +1,9 @@
 package org.mtr.mapping.registry;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import org.mtr.mapping.annotation.MappedMethod;
-import org.mtr.mapping.holder.BlockEntityType;
-import org.mtr.mapping.holder.BlockPos;
-import org.mtr.mapping.holder.BlockState;
-import org.mtr.mapping.holder.ResourceLocation;
+import org.mtr.mapping.holder.*;
 import org.mtr.mapping.mapper.Block;
 import org.mtr.mapping.mapper.BlockEntity;
 import org.mtr.mapping.mapper.Item;
@@ -20,6 +18,10 @@ public final class Registry implements ModInitializer {
 	private static final Map<ResourceLocation, Block> BLOCKS = new HashMap<>();
 	private static final Map<ResourceLocation, Item> ITEMS = new HashMap<>();
 	private static final Map<ResourceLocation, net.minecraft.block.entity.BlockEntityType<? extends BlockEntity>> BLOCK_ENTITY_TYPES = new HashMap<>();
+
+	@MappedMethod
+	public static void init() {
+	}
 
 	@Override
 	public void onInitialize() {
@@ -49,5 +51,10 @@ public final class Registry implements ModInitializer {
 		final T data = supplier.get();
 		map.put(resourceLocation, data);
 		return data;
+	}
+
+	@MappedMethod
+	public static CreativeModeTabHolder createCreativeModeTabHolder(ResourceLocation resourceLocation, Supplier<ItemStack> iconSupplier) {
+		return new CreativeModeTabHolder(FabricItemGroupBuilder.create(resourceLocation.data).icon(() -> iconSupplier.get().data).build());
 	}
 }

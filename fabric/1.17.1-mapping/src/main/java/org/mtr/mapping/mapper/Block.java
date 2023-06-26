@@ -10,9 +10,9 @@ public abstract class Block extends net.minecraft.block.Block {
 		super(properties.blockSettings);
 	}
 
-	public static class Properties {
+	public static final class Properties {
 
-		protected final FabricBlockSettings blockSettings;
+		final FabricBlockSettings blockSettings;
 
 		@MappedMethod
 		public Properties() {

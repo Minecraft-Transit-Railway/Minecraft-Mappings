@@ -41,7 +41,11 @@ public final class GenerateHolders {
 			appendIfNotEmpty(classNameStringBuilder, classObject.getTypeParameters(), "<", ">", TypeVariable::getName);
 			final String className = classNameStringBuilder.toString();
 			mainStringBuilder.append("{public final ").append(className).append(" data;public ").append(newClassName).append("(").append(className).append(" data){this.data=data;}");
-			processMethods(classObject.getDeclaredConstructors(), mainStringBuilder, className, staticClassName, newClassName);
+
+			if (!Modifier.isAbstract(classObject.getModifiers())) {
+				processMethods(classObject.getDeclaredConstructors(), mainStringBuilder, className, staticClassName, newClassName);
+			}
+
 			processMethods(classObject.getDeclaredMethods(), mainStringBuilder, className, staticClassName, newClassName);
 			mainStringBuilder.append("}");
 			Files.createDirectories(PATH);
@@ -70,7 +74,7 @@ public final class GenerateHolders {
 			final String signature = signatureStringBuilder.toString();
 			final int modifiers = executable.getModifiers();
 
-			if (allPublicParameterTypes && !executable.isSynthetic() && !visited.contains(signature) && Modifier.isPublic(modifiers)) {
+			if (allPublicParameterTypes && !executable.isSynthetic() && !visited.contains(signature) && Modifier.isPublic(modifiers) && executable.getDeclaredAnnotations().length == 0) {
 				visited.add(signature);
 				mainStringBuilder.append("public ");
 				final boolean isStatic = Modifier.isStatic(modifiers);

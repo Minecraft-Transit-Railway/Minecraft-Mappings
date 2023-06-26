@@ -10,9 +10,9 @@ public abstract class Block extends net.minecraft.world.level.block.Block {
 		super(properties.blockSettings);
 	}
 
-	public static class Properties {
+	public static final class Properties {
 
-		protected final BlockBehaviour.Properties blockSettings;
+		final BlockBehaviour.Properties blockSettings;
 
 		@MappedMethod
 		public Properties() {

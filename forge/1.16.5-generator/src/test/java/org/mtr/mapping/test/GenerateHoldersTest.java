@@ -1,6 +1,7 @@
 package org.mtr.mapping.test;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
@@ -21,6 +22,7 @@ public final class GenerateHoldersTest {
 		generateHolders.put(BlockPos.class, "BlockPos");
 		generateHolders.put(BlockState.class, "BlockState");
 		generateHolders.put(CompoundNBT.class, "CompoundTag");
+		generateHolders.put(ItemStack.class, "ItemStack");
 		generateHolders.put(ResourceLocation.class, "ResourceLocation");
 		generateHolders.put(Vector3d.class, "Vector3d");
 		generateHolders.put(Vector3f.class, "Vector3f");

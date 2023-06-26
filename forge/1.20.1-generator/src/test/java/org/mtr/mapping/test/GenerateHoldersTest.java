@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Vector3d;
@@ -21,6 +22,7 @@ public final class GenerateHoldersTest {
 		generateHolders.put(BlockPos.class, "BlockPos");
 		generateHolders.put(BlockState.class, "BlockState");
 		generateHolders.put(CompoundTag.class, "CompoundTag");
+		generateHolders.put(ItemStack.class, "ItemStack");
 		generateHolders.put(ResourceLocation.class, "ResourceLocation");
 		generateHolders.put(Vector3d.class, "Vector3d");
 		generateHolders.put(Vector3f.class, "Vector3f");
