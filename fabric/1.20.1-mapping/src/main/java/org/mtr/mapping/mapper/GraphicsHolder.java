@@ -2,6 +2,7 @@ package org.mtr.mapping.mapper;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
@@ -18,16 +19,27 @@ import java.util.stream.Collectors;
 public final class GraphicsHolder extends Dummy {
 
 	private int matrixPushes;
-	private VertexConsumerProvider.Immediate immediate;
 
-	private final MatrixStack matrixStack;
-	private final VertexConsumerProvider vertexConsumerProvider;
+	final MatrixStack matrixStack;
+	final VertexConsumerProvider vertexConsumerProvider;
+	final DrawContext guiGraphics;
+	private final VertexConsumerProvider.Immediate immediate;
 
 	public static final int DEFAULT_LIGHT = 0xF000F0;
 
 	public GraphicsHolder(@Nullable MatrixStack matrixStack, @Nullable VertexConsumerProvider vertexConsumerProvider) {
 		this.matrixStack = matrixStack;
 		this.vertexConsumerProvider = vertexConsumerProvider;
+		guiGraphics = null;
+		immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
+		push();
+	}
+
+	public GraphicsHolder(DrawContext guiGraphics) {
+		this.matrixStack = guiGraphics.getMatrices();
+		this.vertexConsumerProvider = null;
+		this.guiGraphics = guiGraphics;
+		immediate = guiGraphics.getVertexConsumers();
 		push();
 	}
 
@@ -156,13 +168,10 @@ public final class GraphicsHolder extends Dummy {
 	}
 
 	@MappedMethod
-	public void setupImmediate() {
-		immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-	}
-
-	@MappedMethod
 	public void drawImmediate() {
-		if (immediate != null) {
+		if (guiGraphics != null) {
+			guiGraphics.draw();
+		} else if (immediate != null) {
 			immediate.draw();
 		}
 	}

@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.MutableText;
@@ -18,16 +19,27 @@ import java.util.stream.Collectors;
 public final class GraphicsHolder extends Dummy {
 
 	private int matrixPushes;
-	private MultiBufferSource.BufferSource immediate;
 
-	private final PoseStack matrixStack;
-	private final MultiBufferSource vertexConsumerProvider;
+	final PoseStack matrixStack;
+	final MultiBufferSource vertexConsumerProvider;
+	final GuiGraphics guiGraphics;
+	private final MultiBufferSource.BufferSource immediate;
 
 	public static final int DEFAULT_LIGHT = 0xF000F0;
 
 	public GraphicsHolder(@Nullable PoseStack matrixStack, @Nullable MultiBufferSource vertexConsumerProvider) {
 		this.matrixStack = matrixStack;
 		this.vertexConsumerProvider = vertexConsumerProvider;
+		guiGraphics = null;
+		immediate = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+		push();
+	}
+
+	public GraphicsHolder(GuiGraphics guiGraphics) {
+		this.matrixStack = guiGraphics.pose();
+		this.vertexConsumerProvider = null;
+		this.guiGraphics = guiGraphics;
+		immediate = guiGraphics.bufferSource();
 		push();
 	}
 
@@ -156,13 +168,10 @@ public final class GraphicsHolder extends Dummy {
 	}
 
 	@MappedMethod
-	public void setupImmediate() {
-		immediate = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-	}
-
-	@MappedMethod
 	public void drawImmediate() {
-		if (immediate != null) {
+		if (guiGraphics != null) {
+			guiGraphics.flush();
+		} else if (immediate != null) {
 			immediate.endBatch();
 		}
 	}

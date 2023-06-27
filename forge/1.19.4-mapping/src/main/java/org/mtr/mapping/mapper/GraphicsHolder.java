@@ -18,16 +18,17 @@ import java.util.stream.Collectors;
 public final class GraphicsHolder extends Dummy {
 
 	private int matrixPushes;
-	private MultiBufferSource.BufferSource immediate;
 
-	private final PoseStack matrixStack;
-	private final MultiBufferSource vertexConsumerProvider;
+	final PoseStack matrixStack;
+	final MultiBufferSource vertexConsumerProvider;
+	private final MultiBufferSource.BufferSource immediate;
 
 	public static final int DEFAULT_LIGHT = 0xF000F0;
 
 	public GraphicsHolder(@Nullable PoseStack matrixStack, @Nullable MultiBufferSource vertexConsumerProvider) {
 		this.matrixStack = matrixStack;
 		this.vertexConsumerProvider = vertexConsumerProvider;
+		immediate = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
 		push();
 	}
 
@@ -153,11 +154,6 @@ public final class GraphicsHolder extends Dummy {
 
 	private static Minecraft getInstance() {
 		return Minecraft.getInstance();
-	}
-
-	@MappedMethod
-	public void setupImmediate() {
-		immediate = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
 	}
 
 	@MappedMethod
