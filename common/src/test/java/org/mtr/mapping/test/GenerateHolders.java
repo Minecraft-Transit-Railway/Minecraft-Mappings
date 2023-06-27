@@ -117,33 +117,30 @@ public final class GenerateHolders {
 				mainStringBuilder.append(String.join(",", parameterList)).append(")");
 				appendIfNotEmpty(mainStringBuilder, executable.getGenericExceptionTypes(), "throws ", "", Type::getTypeName);
 				mainStringBuilder.append("{");
-				final boolean addClosing;
+				final String variables = String.format("(%s)", String.join(",", superList));
 
 				if (isMethod) {
+					final String methodCall = String.format("%s.%s%s", isStatic ? staticClassName : "this.data", executable.getName(), variables);
+
 					if (isVoid) {
-						addClosing = false;
+						mainStringBuilder.append(methodCall);
 					} else {
 						mainStringBuilder.append("return ");
 						if (isResolvable(returnTypeClass)) {
-							mainStringBuilder.append("new ").append(resolveType(returnTypeClass)).append("(");
-							addClosing = true;
+							if (returnTypeClass instanceof Class && ((Class<?>) returnTypeClass).isEnum()) {
+								mainStringBuilder.append(resolveType(returnTypeClass)).append(".valueOf(").append(methodCall).append(".toString())");
+							} else {
+								mainStringBuilder.append("new ").append(resolveType(returnTypeClass)).append("(").append(methodCall).append(")");
+							}
 						} else {
-							addClosing = false;
+							mainStringBuilder.append(methodCall);
 						}
 					}
-					mainStringBuilder.append(isStatic ? staticClassName : "data").append(".").append(executable.getName());
 				} else {
-					mainStringBuilder.append("data=new ").append(className);
-					addClosing = false;
+					mainStringBuilder.append("this.data=new ").append(className).append(variables);
 				}
 
-				mainStringBuilder.append("(").append(String.join(",", superList));
-
-				if (addClosing) {
-					mainStringBuilder.append(")");
-				}
-
-				mainStringBuilder.append(");}");
+				mainStringBuilder.append(";}");
 			}
 		}
 	}
