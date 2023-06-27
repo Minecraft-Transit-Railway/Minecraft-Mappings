@@ -4,7 +4,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -39,7 +38,6 @@ public final class GenerateHoldersTest {
 		generateHolders.put(ClientWorld.class, "ClientWorld");
 		generateHolders.put(NbtCompound.class, "CompoundTag");
 		generateHolders.put(Direction.class, "Direction");
-		generateHolders.put(Entity.class, "Entity");
 		generateHolders.put(ItemStack.class, "ItemStack");
 		generateHolders.put(LivingEntity.class, "LivingEntity");
 		generateHolders.put(MutableText.class, "MutableText");

@@ -3,7 +3,6 @@ package org.mtr.mapping.test;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -43,7 +42,6 @@ public final class GenerateHoldersTest {
 		generateHolders.put(ClientWorld.class, "ClientWorld");
 		generateHolders.put(CompoundNBT.class, "CompoundTag");
 		generateHolders.put(Direction.class, "Direction");
-		generateHolders.put(Entity.class, "Entity");
 		generateHolders.put(ItemStack.class, "ItemStack");
 		generateHolders.put(LivingEntity.class, "LivingEntity");
 		generateHolders.put(IFormattableTextComponent.class, "MutableText");

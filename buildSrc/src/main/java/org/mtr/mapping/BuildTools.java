@@ -29,7 +29,7 @@ public class BuildTools {
 	private final String version;
 	private final boolean isGenerator;
 
-	public BuildTools(Project project) throws IOException {
+	public BuildTools(Project project, boolean generateHolders) throws IOException {
 		path = project.getProjectDir().toPath();
 		version = project.getVersion().toString();
 		final String[] projectNameSplit = path.getFileName().toString().split("-");
@@ -41,35 +41,35 @@ public class BuildTools {
 		loader = parentPath.getFileName().toString();
 		rootPath = parentPath.getParent();
 
-		System.out.printf("%s-%s: Java %s%n", loader, minecraftVersion, javaLanguageVersion);
-		System.out.printf("%s%n", rootPath);
-		System.out.printf("%s%n", path);
-
 		if (!isGenerator) {
 			final Path testFolder = path.resolve("src/test/java/org/mtr/mapping/test");
 			Files.createDirectories(testFolder);
+
 			final String testFile = FileUtils.readFileToString(rootPath.resolve("common/src/test/java/org/mtr/mapping/test/SearchForMappedMethodsTest.java").toFile(), StandardCharsets.UTF_8);
-			Files.write(testFolder.resolve("SearchForMappedMethodsTest.java"), testFile.replace("@namespace@", String.format("%s-%s", loader, minecraftVersion)).getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+			final String newTestFile = generateHolders ? testFile : testFile.replace("@namespace@", String.format("%s-%s", loader, minecraftVersion));
+			Files.write(testFolder.resolve("SearchForMappedMethodsTest.java"), newTestFile.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+
 			final String generateFile = FileUtils.readFileToString(rootPath.resolve("common/src/test/java/org/mtr/mapping/test/GenerateHolders.java").toFile(), StandardCharsets.UTF_8);
-			Files.write(parentPath.resolve(String.format("%s-generator/src/test/java/org/mtr/mapping/test/GenerateHolders.java", minecraftVersion)), generateFile.replace("@path@", path.resolve("src/main/java/org/mtr/mapping/holder").toString().replace("\\", "/")).getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+			final String newGenerateFile = generateHolders ? generateFile.replace("@generate@", "").replace("@path@", path.resolve("src/main/java/org/mtr/mapping/holder").toString().replace("\\", "/")) : generateFile;
+			Files.write(parentPath.resolve(String.format("%s-generator/src/test/java/org/mtr/mapping/test/GenerateHolders.java", minecraftVersion)), newGenerateFile.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 		}
 	}
 
 	public String getFabricVersion() {
-		return printAndReturn("Fabric", getJson("https://meta.fabricmc.net/v2/versions/loader/" + minecraftVersion).getAsJsonArray().get(0).getAsJsonObject().getAsJsonObject("loader").get("version").getAsString());
+		return getJson("https://meta.fabricmc.net/v2/versions/loader/" + minecraftVersion).getAsJsonArray().get(0).getAsJsonObject().getAsJsonObject("loader").get("version").getAsString();
 	}
 
 	public String getYarnVersion() {
-		return printAndReturn("Yarn", getJson("https://meta.fabricmc.net/v2/versions/yarn/" + minecraftVersion).getAsJsonArray().get(0).getAsJsonObject().get("version").getAsString());
+		return getJson("https://meta.fabricmc.net/v2/versions/yarn/" + minecraftVersion).getAsJsonArray().get(0).getAsJsonObject().get("version").getAsString();
 	}
 
 	public String getFabricApiVersion() {
 		final String modIdString = "fabric-api";
-		return printAndReturn("Fabric API", new ModId(modIdString, ModProvider.MODRINTH).getModFiles(minecraftVersion, ModLoader.FABRIC, "").get(0).fileName.split(".jar")[0].replace(modIdString + "-", ""));
+		return new ModId(modIdString, ModProvider.MODRINTH).getModFiles(minecraftVersion, ModLoader.FABRIC, "").get(0).fileName.split(".jar")[0].replace(modIdString + "-", "");
 	}
 
 	public String getForgeVersion() {
-		return printAndReturn("Forge", getJson("https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json").getAsJsonObject().getAsJsonObject("promos").get(minecraftVersion + "-latest").getAsString());
+		return getJson("https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json").getAsJsonObject().getAsJsonObject("promos").get(minecraftVersion + "-latest").getAsString();
 	}
 
 	public void copyBuildFile() throws IOException {
@@ -78,11 +78,6 @@ public class BuildTools {
 			Files.createDirectories(directory);
 			Files.copy(path.resolve(String.format("build/libs/%s-mapping-%s.jar", minecraftVersion, version)), directory.resolve(String.format("Minecraft-Mappings-%s-%s-%s.jar", loader, minecraftVersion, version)), StandardCopyOption.REPLACE_EXISTING);
 		}
-	}
-
-	private String printAndReturn(String heading, String text) {
-		System.out.printf("%s %s: %s%n", heading, minecraftVersion, text);
-		return text;
 	}
 
 	private static JsonElement getJson(String url) {

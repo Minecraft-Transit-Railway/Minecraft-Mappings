@@ -13,7 +13,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -43,7 +42,6 @@ public final class GenerateHoldersTest {
 		generateHolders.put(ClientLevel.class, "ClientWorld");
 		generateHolders.put(CompoundTag.class, "CompoundTag");
 		generateHolders.put(Direction.class, "Direction");
-		generateHolders.put(Entity.class, "Entity");
 		generateHolders.put(ItemStack.class, "ItemStack");
 		generateHolders.put(LivingEntity.class, "LivingEntity");
 		generateHolders.put(MutableComponent.class, "MutableText");

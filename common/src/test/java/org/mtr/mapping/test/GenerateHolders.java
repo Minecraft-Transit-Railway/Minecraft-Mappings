@@ -1,6 +1,7 @@
 package org.mtr.mapping.test;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.Assumptions;
 
 import java.io.IOException;
 import java.lang.reflect.*;
@@ -16,12 +17,14 @@ public final class GenerateHolders {
 
 	private final Map<Class<?>, String> classMap = new HashMap<>();
 	private static final Path PATH = Paths.get("@path@");
+	private static final String GENERATE_KEY = "@generate@";
 
 	public void put(Class<?> classObject, String newClassName) {
 		classMap.put(classObject, newClassName);
 	}
 
 	public void generate() throws IOException {
+		Assumptions.assumeFalse(GENERATE_KEY.contains("@"));
 		FileUtils.deleteDirectory(PATH.toFile());
 
 		for (Map.Entry<Class<?>, String> classEntry : classMap.entrySet()) {

@@ -17,10 +17,10 @@ jobs:
       - name: Make gradle wrapper executable
         run: chmod +x ./gradlew
       - name: Generate holders
-        run: ./gradlew hideOfficialWarningUntilChanged test -x common:test --continue
+        run: ./gradlew hideOfficialWarningUntilChanged test -x common:test --continue -Pgenerate
         continue-on-error: true
       - name: Search for mapped methods
-        run: ./gradlew test -x common:test --rerun-tasks
+        run: ./gradlew test -x common:test
       - name: Validate mapped methods
         run: ./gradlew common:test
       - name: Build

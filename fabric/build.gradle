@@ -9,7 +9,7 @@ subprojects {
 	apply plugin: "java"
 	apply plugin: "fabric-loom"
 
-	final BuildTools buildTools = new BuildTools(project)
+	final BuildTools buildTools = new BuildTools(project, rootProject.getProperties().containsKey("generate"))
 
 	dependencies {
 		implementation project(":common")
