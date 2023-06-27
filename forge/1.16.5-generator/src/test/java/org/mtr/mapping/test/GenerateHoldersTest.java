@@ -8,6 +8,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
@@ -46,6 +47,7 @@ public final class GenerateHoldersTest {
 		generateHolders.put(LivingEntity.class, "LivingEntity");
 		generateHolders.put(IFormattableTextComponent.class, "MutableText");
 		generateHolders.put(IReorderingProcessor.class, "OrderedText");
+		generateHolders.put(PacketBuffer.class, "PacketBuffer");
 		generateHolders.put(PlayerEntity.class, "PlayerEntity");
 		generateHolders.put(ResourceLocation.class, "ResourceLocation");
 		generateHolders.put(ServerPlayerEntity.class, "ServerPlayerEntity");

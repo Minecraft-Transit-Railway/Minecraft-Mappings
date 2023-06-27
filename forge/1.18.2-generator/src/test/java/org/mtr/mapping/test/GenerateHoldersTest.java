@@ -9,6 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -46,6 +47,7 @@ public final class GenerateHoldersTest {
 		generateHolders.put(LivingEntity.class, "LivingEntity");
 		generateHolders.put(MutableComponent.class, "MutableText");
 		generateHolders.put(FormattedCharSequence.class, "OrderedText");
+		generateHolders.put(FriendlyByteBuf.class, "PacketBuffer");
 		generateHolders.put(Player.class, "PlayerEntity");
 		generateHolders.put(ResourceLocation.class, "ResourceLocation");
 		generateHolders.put(ServerPlayer.class, "ServerPlayerEntity");

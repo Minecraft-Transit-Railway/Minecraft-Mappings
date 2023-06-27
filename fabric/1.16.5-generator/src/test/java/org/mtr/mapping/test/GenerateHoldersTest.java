@@ -8,6 +8,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.MutableText;
@@ -42,6 +43,7 @@ public final class GenerateHoldersTest {
 		generateHolders.put(LivingEntity.class, "LivingEntity");
 		generateHolders.put(MutableText.class, "MutableText");
 		generateHolders.put(OrderedText.class, "OrderedText");
+		generateHolders.put(PacketByteBuf.class, "PacketBuffer");
 		generateHolders.put(PlayerEntity.class, "PlayerEntity");
 		generateHolders.put(Identifier.class, "ResourceLocation");
 		generateHolders.put(ServerPlayerEntity.class, "ServerPlayerEntity");

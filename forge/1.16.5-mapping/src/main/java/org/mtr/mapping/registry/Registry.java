@@ -3,11 +3,11 @@ package org.mtr.mapping.registry;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
 import org.mtr.mapping.annotation.MappedMethod;
-import org.mtr.mapping.holder.BlockPos;
-import org.mtr.mapping.holder.BlockState;
-import org.mtr.mapping.holder.ItemStack;
-import org.mtr.mapping.holder.ResourceLocation;
+import org.mtr.mapping.holder.*;
 import org.mtr.mapping.mapper.Block;
 import org.mtr.mapping.mapper.BlockEntity;
 import org.mtr.mapping.mapper.BlockItem;
@@ -15,9 +15,14 @@ import org.mtr.mapping.mapper.Item;
 import org.mtr.mapping.tool.Dummy;
 
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public final class Registry extends Dummy {
+
+	static SimpleChannel simpleChannel;
+	private static int packetIdCounter;
+	private static final String PROTOCOL_VERSION = "1";
 
 	@MappedMethod
 	public static void init() {
@@ -54,5 +59,34 @@ public final class Registry extends Dummy {
 	@MappedMethod
 	public static CreativeModeTabHolder createCreativeModeTabHolder(ResourceLocation resourceLocation, Supplier<ItemStack> iconSupplier) {
 		return new CreativeModeTabHolder(resourceLocation, iconSupplier);
+	}
+
+	@MappedMethod
+	public static void setupPackets(ResourceLocation resourceLocation) {
+		simpleChannel = NetworkRegistry.newSimpleChannel(resourceLocation.data, () -> PROTOCOL_VERSION, Registry::validProtocol, Registry::validProtocol);
+	}
+
+	@MappedMethod
+	public static <T extends PacketHandler> void registerPacket(Class<T> classObject, Function<PacketBuffer, T> getInstance) {
+		if (simpleChannel != null) {
+			simpleChannel.registerMessage(packetIdCounter++, classObject, (packetHandler, packetBuffer) -> {
+				packetBuffer.writeUtf(classObject.getName());
+				packetHandler.write(new PacketBuffer(packetBuffer));
+			}, packetBuffer -> {
+				packetBuffer.readUtf();
+				return getInstance.apply(new PacketBuffer(packetBuffer));
+			}, (packetHandler, contextSupplier) -> contextSupplier.get().enqueueWork(packetHandler::run));
+		}
+	}
+
+	@MappedMethod
+	public static <T extends PacketHandler> void sendPacketToClient(ServerPlayerEntity serverPlayerEntity, T data) {
+		if (simpleChannel != null) {
+			simpleChannel.send(PacketDistributor.PLAYER.with(() -> serverPlayerEntity.data), data);
+		}
+	}
+
+	private static boolean validProtocol(String text) {
+		return text.equals(PROTOCOL_VERSION) || text.equals(NetworkRegistry.ACCEPTVANILLA) || text.equals(NetworkRegistry.ABSENT);
 	}
 }

@@ -1,8 +1,11 @@
 package org.mtr.mapping.registry;
 
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import org.mtr.mapping.annotation.MappedMethod;
@@ -14,12 +17,17 @@ import org.mtr.mapping.mapper.Item;
 import org.mtr.mapping.tool.Dummy;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public final class Registry extends Dummy {
 
+	static ResourceLocation packetsResourceLocation;
+	static final Map<String, Function<PacketBuffer, ? extends PacketHandler>> PACKETS = new HashMap<>();
 	private static final List<Runnable> OBJECTS_TO_REGISTER = new ArrayList<>();
 
 	@MappedMethod
@@ -61,5 +69,32 @@ public final class Registry extends Dummy {
 		final ItemGroup itemGroup = FabricItemGroup.builder().icon(() -> iconSupplier.get().data).displayName(Text.translatable(String.format("itemGroup.%s.%s", resourceLocation.data.getNamespace(), resourceLocation.data.getPath()))).build();
 		OBJECTS_TO_REGISTER.add(() -> net.minecraft.registry.Registry.register(Registries.ITEM_GROUP, resourceLocation.data, itemGroup));
 		return new CreativeModeTabHolder(itemGroup, resourceLocation.data);
+	}
+
+	@MappedMethod
+	public static void setupPackets(ResourceLocation resourceLocation) {
+		packetsResourceLocation = resourceLocation;
+		ServerPlayNetworking.registerGlobalReceiver(resourceLocation.data, (server, player, handler, buf, responseSender) -> {
+			final Function<PacketBuffer, ? extends PacketHandler> getInstance = PACKETS.get(buf.readString());
+			if (getInstance != null) {
+				final PacketHandler packetHandler = getInstance.apply(new PacketBuffer(buf));
+				server.execute(packetHandler::run);
+			}
+		});
+	}
+
+	@MappedMethod
+	public static <T extends PacketHandler> void registerPacket(Class<T> classObject, Function<PacketBuffer, T> getInstance) {
+		PACKETS.put(classObject.getName(), getInstance);
+	}
+
+	@MappedMethod
+	public static <T extends PacketHandler> void sendPacketToClient(ServerPlayerEntity serverPlayerEntity, T data) {
+		if (packetsResourceLocation != null) {
+			final PacketByteBuf packetByteBuf = PacketByteBufs.create();
+			packetByteBuf.writeString(data.getClass().getName());
+			data.write(new PacketBuffer(packetByteBuf));
+			ServerPlayNetworking.send(serverPlayerEntity.data, packetsResourceLocation.data, packetByteBuf);
+		}
 	}
 }
