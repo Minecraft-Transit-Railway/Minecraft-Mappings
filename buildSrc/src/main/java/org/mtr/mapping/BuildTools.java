@@ -44,13 +44,14 @@ public class BuildTools {
 		if (!isGenerator) {
 			final Path testFolder = path.resolve("src/test/java/org/mtr/mapping/test");
 			Files.createDirectories(testFolder);
+			final String namespace = String.format("%s-%s", loader, minecraftVersion);
 
 			final String testFile = FileUtils.readFileToString(rootPath.resolve("common/src/test/java/org/mtr/mapping/test/SearchForMappedMethodsTest.java").toFile(), StandardCharsets.UTF_8);
-			final String newTestFile = generateHolders ? testFile : testFile.replace("@namespace@", String.format("%s-%s", loader, minecraftVersion));
+			final String newTestFile = generateHolders ? testFile : testFile.replace("@namespace@", namespace);
 			Files.write(testFolder.resolve("SearchForMappedMethodsTest.java"), newTestFile.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 
 			final String generateFile = FileUtils.readFileToString(rootPath.resolve("common/src/test/java/org/mtr/mapping/test/GenerateHolders.java").toFile(), StandardCharsets.UTF_8);
-			final String newGenerateFile = generateHolders ? generateFile.replace("@generate@", "").replace("@path@", path.resolve("src/main/java/org/mtr/mapping/holder").toString().replace("\\", "/")) : generateFile;
+			final String newGenerateFile = generateHolders ? generateFile.replace("@generate@", "").replace("@path@", path.toString().replace("\\", "/")).replace("@namespace@", namespace) : generateFile;
 			Files.write(parentPath.resolve(String.format("%s-generator/src/test/java/org/mtr/mapping/test/GenerateHolders.java", minecraftVersion)), newGenerateFile.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 		}
 	}

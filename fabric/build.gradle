@@ -20,6 +20,7 @@ subprojects {
 		implementation "com.google.code.findbugs:jsr305:+"
 		testImplementation "org.junit.jupiter:junit-jupiter-api:+"
 		testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:+"
+		testImplementation "com.google.code.gson:gson:+"
 		testImplementation "org.reflections:reflections:+"
 	}
 

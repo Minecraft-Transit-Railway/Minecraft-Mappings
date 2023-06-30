@@ -21,7 +21,7 @@ jobs:
         continue-on-error: true
       - name: Search for mapped methods
         run: ./gradlew test -x common:test
-      - name: Validate mapped methods
+      - name: Analyze test results
         run: ./gradlew common:test
       - name: Build
         run: ./gradlew build -x test
@@ -30,3 +30,8 @@ jobs:
         with:
           name: Mappings
           path: build/release/
+      - name: Capture consolidated Minecraft methods
+        uses: actions/upload-artifact@main
+        with:
+          name: Minecraft Methods
+          path: build/libraryMethods/

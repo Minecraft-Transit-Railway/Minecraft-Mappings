@@ -34,31 +34,31 @@ public final class GenerateHoldersTest {
 	@Test
 	public void generate() throws IOException {
 		final GenerateHolders generateHolders = new GenerateHolders();
-		generateHolders.put(ActionResultType.class, "ActionResult");
-		generateHolders.put(TileEntityRendererDispatcher.class, "BlockEntityRendererArgument");
-		generateHolders.put(TileEntityType.class, "BlockEntityType");
-		generateHolders.put(BlockPos.class, "BlockPos");
-		generateHolders.put(BlockState.class, "BlockState");
-		generateHolders.put(IBlockReader.class, "BlockView");
-		generateHolders.put(ClientWorld.class, "ClientWorld");
-		generateHolders.put(CompoundNBT.class, "CompoundTag");
-		generateHolders.put(Direction.class, "Direction");
-		generateHolders.put(ItemStack.class, "ItemStack");
-		generateHolders.put(LivingEntity.class, "LivingEntity");
-		generateHolders.put(IFormattableTextComponent.class, "MutableText");
-		generateHolders.put(IReorderingProcessor.class, "OrderedText");
-		generateHolders.put(PacketBuffer.class, "PacketBuffer");
-		generateHolders.put(PlayerEntity.class, "PlayerEntity");
-		generateHolders.put(ResourceLocation.class, "ResourceLocation");
-		generateHolders.put(ServerPlayerEntity.class, "ServerPlayerEntity");
-		generateHolders.put(ServerWorld.class, "ServerWorld");
-		generateHolders.put(IServerWorld.class, "ServerWorldAccess");
-		generateHolders.put(TextFormatting.class, "TextFormatting");
-		generateHolders.put(Vector3d.class, "Vector3d");
-		generateHolders.put(Vector3f.class, "Vector3f");
-		generateHolders.put(Vector3i.class, "Vector3i");
-		generateHolders.put(World.class, "World");
-		generateHolders.put(IWorld.class, "WorldAccess");
+		generateHolders.put("ActionResult", ActionResultType.class);
+		generateHolders.put("BlockEntityRendererArgument", TileEntityRendererDispatcher.class);
+		generateHolders.put("BlockEntityType", TileEntityType.class);
+		generateHolders.put("BlockPos", BlockPos.class);
+		generateHolders.put("BlockState", BlockState.class);
+		generateHolders.put("BlockView", IBlockReader.class);
+		generateHolders.put("ClientWorld", ClientWorld.class);
+		generateHolders.put("CompoundTag", CompoundNBT.class);
+		generateHolders.put("Direction", Direction.class);
+		generateHolders.put("ItemStack", ItemStack.class);
+		generateHolders.put("LivingEntity", LivingEntity.class);
+		generateHolders.put("MutableText", IFormattableTextComponent.class);
+		generateHolders.put("OrderedText", IReorderingProcessor.class);
+		generateHolders.put("PacketBuffer", PacketBuffer.class);
+		generateHolders.put("PlayerEntity", PlayerEntity.class);
+		generateHolders.put("ResourceLocation", ResourceLocation.class);
+		generateHolders.put("ServerPlayerEntity", ServerPlayerEntity.class);
+		generateHolders.put("ServerWorld", ServerWorld.class);
+		generateHolders.put("ServerWorldAccess", IServerWorld.class);
+		generateHolders.put("TextFormatting", TextFormatting.class);
+		generateHolders.put("Vector3d", Vector3d.class);
+		generateHolders.put("Vector3f", Vector3f.class);
+		generateHolders.put("Vector3i", Vector3i.class);
+		generateHolders.put("World", World.class);
+		generateHolders.put("WorldAccess", IWorld.class);
 		generateHolders.generate();
 	}
 }
