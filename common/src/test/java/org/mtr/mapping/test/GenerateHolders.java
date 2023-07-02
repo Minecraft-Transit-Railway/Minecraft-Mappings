@@ -51,7 +51,7 @@ public final class GenerateHolders {
 
 			if (classObject.isEnum()) {
 				mainStringBuilder.append("enum ").append(holderInfo.className).append("{");
-				appendIfNotEmpty(mainStringBuilder, classObject.getEnumConstants(), "", "", enumConstant -> String.format("%1$s(%2$s.%1$s)", ((Enum<?>) enumConstant).name(), staticClassName));
+				appendIfNotEmpty(mainStringBuilder, classObject.getEnumConstants(), "", "", ",", enumConstant -> String.format("%1$s(%2$s.%1$s)", ((Enum<?>) enumConstant).name(), staticClassName));
 				mainStringBuilder.append(";public final ").append(staticClassName).append(" data;").append(holderInfo.className).append("(").append(staticClassName).append(" data){this.data=data;}");
 			} else {
 				mainStringBuilder.append(holderInfo.abstractMapping ? "abstract" : "final").append(" class ").append(holderInfo.className);
@@ -93,7 +93,7 @@ public final class GenerateHolders {
 			final int modifiers = executable.getModifiers();
 			final String originalMethodName = executable.getName();
 
-			if (isValidExecutable(executable, originalParameterList, parameterList, superList, mappedSuperList, resolvedSignature, forceResolvedSignature, typeMap) && (!Modifier.isFinal(modifiers) || !holderInfo.abstractMapping) && !holderInfo.blacklist.contains(originalMethodName)) {
+			if (isValidExecutable(executable, originalParameterList, parameterList, superList, mappedSuperList, resolvedSignature, forceResolvedSignature, typeMap) && (!Modifier.isFinal(modifiers) && !Modifier.isAbstract(modifiers) || !holderInfo.abstractMapping) && !holderInfo.blacklist.contains(originalMethodName)) {
 				final boolean isStatic = Modifier.isStatic(modifiers);
 				final boolean isMethod = executable instanceof Method;
 				final boolean generateExtraMethod = holderInfo.abstractMapping && !isStatic && isMethod;
@@ -127,7 +127,7 @@ public final class GenerateHolders {
 					} else {
 						mainStringBuilder.append("return ");
 						final StringBuilder returnStringBuilder = new StringBuilder();
-						if (appendGenerics(returnStringBuilder, returnTypeClass, typeMap, true, false)) {
+						if (appendGenerics(returnStringBuilder, returnTypeClass, typeMap, true, true, false)) {
 							mainStringBuilder.append(appendWrap(returnTypeClass, returnStringBuilder.toString(), methodCall));
 							resolvedReturnType = true;
 						} else {
@@ -137,10 +137,10 @@ public final class GenerateHolders {
 					}
 
 					final StringBuilder forceResolvedReturnStringBuilder = new StringBuilder();
-					appendGenerics(forceResolvedReturnStringBuilder, returnTypeClass, typeMap, true, true);
+					appendGenerics(forceResolvedReturnStringBuilder, returnTypeClass, typeMap, true, false, true);
 					final JsonObject methodObject = new JsonObject();
 					methodObject.addProperty("name", originalMethodName);
-					methodObject.addProperty("signature", String.format("%s %s(%s)", Modifier.toString(modifiers), forceResolvedReturnStringBuilder, String.join(",", forceResolvedSignature)));
+					methodObject.addProperty("signature", String.format("%s %s(%s)", Modifier.toString(modifiers), forceResolvedReturnStringBuilder, String.join("|", forceResolvedSignature)));
 					holderInfo.methodsArray.add(methodObject);
 				} else {
 					if (holderInfo.abstractMapping) {
@@ -172,20 +172,22 @@ public final class GenerateHolders {
 		final boolean[] allPublicParameterTypes = {true};
 		iterateTwoArrays(executable.getParameters(), executable.getGenericParameterTypes(), (parameter, type) -> {
 			final StringBuilder originalParameterStringBuilder = new StringBuilder();
-			appendGenerics(originalParameterStringBuilder, type, typeMap, false, false);
+			appendGenerics(originalParameterStringBuilder, type, typeMap, false, false, false);
 			originalParameterList.add(String.format("%s %s", originalParameterStringBuilder, parameter.getName()));
 
 			final StringBuilder parameterStringBuilder = new StringBuilder();
-			final boolean isResolved = appendGenerics(parameterStringBuilder, type, typeMap, true, false);
+			final boolean isResolved = appendGenerics(parameterStringBuilder, type, typeMap, true, false, false);
 			parameterList.add(String.format("%s %s", parameterStringBuilder, parameter.getName()));
 			resolvedSignature.add(parameterStringBuilder.toString());
 
 			final StringBuilder forceResolvedParameterStringBuilder = new StringBuilder();
-			appendGenerics(forceResolvedParameterStringBuilder, type, typeMap, true, true);
+			appendGenerics(forceResolvedParameterStringBuilder, type, typeMap, true, false, true);
 			forceResolvedSignature.add(forceResolvedParameterStringBuilder.toString());
 
 			superList.add(String.format("%s%s", parameter.getName(), isResolved ? ".data" : ""));
-			mappedSuperList.add(isResolved ? appendWrap(type, parameterStringBuilder.toString(), parameter.getName()) : parameter.getName());
+			final StringBuilder impliedParameterStringBuilder = new StringBuilder();
+			appendGenerics(impliedParameterStringBuilder, type, typeMap, true, true, false);
+			mappedSuperList.add(isResolved ? appendWrap(type, impliedParameterStringBuilder.toString(), parameter.getName()) : parameter.getName());
 
 			if (!Modifier.isPublic(parameter.getType().getModifiers())) {
 				allPublicParameterTypes[0] = false;
@@ -201,7 +203,7 @@ public final class GenerateHolders {
 		if (executable instanceof Method) {
 			appendGenerics(mainStringBuilder, executable, true);
 			returnTypeClass = ((Method) executable).getGenericReturnType();
-			appendGenerics(mainStringBuilder, returnTypeClass, typeMap, resolve, false);
+			appendGenerics(mainStringBuilder, returnTypeClass, typeMap, resolve, false, false);
 			mainStringBuilder.append(" ").append(methodName);
 		} else {
 			returnTypeClass = null;
@@ -209,16 +211,16 @@ public final class GenerateHolders {
 		}
 
 		mainStringBuilder.append("(").append(String.join(",", parameterList)).append(")");
-		appendIfNotEmpty(mainStringBuilder, executable.getGenericExceptionTypes(), "throws ", "", Type::getTypeName);
+		appendIfNotEmpty(mainStringBuilder, executable.getGenericExceptionTypes(), "throws ", "", ",", Type::getTypeName);
 		mainStringBuilder.append("{");
 		return returnTypeClass;
 	}
 
-	private boolean appendGenerics(StringBuilder stringBuilder, Type type, Map<Type, Type> typeMap, boolean resolve, boolean forceResolveAll) {
-		return appendGenerics(stringBuilder, type, typeMap, resolve, forceResolveAll, true);
+	private boolean appendGenerics(StringBuilder stringBuilder, Type type, Map<Type, Type> typeMap, boolean resolve, boolean impliedType, boolean forceResolveAll) {
+		return appendGenerics(stringBuilder, type, typeMap, resolve, impliedType, forceResolveAll, true);
 	}
 
-	private boolean appendGenerics(StringBuilder stringBuilder, Type type, Map<Type, Type> typeMap, boolean resolve, boolean forceResolveAll, boolean isFirst) {
+	private boolean appendGenerics(StringBuilder stringBuilder, Type type, Map<Type, Type> typeMap, boolean resolve, boolean impliedType, boolean forceResolveAll, boolean isFirst) {
 		final boolean isParameterized = type instanceof ParameterizedType;
 		final Type mappedType = getOrReturn(typeMap, isParameterized ? ((ParameterizedType) type).getRawType() : type);
 		final boolean isResolved;
@@ -233,21 +235,25 @@ public final class GenerateHolders {
 		}
 
 		if (isParameterized) {
-			appendIfNotEmpty(stringBuilder, ((ParameterizedType) type).getActualTypeArguments(), "<", ">", innerType -> {
-				final StringBuilder innerStringBuilder = new StringBuilder();
-				appendGenerics(innerStringBuilder, innerType, typeMap, resolve, forceResolveAll, false);
-				return innerStringBuilder.toString();
-			});
+			if (impliedType) {
+				stringBuilder.append("<>");
+			} else {
+				appendIfNotEmpty(stringBuilder, ((ParameterizedType) type).getActualTypeArguments(), "<", ">", ",", innerType -> {
+					final StringBuilder innerStringBuilder = new StringBuilder();
+					appendGenerics(innerStringBuilder, innerType, typeMap, resolve, false, forceResolveAll, false);
+					return innerStringBuilder.toString();
+				});
+			}
 		}
 
 		return isResolved;
 	}
 
 	private static void appendGenerics(StringBuilder stringBuilder, GenericDeclaration genericDeclaration, boolean getBounds) {
-		appendIfNotEmpty(stringBuilder, genericDeclaration.getTypeParameters(), "<", ">", typeVariable -> {
+		appendIfNotEmpty(stringBuilder, genericDeclaration.getTypeParameters(), "<", ">", ",", typeVariable -> {
 			if (getBounds) {
 				final StringBuilder extendsStringBuilder = new StringBuilder();
-				appendIfNotEmpty(extendsStringBuilder, typeVariable.getBounds(), " extends ", "", Type::getTypeName);
+				appendIfNotEmpty(extendsStringBuilder, typeVariable.getBounds(), " extends ", "", "&", Type::getTypeName);
 				return String.format("%s%s", typeVariable.getName(), extendsStringBuilder);
 			} else {
 				return typeVariable.getName();
@@ -267,13 +273,13 @@ public final class GenerateHolders {
 				break;
 			}
 
-			final Map<Type, Type> actualTypes = new HashMap<>();
+			final Map<Type, Type> typeMap = new HashMap<>();
 
 			if (genericType instanceof ParameterizedType) {
-				iterateTwoArrays(superClassObject.getTypeParameters(), ((ParameterizedType) genericType).getActualTypeArguments(), actualTypes::put);
+				iterateTwoArrays(superClassObject.getTypeParameters(), ((ParameterizedType) genericType).getActualTypeArguments(), (type, mappedType) -> typeMap.put(type, genericClassTree.values().stream().map(previousTypeMap -> previousTypeMap.get(mappedType)).filter(Objects::nonNull).findFirst().orElse(mappedType)));
 			}
 
-			genericClassTree.put(superClassObject, actualTypes);
+			genericClassTree.put(superClassObject, typeMap);
 		}
 
 		return genericClassTree;
@@ -287,14 +293,14 @@ public final class GenerateHolders {
 		}
 	}
 
-	private static <T> void appendIfNotEmpty(StringBuilder stringBuilder, T[] array, String prefix, String suffix, Function<T, String> callback) {
+	private static <T> void appendIfNotEmpty(StringBuilder stringBuilder, T[] array, String prefix, String suffix, String delimiter, Function<T, String> callback) {
 		if (array.length > 0) {
 			stringBuilder.append(prefix);
 			final List<String> dataList = new ArrayList<>();
 			for (T data : array) {
 				dataList.add(callback.apply(data));
 			}
-			stringBuilder.append(String.join(",", dataList)).append(suffix);
+			stringBuilder.append(String.join(delimiter, dataList)).append(suffix);
 		}
 	}
 
