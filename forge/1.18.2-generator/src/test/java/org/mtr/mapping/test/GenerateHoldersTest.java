@@ -23,17 +23,26 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.*;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.Random;
 
 public final class GenerateHoldersTest {
 
@@ -47,45 +56,45 @@ public final class GenerateHoldersTest {
 		generateHolders.put("BlockPos", BlockPos.class);
 		generateHolders.put("BlockState", BlockState.class);
 		generateHolders.put("BlockView", BlockGetter.class);
-		generateHolders.put("BooleanProperty", BooleanProperty.class)
-				.map("create", "create")
-				.map("getValues", "getPossibleValues");
+		generateHolders.put("BooleanProperty", BooleanProperty.class);
 		generateHolders.put("ClientWorld", ClientLevel.class);
 		generateHolders.put("CompoundTag", CompoundTag.class);
 		generateHolders.put("Direction", Direction.class);
-		generateHolders.put("DirectionProperty", DirectionProperty.class)
-				.map("create", "create")
-				.map("getValues", "getPossibleValues");
+		generateHolders.put("DirectionProperty", DirectionProperty.class);
 		generateHolders.put("EntityType", EntityType.class);
-		generateHolders.put("EnumProperty", EnumProperty.class)
-				.map("create", "create")
-				.map("getValues", "getPossibleValues");
+		generateHolders.put("EnumProperty", EnumProperty.class);
 		generateHolders.put("Explosion", Explosion.class);
 		generateHolders.put("FluidState", FluidState.class);
 		generateHolders.put("Hand", InteractionHand.class);
-		generateHolders.put("IntegerProperty", IntegerProperty.class)
-				.map("create", "create")
-				.map("getValues", "getPossibleValues");
+		generateHolders.put("IntegerProperty", IntegerProperty.class);
+		generateHolders.put("ItemPlacementContext", BlockPlaceContext.class);
 		generateHolders.put("ItemStack", ItemStack.class);
+		generateHolders.put("ItemUsageContext", UseOnContext.class);
 		generateHolders.put("LivingEntity", LivingEntity.class);
+		generateHolders.put("Mirror", Mirror.class);
 		generateHolders.put("MutableText", MutableComponent.class);
 		generateHolders.put("OrderedText", FormattedCharSequence.class);
-		generateHolders.put("PacketBuffer", FriendlyByteBuf.class)
-				.blacklist("readRegistryIdSafe");
+		generateHolders.put("PacketBuffer", FriendlyByteBuf.class, "readRegistryIdSafe");
 		generateHolders.put("PlayerEntity", Player.class);
 		generateHolders.put("Property", Property.class);
+		generateHolders.put("Random", Random.class);
 		generateHolders.put("ResourceLocation", ResourceLocation.class);
+		generateHolders.put("Rotation", Rotation.class);
 		generateHolders.put("ServerPlayerEntity", ServerPlayer.class);
 		generateHolders.put("ServerWorld", ServerLevel.class);
 		generateHolders.put("ServerWorldAccess", ServerLevelAccessor.class);
+		generateHolders.put("ShapeContext", CollisionContext.class);
 		generateHolders.put("TextFormatting", ChatFormatting.class);
+		generateHolders.put("TooltipContext", TooltipFlag.class);
 		generateHolders.put("Vector3d", Vector3d.class);
 		generateHolders.put("Vector3f", Vector3f.class);
 		generateHolders.put("Vector3i", Vec3i.class);
 		generateHolders.put("VoxelShape", VoxelShape.class);
+		generateHolders.put("VoxelShapes", Shapes.class);
 		generateHolders.put("World", Level.class);
 		generateHolders.put("WorldAccess", LevelAccessor.class);
 		generateHolders.putAbstract("Block", Block.class);
+		generateHolders.putAbstract("BlockEntity", BlockEntity.class);
 		generateHolders.putAbstract("Entity", Entity.class);
 		generateHolders.putAbstract("Item", Item.class);
 		generateHolders.generate();

@@ -6,10 +6,10 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.PacketByteBuf;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
-import org.mtr.mapping.mapper.Block;
-import org.mtr.mapping.mapper.BlockEntity;
+import org.mtr.mapping.mapper.BlockEntityExtension;
+import org.mtr.mapping.mapper.BlockExtension;
 import org.mtr.mapping.mapper.BlockItem;
-import org.mtr.mapping.mapper.Item;
+import org.mtr.mapping.mapper.ItemExtension;
 import org.mtr.mapping.tool.Dummy;
 
 import java.util.ArrayList;
@@ -32,30 +32,30 @@ public final class Registry extends Dummy {
 	}
 
 	@MappedMethod
-	public static BlockRegistryObject registerBlock(ResourceLocation resourceLocation, Supplier<Block> supplier) {
-		final Block block = supplier.get();
-		OBJECTS_TO_REGISTER.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.BLOCK, resourceLocation.data, block));
-		return new BlockRegistryObject(block);
+	public static BlockRegistryObject registerBlock(ResourceLocation resourceLocation, Supplier<BlockExtension> supplier) {
+		final BlockExtension blockExtension = supplier.get();
+		OBJECTS_TO_REGISTER.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.BLOCK, resourceLocation.data, blockExtension));
+		return new BlockRegistryObject(blockExtension);
 	}
 
 	@MappedMethod
-	public static BlockRegistryObject registerBlockWithBlockItem(ResourceLocation resourceLocation, Supplier<Block> supplier) {
-		final Block block = supplier.get();
-		OBJECTS_TO_REGISTER.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.BLOCK, resourceLocation.data, block));
-		OBJECTS_TO_REGISTER.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.ITEM, resourceLocation.data, new BlockItem(block, new Item.Properties())));
-		return new BlockRegistryObject(block);
+	public static BlockRegistryObject registerBlockWithBlockItem(ResourceLocation resourceLocation, Supplier<BlockExtension> supplier) {
+		final BlockExtension blockExtension = supplier.get();
+		OBJECTS_TO_REGISTER.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.BLOCK, resourceLocation.data, blockExtension));
+		OBJECTS_TO_REGISTER.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.ITEM, resourceLocation.data, new BlockItem(blockExtension, new ItemExtension.Properties())));
+		return new BlockRegistryObject(blockExtension);
 	}
 
 	@MappedMethod
-	public static ItemRegistryObject registerItem(ResourceLocation resourceLocation, Supplier<Item> supplier) {
-		final Item item = supplier.get();
-		OBJECTS_TO_REGISTER.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.ITEM, resourceLocation.data, item));
-		return new ItemRegistryObject(item);
+	public static ItemRegistryObject registerItem(ResourceLocation resourceLocation, Supplier<ItemExtension> supplier) {
+		final ItemExtension itemExtension = supplier.get();
+		OBJECTS_TO_REGISTER.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.ITEM, resourceLocation.data, itemExtension));
+		return new ItemRegistryObject(itemExtension);
 	}
 
 	@MappedMethod
-	public static <T extends BlockEntity> BlockEntityTypeRegistryObject<T> registerBlockEntityType(ResourceLocation resourceLocation, BiFunction<BlockPos, BlockState, T> function, Block... blocks) {
-		final net.minecraft.block.entity.BlockEntityType<T> blockEntityType = net.minecraft.block.entity.BlockEntityType.Builder.create(() -> function.apply(null, null), blocks).build(null);
+	public static <T extends BlockEntityExtension> BlockEntityTypeRegistryObject<T> registerBlockEntityType(ResourceLocation resourceLocation, BiFunction<BlockPos, BlockState, T> function, BlockExtension... blockExtensions) {
+		final net.minecraft.block.entity.BlockEntityType<T> blockEntityType = net.minecraft.block.entity.BlockEntityType.Builder.create(() -> function.apply(null, null), blockExtensions).build(null);
 		OBJECTS_TO_REGISTER.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.BLOCK_ENTITY_TYPE, resourceLocation.data, blockEntityType));
 		return new BlockEntityTypeRegistryObject<>(new BlockEntityType<>(blockEntityType));
 	}

@@ -5,7 +5,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.BlockEntityRendererArgument;
 
-public abstract class BlockEntityRenderer<T extends BlockEntity> extends net.minecraft.client.render.block.entity.BlockEntityRenderer<T> {
+public abstract class BlockEntityRenderer<T extends BlockEntityExtension> extends net.minecraft.client.render.block.entity.BlockEntityRenderer<T> {
 
 	@MappedMethod
 	public BlockEntityRenderer(BlockEntityRendererArgument argument) {

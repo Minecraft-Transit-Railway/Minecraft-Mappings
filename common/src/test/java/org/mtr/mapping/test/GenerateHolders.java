@@ -24,18 +24,16 @@ public final class GenerateHolders {
 	private static final String GENERATE_KEY = "@generate@";
 	private static final String NAMESPACE = "@namespace@";
 
-	public HolderInfo put(String newClassName, Class<?> classObject) {
-		final HolderInfo holderInfo = new HolderInfo(newClassName, false);
+	public void put(String newClassName, Class<?> classObject, String... blacklistMethods) {
+		final HolderInfo holderInfo = new HolderInfo(newClassName, false, blacklistMethods);
 		classMap.put(classObject, holderInfo);
 		classesObject.add(newClassName, holderInfo.methodsArray);
-		return holderInfo;
 	}
 
-	public HolderInfo putAbstract(String newClassName, Class<?> classObject) {
-		final HolderInfo holderInfo = new HolderInfo(newClassName, true);
+	public void putAbstract(String newClassName, Class<?> classObject, String... blacklistMethods) {
+		final HolderInfo holderInfo = new HolderInfo(newClassName, true, blacklistMethods);
 		classMap.put(classObject, holderInfo);
 		classesObject.add(newClassName, holderInfo.methodsArray);
-		return holderInfo;
 	}
 
 	public void generate() throws IOException {
@@ -44,41 +42,49 @@ public final class GenerateHolders {
 		FileUtils.deleteDirectory(holdersPath.toFile());
 
 		for (Map.Entry<Class<?>, HolderInfo> classEntry : classMap.entrySet()) {
-			final Class<?> classObject = classEntry.getKey();
 			final HolderInfo holderInfo = classEntry.getValue();
-			final StringBuilder mainStringBuilder = new StringBuilder("package org.mtr.mapping.holder;public ");
-			final String staticClassName = formatClassName(classObject.getName());
-
-			if (classObject.isEnum()) {
-				mainStringBuilder.append("enum ").append(holderInfo.className).append("{");
-				appendIfNotEmpty(mainStringBuilder, classObject.getEnumConstants(), "", "", ",", enumConstant -> String.format("%1$s(%2$s.%1$s)", ((Enum<?>) enumConstant).name(), staticClassName));
-				mainStringBuilder.append(";public final ").append(staticClassName).append(" data;").append(holderInfo.className).append("(").append(staticClassName).append(" data){this.data=data;}");
+			if (holderInfo.abstractMapping) {
+				generate(holdersPath, classEntry.getKey(), new HolderInfo(holderInfo, holderInfo.className + "AbstractMapping", true));
+				generate(holdersPath, classEntry.getKey(), new HolderInfo(holderInfo, holderInfo.className, false));
 			} else {
-				mainStringBuilder.append(holderInfo.abstractMapping ? "abstract" : "final").append(" class ").append(holderInfo.className);
-				appendGenerics(mainStringBuilder, classObject, true);
-				final StringBuilder classNameStringBuilder = new StringBuilder(staticClassName);
-				appendGenerics(classNameStringBuilder, classObject, false);
-				final String className = classNameStringBuilder.toString();
-
-				if (holderInfo.abstractMapping) {
-					mainStringBuilder.append(" extends ").append(className).append("{");
-				} else {
-					mainStringBuilder.append("{public final ").append(className).append(" data;public ").append(holderInfo.className).append("(").append(className).append(" data){this.data=data;}");
-				}
-
-				final Map<Class<?>, Map<Type, Type>> classTree = walkClassTree(classObject);
-				processMethods(Modifier.isAbstract(classObject.getModifiers()) && !holderInfo.abstractMapping ? new Executable[0] : classObject.getConstructors(), mainStringBuilder, className, staticClassName, holderInfo, classTree);
-				processMethods(classObject.getMethods(), mainStringBuilder, className, staticClassName, holderInfo, classTree);
+				generate(holdersPath, classEntry.getKey(), holderInfo);
 			}
-
-			mainStringBuilder.append("}");
-			Files.createDirectories(holdersPath);
-			Files.write(holdersPath.resolve(String.format("%s.java", holderInfo.className)), mainStringBuilder.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 		}
 
 		final Path methodsPath = PATH.resolve("../../build/existingMethods");
 		Files.createDirectories(methodsPath);
 		Files.write(methodsPath.resolve(String.format("%s.json", NAMESPACE)), classesObject.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+	}
+
+	private void generate(Path holdersPath, Class<?> classObject, HolderInfo holderInfo) throws IOException {
+		final StringBuilder mainStringBuilder = new StringBuilder("package org.mtr.mapping.holder;public ");
+		final String staticClassName = formatClassName(classObject.getName());
+
+		if (classObject.isEnum()) {
+			mainStringBuilder.append("enum ").append(holderInfo.className).append("{");
+			appendIfNotEmpty(mainStringBuilder, classObject.getEnumConstants(), "", "", ",", enumConstant -> String.format("%1$s(%2$s.%1$s)", ((Enum<?>) enumConstant).name(), staticClassName));
+			mainStringBuilder.append(";public final ").append(staticClassName).append(" data;").append(holderInfo.className).append("(").append(staticClassName).append(" data){this.data=data;}");
+		} else {
+			mainStringBuilder.append(holderInfo.abstractMapping ? "abstract" : "final").append(" class ").append(holderInfo.className);
+			appendGenerics(mainStringBuilder, classObject, true);
+			final StringBuilder classNameStringBuilder = new StringBuilder(staticClassName);
+			appendGenerics(classNameStringBuilder, classObject, false);
+			final String className = classNameStringBuilder.toString();
+
+			if (holderInfo.abstractMapping) {
+				mainStringBuilder.append(" extends ").append(className).append("{");
+			} else {
+				mainStringBuilder.append("{public final ").append(className).append(" data;public ").append(holderInfo.className).append("(").append(className).append(" data){this.data=data;}");
+			}
+
+			final Map<Class<?>, Map<Type, Type>> classTree = walkClassTree(classObject);
+			processMethods(Modifier.isAbstract(classObject.getModifiers()) && !holderInfo.abstractMapping ? new Executable[0] : classObject.getConstructors(), mainStringBuilder, className, staticClassName, holderInfo, classTree);
+			processMethods(classObject.getMethods(), mainStringBuilder, className, staticClassName, holderInfo, classTree);
+		}
+
+		mainStringBuilder.append("}");
+		Files.createDirectories(holdersPath);
+		Files.write(holdersPath.resolve(String.format("%s.java", holderInfo.className)), mainStringBuilder.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 	}
 
 	private void processMethods(Executable[] executables, StringBuilder mainStringBuilder, String className, String staticClassName, HolderInfo holderInfo, Map<Class<?>, Map<Type, Type>> classTree) {
@@ -227,7 +233,7 @@ public final class GenerateHolders {
 
 		if ((forceResolveAll || isFirst) && mappedType instanceof Class) {
 			final HolderInfo resolvedClassName = classMap.get(mappedType);
-			isResolved = resolve && resolvedClassName != null && !resolvedClassName.abstractMapping;
+			isResolved = resolve && resolvedClassName != null;
 			stringBuilder.append(isResolved ? resolvedClassName.className : formatClassName(mappedType.getTypeName()));
 		} else {
 			isResolved = false;
@@ -327,13 +333,77 @@ public final class GenerateHolders {
 
 		private final String className;
 		private final boolean abstractMapping;
-		private final Set<String> blacklist = new HashSet<>();
-		private final Map<String, String> methodMap = new HashMap<>();
-		private final JsonArray methodsArray = new JsonArray();
+		private final List<String> blacklist;
+		private final Map<String, String> methodMap;
+		private final JsonArray methodsArray;
+		private static final Map<String, Map<String, String>> GLOBAL_METHOD_MAP = new HashMap<>();
 
-		private HolderInfo(String className, boolean abstractMapping) {
+		static {
+			addMethodMap("Block", "afterBreak", "playerDestroy");
+			addMethodMap("Block", "appendTooltip", "appendHoverText");
+			addMethodMap("Block", "createCuboidShape", "box");
+			addMethodMap("Block", "emitsRedstonePower", "isSignalSource");
+			addMethodMap("Block", "getBlockFromItem", "byItem");
+			addMethodMap("Block", "getComparatorOutput", "getAnalogOutputSignal");
+			addMethodMap("Block", "getInteractionShape", "getRaycastShape");
+			addMethodMap("Block", "getOcclusionShape", "getCullingShape");
+			addMethodMap("Block", "getOutlineShape", "getShape");
+			addMethodMap("Block", "getPlacementState", "getStateForPlacement");
+			addMethodMap("Block", "getSidesShape", "getBlockSupportShape");
+			addMethodMap("Block", "getStateForNeighborUpdate", "updateShape");
+			addMethodMap("Block", "getStrongRedstonePower", "getDirectSignal");
+			addMethodMap("Block", "getVisualShape", "getCameraCollisionShape");
+			addMethodMap("Block", "getWeakRedstonePower", "getSignal");
+			addMethodMap("Block", "hasComparatorOutput", "hasAnalogOutputSignal");
+			addMethodMap("Block", "hasRandomTicks", "isRandomlyTicking");
+			addMethodMap("Block", "isFaceFullSquare", "isFaceFull");
+			addMethodMap("Block", "isSideInvisible", "skipRendering");
+			addMethodMap("Block", "neighborUpdate", "neighborChanged");
+			addMethodMap("Block", "onBlockBreakStart", "attack");
+			addMethodMap("Block", "onBreak", "playerWillDestroy");
+			addMethodMap("Block", "onBroken", "destroy");
+			addMethodMap("Block", "onDestroyedByExplosion", "wasExploded");
+			addMethodMap("Block", "onDestroyedByExplosion", "wasExploded");
+			addMethodMap("Block", "onEntityCollision", "entityInside");
+			addMethodMap("Block", "onEntityLand", "updateEntityAfterFallOn");
+			addMethodMap("Block", "onPlace", "onBlockAdded");
+			addMethodMap("Block", "onPlaced", "setPlacedBy");
+			addMethodMap("Block", "onRemove", "onStateReplaced");
+			addMethodMap("Block", "randomDisplayTick", "animateTick");
+			addMethodMap("Block", "replace", "updateOrDestroy");
+			addMethodMap("Block", "scheduledTick", "tick");
+			addMethodMap("Block", "shouldDropItemsOnExplosion", "dropFromExplosion");
+			addMethodMap("BlockEntity", "getPosition", "getPos", "getBlockPos");
+			addMethodMap("BlockEntity", "getWorld", "getLevel");
+			addMethodMap("BlockEntity", "markDirty", "setChanged");
+			addMethodMap("BlockEntity", "markRemoved", "setRemoved");
+			addMethodMap("BlockState", "get", "getValue");
+			addMethodMap("BlockState", "hasProperty", "contains");
+			addMethodMap("BlockState", "with", "setValue");
+			addMethodMap("BooleanProperty", "create", "of");
+			addMethodMap("BooleanProperty", "getValues", "getPossibleValues");
+			addMethodMap("DirectionProperty", "create", "of");
+			addMethodMap("DirectionProperty", "getValues", "getPossibleValues");
+			addMethodMap("EnumProperty", "create", "of");
+			addMethodMap("EnumProperty", "getValues", "getPossibleValues");
+			addMethodMap("IntegerProperty", "create", "of");
+			addMethodMap("IntegerProperty", "getValues", "getPossibleValues");
+		}
+
+		private HolderInfo(String className, boolean abstractMapping, String... blacklistMethods) {
 			this.className = className;
 			this.abstractMapping = abstractMapping;
+			blacklist = Arrays.asList(blacklistMethods);
+			methodMap = GLOBAL_METHOD_MAP.getOrDefault(className, new HashMap<>());
+			methodsArray = new JsonArray();
+		}
+
+		private HolderInfo(HolderInfo holderInfo, String className, boolean abstractMapping) {
+			this.className = className;
+			this.abstractMapping = abstractMapping;
+			blacklist = holderInfo.blacklist;
+			methodMap = holderInfo.methodMap;
+			methodsArray = abstractMapping ? holderInfo.methodsArray : new JsonArray();
 		}
 
 		public HolderInfo blacklist(String methodName) {
@@ -341,9 +411,13 @@ public final class GenerateHolders {
 			return this;
 		}
 
-		public HolderInfo map(String newMethodName, String oldMethodName) {
-			methodMap.put(oldMethodName, newMethodName);
-			return this;
+		private static void addMethodMap(String className, String newMethodName, String... methods) {
+			GLOBAL_METHOD_MAP.computeIfAbsent(className, methodMap -> new HashMap<>());
+			final Map<String, String> methodMap = GLOBAL_METHOD_MAP.get(className);
+			for (final String method : methods) {
+				methodMap.put(method, newMethodName);
+			}
+			methodMap.put(newMethodName, newMethodName);
 		}
 	}
 }

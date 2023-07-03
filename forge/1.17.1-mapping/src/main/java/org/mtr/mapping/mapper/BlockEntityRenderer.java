@@ -5,7 +5,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.BlockEntityRendererArgument;
 
-public abstract class BlockEntityRenderer<T extends BlockEntity> implements net.minecraft.client.renderer.blockentity.BlockEntityRenderer<T> {
+public abstract class BlockEntityRenderer<T extends BlockEntityExtension> implements net.minecraft.client.renderer.blockentity.BlockEntityRenderer<T> {
 
 	@MappedMethod
 	public BlockEntityRenderer(BlockEntityRendererArgument argument) {

@@ -1,23 +1,23 @@
 package org.mtr.mapping.registry;
 
 import org.mtr.mapping.annotation.MappedMethod;
-import org.mtr.mapping.mapper.Item;
+import org.mtr.mapping.mapper.ItemExtension;
 import org.mtr.mapping.tool.RegistryObject;
 
 import java.util.function.Consumer;
 
-public final class ItemRegistryObject extends RegistryObject<Item> {
+public final class ItemRegistryObject extends RegistryObject<ItemExtension> {
 
-	private final Item item;
+	private final ItemExtension itemExtension;
 
-	ItemRegistryObject(Item item) {
-		this.item = item;
+	ItemRegistryObject(ItemExtension itemExtension) {
+		this.itemExtension = itemExtension;
 	}
 
 	@MappedMethod
 	@Override
-	public Item get() {
-		return item;
+	public ItemExtension get() {
+		return itemExtension;
 	}
 
 	@MappedMethod
@@ -28,7 +28,7 @@ public final class ItemRegistryObject extends RegistryObject<Item> {
 
 	@MappedMethod
 	@Override
-	public void ifPresent(Consumer<Item> consumer) {
-		consumer.accept(item);
+	public void ifPresent(Consumer<ItemExtension> consumer) {
+		consumer.accept(itemExtension);
 	}
 }

@@ -11,12 +11,12 @@ import javax.annotation.Nullable;
 public abstract class BlockWithEntity extends net.minecraft.block.BlockWithEntity {
 
 	@MappedMethod
-	public BlockWithEntity(Block.Properties properties) {
+	public BlockWithEntity(BlockExtension.Properties properties) {
 		super(properties.blockSettings);
 	}
 
 	@MappedMethod
-	public abstract <T extends BlockEntity> BlockEntityType<T> getBlockEntityTypeForTicking();
+	public abstract <T extends BlockEntityExtension> BlockEntityType<T> getBlockEntityTypeForTicking();
 
 	@Override
 	public final net.minecraft.block.entity.BlockEntity createBlockEntity(BlockView world) {
@@ -24,5 +24,5 @@ public abstract class BlockWithEntity extends net.minecraft.block.BlockWithEntit
 	}
 
 	@MappedMethod
-	public abstract BlockEntity createBlockEntity(@Nullable BlockPos blockPos, @Nullable BlockState blockState);
+	public abstract BlockEntityExtension createBlockEntity(@Nullable BlockPos blockPos, @Nullable BlockState blockState);
 }

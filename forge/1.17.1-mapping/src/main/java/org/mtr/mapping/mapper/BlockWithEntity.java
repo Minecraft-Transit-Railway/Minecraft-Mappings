@@ -8,15 +8,15 @@ import org.mtr.mapping.holder.BlockEntityType;
 import org.mtr.mapping.holder.BlockPos;
 import org.mtr.mapping.holder.BlockState;
 
-public abstract class BlockWithEntity extends Block implements EntityBlock {
+public abstract class BlockWithEntity extends BlockExtension implements EntityBlock {
 
 	@MappedMethod
-	public BlockWithEntity(Block.Properties properties) {
+	public BlockWithEntity(BlockExtension.Properties properties) {
 		super(properties);
 	}
 
 	@MappedMethod
-	public abstract <T extends BlockEntity> BlockEntityType<T> getBlockEntityTypeForTicking();
+	public abstract <T extends BlockEntityExtension> BlockEntityType<T> getBlockEntityTypeForTicking();
 
 	@Override
 	public final net.minecraft.world.level.block.entity.BlockEntity newBlockEntity(net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state) {
@@ -24,12 +24,12 @@ public abstract class BlockWithEntity extends Block implements EntityBlock {
 	}
 
 	@MappedMethod
-	public abstract BlockEntity createBlockEntity(BlockPos blockPos, BlockState blockState);
+	public abstract BlockEntityExtension createBlockEntity(BlockPos blockPos, BlockState blockState);
 
 	@Override
 	public final <T extends net.minecraft.world.level.block.entity.BlockEntity> BlockEntityTicker<T> getTicker(Level world, net.minecraft.world.level.block.state.BlockState state, net.minecraft.world.level.block.entity.BlockEntityType<T> type) {
 		if (type == getBlockEntityTypeForTicking().data) {
-			return (world1, pos, state1, blockEntity) -> ((BlockEntity) blockEntity).blockEntityTick();
+			return (world1, pos, state1, blockEntity) -> ((BlockEntityExtension) blockEntity).blockEntityTick();
 		} else {
 			return null;
 		}

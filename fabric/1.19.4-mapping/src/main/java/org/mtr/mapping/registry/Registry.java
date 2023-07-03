@@ -8,10 +8,10 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
-import org.mtr.mapping.mapper.Block;
-import org.mtr.mapping.mapper.BlockEntity;
+import org.mtr.mapping.mapper.BlockEntityExtension;
+import org.mtr.mapping.mapper.BlockExtension;
 import org.mtr.mapping.mapper.BlockItem;
-import org.mtr.mapping.mapper.Item;
+import org.mtr.mapping.mapper.ItemExtension;
 import org.mtr.mapping.tool.Dummy;
 
 import java.util.ArrayList;
@@ -34,30 +34,30 @@ public final class Registry extends Dummy {
 	}
 
 	@MappedMethod
-	public static BlockRegistryObject registerBlock(ResourceLocation resourceLocation, Supplier<Block> supplier) {
-		final Block block = supplier.get();
-		OBJECTS_TO_REGISTER.add(() -> net.minecraft.registry.Registry.register(Registries.BLOCK, resourceLocation.data, block));
-		return new BlockRegistryObject(block);
+	public static BlockRegistryObject registerBlock(ResourceLocation resourceLocation, Supplier<BlockExtension> supplier) {
+		final BlockExtension blockExtension = supplier.get();
+		OBJECTS_TO_REGISTER.add(() -> net.minecraft.registry.Registry.register(Registries.BLOCK, resourceLocation.data, blockExtension));
+		return new BlockRegistryObject(blockExtension);
 	}
 
 	@MappedMethod
-	public static BlockRegistryObject registerBlockWithBlockItem(ResourceLocation resourceLocation, Supplier<Block> supplier) {
-		final Block block = supplier.get();
-		OBJECTS_TO_REGISTER.add(() -> net.minecraft.registry.Registry.register(Registries.BLOCK, resourceLocation.data, block));
-		OBJECTS_TO_REGISTER.add(() -> net.minecraft.registry.Registry.register(Registries.ITEM, resourceLocation.data, new BlockItem(block, new Item.Properties())));
-		return new BlockRegistryObject(block);
+	public static BlockRegistryObject registerBlockWithBlockItem(ResourceLocation resourceLocation, Supplier<BlockExtension> supplier) {
+		final BlockExtension blockExtension = supplier.get();
+		OBJECTS_TO_REGISTER.add(() -> net.minecraft.registry.Registry.register(Registries.BLOCK, resourceLocation.data, blockExtension));
+		OBJECTS_TO_REGISTER.add(() -> net.minecraft.registry.Registry.register(Registries.ITEM, resourceLocation.data, new BlockItem(blockExtension, new ItemExtension.Properties())));
+		return new BlockRegistryObject(blockExtension);
 	}
 
 	@MappedMethod
-	public static ItemRegistryObject registerItem(ResourceLocation resourceLocation, Supplier<Item> supplier) {
-		final Item item = supplier.get();
-		OBJECTS_TO_REGISTER.add(() -> net.minecraft.registry.Registry.register(Registries.ITEM, resourceLocation.data, item));
-		return new ItemRegistryObject(item);
+	public static ItemRegistryObject registerItem(ResourceLocation resourceLocation, Supplier<ItemExtension> supplier) {
+		final ItemExtension itemExtension = supplier.get();
+		OBJECTS_TO_REGISTER.add(() -> net.minecraft.registry.Registry.register(Registries.ITEM, resourceLocation.data, itemExtension));
+		return new ItemRegistryObject(itemExtension);
 	}
 
 	@MappedMethod
-	public static <T extends BlockEntity> BlockEntityTypeRegistryObject<T> registerBlockEntityType(ResourceLocation resourceLocation, BiFunction<BlockPos, BlockState, T> function, Block... blocks) {
-		final net.minecraft.block.entity.BlockEntityType<T> blockEntityType = FabricBlockEntityTypeBuilder.create((pos, state) -> function.apply(new BlockPos(pos), new BlockState(state)), blocks).build(null);
+	public static <T extends BlockEntityExtension> BlockEntityTypeRegistryObject<T> registerBlockEntityType(ResourceLocation resourceLocation, BiFunction<BlockPos, BlockState, T> function, BlockExtension... blockExtensions) {
+		final net.minecraft.block.entity.BlockEntityType<T> blockEntityType = FabricBlockEntityTypeBuilder.create((pos, state) -> function.apply(new BlockPos(pos), new BlockState(state)), blockExtensions).build(null);
 		OBJECTS_TO_REGISTER.add(() -> net.minecraft.registry.Registry.register(Registries.BLOCK_ENTITY_TYPE, resourceLocation.data, blockEntityType));
 		return new BlockEntityTypeRegistryObject<>(new BlockEntityType<>(blockEntityType));
 	}

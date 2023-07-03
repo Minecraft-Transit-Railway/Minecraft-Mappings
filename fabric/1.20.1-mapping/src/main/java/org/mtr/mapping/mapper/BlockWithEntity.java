@@ -10,12 +10,12 @@ import org.mtr.mapping.holder.BlockState;
 public abstract class BlockWithEntity extends net.minecraft.block.BlockWithEntity {
 
 	@MappedMethod
-	public BlockWithEntity(Block.Properties properties) {
+	public BlockWithEntity(BlockExtension.Properties properties) {
 		super(properties.blockSettings);
 	}
 
 	@MappedMethod
-	public abstract <T extends BlockEntity> BlockEntityType<T> getBlockEntityTypeForTicking();
+	public abstract <T extends BlockEntityExtension> BlockEntityType<T> getBlockEntityTypeForTicking();
 
 	@Override
 	public final net.minecraft.block.entity.BlockEntity createBlockEntity(net.minecraft.util.math.BlockPos pos, net.minecraft.block.BlockState state) {
@@ -23,11 +23,11 @@ public abstract class BlockWithEntity extends net.minecraft.block.BlockWithEntit
 	}
 
 	@MappedMethod
-	public abstract BlockEntity createBlockEntity(BlockPos blockPos, BlockState blockState);
+	public abstract BlockEntityExtension createBlockEntity(BlockPos blockPos, BlockState blockState);
 
 	@Override
 	public final <T extends net.minecraft.block.entity.BlockEntity> BlockEntityTicker<T> getTicker(World world, net.minecraft.block.BlockState state, net.minecraft.block.entity.BlockEntityType<T> type) {
-		final net.minecraft.block.entity.BlockEntityType<BlockEntity> blockEntityType = getBlockEntityTypeForTicking().data;
+		final net.minecraft.block.entity.BlockEntityType<BlockEntityExtension> blockEntityType = getBlockEntityTypeForTicking().data;
 		if (blockEntityType == null) {
 			return super.getTicker(world, state, type);
 		} else {

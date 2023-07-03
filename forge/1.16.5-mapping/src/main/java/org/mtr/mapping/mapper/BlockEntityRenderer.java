@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.BlockEntityRendererArgument;
 
-public abstract class BlockEntityRenderer<T extends BlockEntity> extends TileEntityRenderer<T> {
+public abstract class BlockEntityRenderer<T extends BlockEntityExtension> extends TileEntityRenderer<T> {
 
 	@MappedMethod
 	public BlockEntityRenderer(BlockEntityRendererArgument argument) {

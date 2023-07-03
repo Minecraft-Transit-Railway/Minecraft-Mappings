@@ -2,12 +2,12 @@ package org.mtr.mapping.registry;
 
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.BlockEntityType;
-import org.mtr.mapping.mapper.BlockEntity;
+import org.mtr.mapping.mapper.BlockEntityExtension;
 import org.mtr.mapping.tool.RegistryObject;
 
 import java.util.function.Consumer;
 
-public final class BlockEntityTypeRegistryObject<T extends BlockEntity> extends RegistryObject<BlockEntityType<T>> {
+public final class BlockEntityTypeRegistryObject<T extends BlockEntityExtension> extends RegistryObject<BlockEntityType<T>> {
 
 	private final BlockEntityType<T> blockEntityType;
 
