@@ -45,6 +45,7 @@ public final class GenerateHoldersTest {
 	public void generate() throws IOException {
 		final GenerateHolders generateHolders = new GenerateHolders();
 		generateHolders.put("ActionResult", ActionResult.class);
+		generateHolders.put("Axis", Direction.Axis.class);
 		generateHolders.put("BlockEntityRendererArgument", BlockEntityRenderDispatcher.class);
 		generateHolders.put("BlockEntityType", BlockEntityType.class);
 		generateHolders.put("BlockHitResult", BlockHitResult.class);
@@ -70,8 +71,9 @@ public final class GenerateHoldersTest {
 		generateHolders.put("MutableText", MutableText.class);
 		generateHolders.put("OrderedText", OrderedText.class);
 		generateHolders.put("PacketBuffer", PacketByteBuf.class);
-		generateHolders.put("Property", Property.class);
 		generateHolders.put("PlayerEntity", PlayerEntity.class);
+		generateHolders.put("Position", Position.class);
+		generateHolders.put("Property", Property.class);
 		generateHolders.put("Random", Random.class);
 		generateHolders.put("ResourceLocation", Identifier.class);
 		generateHolders.put("Rotation", BlockRotation.class);

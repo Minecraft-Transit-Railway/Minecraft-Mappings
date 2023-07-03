@@ -5,6 +5,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.dispenser.IPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -44,6 +45,7 @@ public final class GenerateHoldersTest {
 	public void generate() throws IOException {
 		final GenerateHolders generateHolders = new GenerateHolders();
 		generateHolders.put("ActionResult", ActionResultType.class);
+		generateHolders.put("Axis", Direction.Axis.class);
 		generateHolders.put("BlockEntityRendererArgument", TileEntityRendererDispatcher.class);
 		generateHolders.put("BlockEntityType", TileEntityType.class);
 		generateHolders.put("BlockHitResult", BlockRayTraceResult.class);
@@ -70,6 +72,7 @@ public final class GenerateHoldersTest {
 		generateHolders.put("OrderedText", IReorderingProcessor.class);
 		generateHolders.put("PacketBuffer", PacketBuffer.class);
 		generateHolders.put("PlayerEntity", PlayerEntity.class);
+		generateHolders.put("Position", IPosition.class);
 		generateHolders.put("Property", Property.class);
 		generateHolders.put("Random", Random.class);
 		generateHolders.put("ResourceLocation", ResourceLocation.class);

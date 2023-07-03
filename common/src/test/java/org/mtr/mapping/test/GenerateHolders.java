@@ -69,12 +69,13 @@ public final class GenerateHolders {
 			appendGenerics(mainStringBuilder, classObject, true);
 			final StringBuilder classNameStringBuilder = new StringBuilder(staticClassName);
 			appendGenerics(classNameStringBuilder, classObject, false);
+			mainStringBuilder.append(" extends ");
 			final String className = classNameStringBuilder.toString();
 
 			if (holderInfo.abstractMapping) {
-				mainStringBuilder.append(" extends ").append(className).append("{");
+				mainStringBuilder.append(className).append("{");
 			} else {
-				mainStringBuilder.append("{public final ").append(className).append(" data;public ").append(holderInfo.className).append("(").append(className).append(" data){this.data=data;}");
+				mainStringBuilder.append("org.mtr.mapping.tool.Dummy{public final ").append(className).append(" data;public ").append(holderInfo.className).append("(").append(className).append(" data){this.data=data;}");
 			}
 
 			final Map<Class<?>, Map<Type, Type>> classTree = walkClassTree(classObject);
@@ -103,12 +104,7 @@ public final class GenerateHolders {
 				final boolean isStatic = Modifier.isStatic(modifiers);
 				final boolean isMethod = executable instanceof Method;
 				final boolean generateExtraMethod = holderInfo.abstractMapping && !isStatic && isMethod;
-				final String methodName = String.format("%s%s", getOrReturn(holderInfo.methodMap, originalMethodName), holderInfo.abstractMapping ? "2" : "");
-
-				if (holderInfo.methodMap.containsKey(originalMethodName)) {
-					mainStringBuilder.append("@org.mtr.mapping.annotation.MappedMethod ");
-				}
-
+				final String methodName = String.format("%s%s", holderInfo.getMappedMethod(mainStringBuilder, originalMethodName, forceResolvedSignature), holderInfo.abstractMapping ? "2" : "");
 				mainStringBuilder.append("public ");
 
 				if (isStatic) {
@@ -125,7 +121,7 @@ public final class GenerateHolders {
 				final boolean resolvedReturnType;
 
 				if (isMethod) {
-					final String methodCall = String.format("%s.%s%s", isStatic ? staticClassName : holderInfo.abstractMapping ? "super" : "this.data", executable.getName(), variables);
+					final String methodCall = String.format("%s.%s%s", isStatic ? staticClassName : holderInfo.abstractMapping ? "super" : "this.data", originalMethodName, variables);
 
 					if (isVoid) {
 						mainStringBuilder.append(methodCall);
@@ -314,8 +310,7 @@ public final class GenerateHolders {
 		if (map == null) {
 			return data;
 		} else {
-			final T newData = map.get(data);
-			return newData == null ? data : newData;
+			return map.getOrDefault(data, data);
 		}
 	}
 
@@ -339,55 +334,78 @@ public final class GenerateHolders {
 		private static final Map<String, Map<String, String>> GLOBAL_METHOD_MAP = new HashMap<>();
 
 		static {
-			addMethodMap("Block", "afterBreak", "playerDestroy");
-			addMethodMap("Block", "appendTooltip", "appendHoverText");
-			addMethodMap("Block", "createCuboidShape", "box");
-			addMethodMap("Block", "emitsRedstonePower", "isSignalSource");
-			addMethodMap("Block", "getBlockFromItem", "byItem");
-			addMethodMap("Block", "getComparatorOutput", "getAnalogOutputSignal");
-			addMethodMap("Block", "getInteractionShape", "getRaycastShape");
-			addMethodMap("Block", "getOcclusionShape", "getCullingShape");
-			addMethodMap("Block", "getOutlineShape", "getShape");
-			addMethodMap("Block", "getPlacementState", "getStateForPlacement");
-			addMethodMap("Block", "getSidesShape", "getBlockSupportShape");
-			addMethodMap("Block", "getStateForNeighborUpdate", "updateShape");
-			addMethodMap("Block", "getStrongRedstonePower", "getDirectSignal");
-			addMethodMap("Block", "getVisualShape", "getCameraCollisionShape");
-			addMethodMap("Block", "getWeakRedstonePower", "getSignal");
-			addMethodMap("Block", "hasComparatorOutput", "hasAnalogOutputSignal");
-			addMethodMap("Block", "hasRandomTicks", "isRandomlyTicking");
-			addMethodMap("Block", "isFaceFullSquare", "isFaceFull");
-			addMethodMap("Block", "isSideInvisible", "skipRendering");
-			addMethodMap("Block", "neighborUpdate", "neighborChanged");
-			addMethodMap("Block", "onBlockBreakStart", "attack");
-			addMethodMap("Block", "onBreak", "playerWillDestroy");
-			addMethodMap("Block", "onBroken", "destroy");
-			addMethodMap("Block", "onDestroyedByExplosion", "wasExploded");
-			addMethodMap("Block", "onDestroyedByExplosion", "wasExploded");
-			addMethodMap("Block", "onEntityCollision", "entityInside");
-			addMethodMap("Block", "onEntityLand", "updateEntityAfterFallOn");
-			addMethodMap("Block", "onPlace", "onBlockAdded");
-			addMethodMap("Block", "onPlaced", "setPlacedBy");
-			addMethodMap("Block", "onRemove", "onStateReplaced");
-			addMethodMap("Block", "randomDisplayTick", "animateTick");
-			addMethodMap("Block", "replace", "updateOrDestroy");
-			addMethodMap("Block", "scheduledTick", "tick");
-			addMethodMap("Block", "shouldDropItemsOnExplosion", "dropFromExplosion");
-			addMethodMap("BlockEntity", "getPosition", "getPos", "getBlockPos");
-			addMethodMap("BlockEntity", "getWorld", "getLevel");
-			addMethodMap("BlockEntity", "markDirty", "setChanged");
-			addMethodMap("BlockEntity", "markRemoved", "setRemoved");
-			addMethodMap("BlockState", "get", "getValue");
-			addMethodMap("BlockState", "hasProperty", "contains");
-			addMethodMap("BlockState", "with", "setValue");
-			addMethodMap("BooleanProperty", "create", "of");
-			addMethodMap("BooleanProperty", "getValues", "getPossibleValues");
-			addMethodMap("DirectionProperty", "create", "of");
-			addMethodMap("DirectionProperty", "getValues", "getPossibleValues");
-			addMethodMap("EnumProperty", "create", "of");
-			addMethodMap("EnumProperty", "getValues", "getPossibleValues");
-			addMethodMap("IntegerProperty", "create", "of");
-			addMethodMap("IntegerProperty", "getValues", "getPossibleValues");
+			addMethodMap1("Block", "afterBreak", "playerDestroy");
+			addMethodMap1("Block", "appendTooltip", "appendHoverText");
+			addMethodMap1("Block", "createCuboidShape", "box");
+			addMethodMap1("Block", "emitsRedstonePower", "isSignalSource");
+			addMethodMap1("Block", "getBlockFromItem", "byItem");
+			addMethodMap1("Block", "getComparatorOutput", "getAnalogOutputSignal");
+			addMethodMap1("Block", "getInteractionShape", "getRaycastShape");
+			addMethodMap1("Block", "getOcclusionShape", "getCullingShape");
+			addMethodMap1("Block", "getOutlineShape", "getShape");
+			addMethodMap2("Block", "getPickStack", "BlockView|BlockPos|BlockState", "getCloneItemStack");
+			addMethodMap1("Block", "getPlacementState", "getStateForPlacement");
+			addMethodMap1("Block", "getSidesShape", "getBlockSupportShape");
+			addMethodMap1("Block", "getStateForNeighborUpdate", "updateShape");
+			addMethodMap1("Block", "getStrongRedstonePower", "getDirectSignal");
+			addMethodMap1("Block", "getVisualShape", "getCameraCollisionShape");
+			addMethodMap1("Block", "getWeakRedstonePower", "getSignal");
+			addMethodMap1("Block", "hasComparatorOutput", "hasAnalogOutputSignal");
+			addMethodMap1("Block", "hasRandomTicks", "isRandomlyTicking");
+			addMethodMap1("Block", "isFaceFullSquare", "isFaceFull");
+			addMethodMap1("Block", "isSideInvisible", "skipRendering");
+			addMethodMap1("Block", "neighborUpdate", "neighborChanged");
+			addMethodMap1("Block", "onBlockBreakStart", "attack");
+			addMethodMap1("Block", "onBreak", "playerWillDestroy");
+			addMethodMap1("Block", "onBroken", "destroy");
+			addMethodMap1("Block", "onDestroyedByExplosion", "wasExploded");
+			addMethodMap1("Block", "onDestroyedByExplosion", "wasExploded");
+			addMethodMap1("Block", "onEntityCollision", "entityInside");
+			addMethodMap1("Block", "onEntityLand", "updateEntityAfterFallOn");
+			addMethodMap1("Block", "onPlace", "onBlockAdded");
+			addMethodMap1("Block", "onPlaced", "setPlacedBy");
+			addMethodMap1("Block", "onRemove", "onStateReplaced");
+			addMethodMap1("Block", "randomDisplayTick", "animateTick");
+			addMethodMap1("Block", "replace", "updateOrDestroy");
+			addMethodMap1("Block", "scheduledTick", "tick");
+			addMethodMap1("Block", "shouldDropItemsOnExplosion", "dropFromExplosion");
+			addMethodMap1("BlockEntity", "getPosition", "getBlockPos", "getPos");
+			addMethodMap1("BlockEntity", "getWorld", "getLevel");
+			addMethodMap1("BlockEntity", "markDirty", "setChanged");
+			addMethodMap1("BlockEntity", "markRemoved", "setRemoved");
+			addMethodMap1("BlockPos", "crossProduct", "cross");
+			addMethodMap1("BlockPos", "down", "below");
+			addMethodMap1("BlockPos", "fromLong", "of");
+			addMethodMap1("BlockPos", "getManhattanDistance", "distManhattan");
+			addMethodMap1("BlockPos", "getX", "unpackLongX");
+			addMethodMap1("BlockPos", "getY", "unpackLongY");
+			addMethodMap1("BlockPos", "getZ", "unpackLongZ");
+			addMethodMap1("BlockPos", "isWithinDistance", "closerThan", "closerToCenterThan");
+			addMethodMap2("BlockPos", "offset", "int|int|int", "add", "relative");
+			addMethodMap2("BlockPos", "offset", "Axis|int", "add", "relative");
+			addMethodMap2("BlockPos", "offset", "Direction", "add", "relative");
+			addMethodMap2("BlockPos", "offset", "Direction|int", "add", "relative");
+			addMethodMap2("BlockPos", "offset", "Vector3i", "add", "relative");
+			addMethodMap2("BlockPos", "offset", "long|int|int|int", "add", "relative");
+			addMethodMap2("BlockPos", "offset", "long|Direction", "add", "relative");
+			addMethodMap1("BlockPos", "toImmutable", "immutable");
+			addMethodMap1("BlockPos", "up", "above");
+			addMethodMap1("BlockState", "get", "getValue");
+			addMethodMap1("BlockState", "hasProperty", "contains");
+			addMethodMap1("BlockState", "with", "setValue");
+			addMethodMap1("BooleanProperty", "create", "of");
+			addMethodMap1("BooleanProperty", "getValues", "getPossibleValues");
+			addMethodMap2("DirectionProperty", "create", "java.lang.String|java.util.Collection<Direction>", "of");
+			addMethodMap2("DirectionProperty", "create", "java.lang.String|java.util.function.Predicate<Direction>", "of");
+			addMethodMap2("DirectionProperty", "create", "java.lang.String|java.lang.Class<T>|T[]", "of");
+			addMethodMap2("DirectionProperty", "create", "java.lang.String|java.lang.Class<T>|java.util.function.Predicate<T>", "of");
+			addMethodMap2("DirectionProperty", "create", "java.lang.String|java.lang.Class<T>|java.util.Collection<T>", "of");
+			addMethodMap2("DirectionProperty", "create", "java.lang.String|java.lang.Class<T>", "of");
+			addMethodMap1("DirectionProperty", "getValues", "getPossibleValues");
+			addMethodMap1("EnumProperty", "create", "of");
+			addMethodMap1("EnumProperty", "getValues", "getPossibleValues");
+			addMethodMap1("IntegerProperty", "create", "of");
+			addMethodMap1("IntegerProperty", "getValues", "getPossibleValues");
 		}
 
 		private HolderInfo(String className, boolean abstractMapping, String... blacklistMethods) {
@@ -406,9 +424,32 @@ public final class GenerateHolders {
 			methodsArray = abstractMapping ? holderInfo.methodsArray : new JsonArray();
 		}
 
-		public HolderInfo blacklist(String methodName) {
-			blacklist.add(methodName);
-			return this;
+		private String getMappedMethod(StringBuilder stringBuilder, String methodName, List<String> signature) {
+			final String newMethodName1 = methodMap.get(methodName);
+			if (newMethodName1 != null) {
+				stringBuilder.append("@org.mtr.mapping.annotation.MappedMethod ");
+				return newMethodName1;
+			}
+
+			final String newMethodName2 = methodMap.get(String.format("%s|%s", methodName, String.join("|", signature)));
+			if (newMethodName2 == null) {
+				return methodName;
+			} else {
+				stringBuilder.append("@org.mtr.mapping.annotation.MappedMethod ");
+				return newMethodName2;
+			}
+		}
+
+		private static void addMethodMap1(String className, String newMethodName, String... methods) {
+			addMethodMap(className, newMethodName, methods);
+			addMethodMap(className, newMethodName, newMethodName);
+		}
+
+		private static void addMethodMap2(String className, String newMethodName, String signature, String... methods) {
+			for (final String method : methods) {
+				addMethodMap(className, newMethodName, String.format("%s|%s", method, signature));
+			}
+			addMethodMap(className, newMethodName, String.format("%s|%s", newMethodName, signature));
 		}
 
 		private static void addMethodMap(String className, String newMethodName, String... methods) {
@@ -417,7 +458,6 @@ public final class GenerateHolders {
 			for (final String method : methods) {
 				methodMap.put(method, newMethodName);
 			}
-			methodMap.put(newMethodName, newMethodName);
 		}
 	}
 }

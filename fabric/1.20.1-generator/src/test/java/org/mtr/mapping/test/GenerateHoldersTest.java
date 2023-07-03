@@ -26,10 +26,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -49,6 +46,7 @@ public final class GenerateHoldersTest {
 	public void generate() throws IOException {
 		final GenerateHolders generateHolders = new GenerateHolders();
 		generateHolders.put("ActionResult", ActionResult.class);
+		generateHolders.put("Axis", Direction.Axis.class);
 		generateHolders.put("BlockEntityRendererArgument", BlockEntityRendererFactory.Context.class);
 		generateHolders.put("BlockEntityType", BlockEntityType.class);
 		generateHolders.put("BlockHitResult", BlockHitResult.class);
@@ -75,6 +73,7 @@ public final class GenerateHoldersTest {
 		generateHolders.put("OrderedText", OrderedText.class);
 		generateHolders.put("PacketBuffer", PacketByteBuf.class);
 		generateHolders.put("PlayerEntity", PlayerEntity.class, "damageArmor", "damageHelmet", "damageShield");
+		generateHolders.put("Position", Position.class);
 		generateHolders.put("Property", Property.class);
 		generateHolders.put("Random", Random.class);
 		generateHolders.put("ResourceLocation", Identifier.class);

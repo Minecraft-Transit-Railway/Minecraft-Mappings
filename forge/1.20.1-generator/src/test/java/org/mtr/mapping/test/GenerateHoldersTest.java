@@ -5,6 +5,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Position;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -50,6 +51,7 @@ public final class GenerateHoldersTest {
 	public void generate() throws IOException {
 		final GenerateHolders generateHolders = new GenerateHolders();
 		generateHolders.put("ActionResult", InteractionResult.class);
+		generateHolders.put("Axis", Direction.Axis.class);
 		generateHolders.put("BlockEntityRendererArgument", BlockEntityRendererProvider.Context.class);
 		generateHolders.put("BlockEntityType", BlockEntityType.class);
 		generateHolders.put("BlockHitResult", BlockHitResult.class);
@@ -76,6 +78,7 @@ public final class GenerateHoldersTest {
 		generateHolders.put("OrderedText", FormattedCharSequence.class);
 		generateHolders.put("PacketBuffer", FriendlyByteBuf.class);
 		generateHolders.put("PlayerEntity", Player.class);
+		generateHolders.put("Position", Position.class);
 		generateHolders.put("Property", Property.class);
 		generateHolders.put("Random", RandomSource.class);
 		generateHolders.put("ResourceLocation", ResourceLocation.class);
