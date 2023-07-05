@@ -157,7 +157,7 @@ public final class GenerateHolders {
 				mainStringBuilder.append(";}");
 
 				if (generateExtraMethod) {
-					mainStringBuilder.append("public final ");
+					mainStringBuilder.append("@Deprecated public final ");
 					final Type returnTypeClass2 = appendMethodHeader(mainStringBuilder, executable, originalMethodName, false, originalParameterList, holderInfo.className, typeMap);
 					mainStringBuilder.append(returnTypeClass2 == null || returnTypeClass2 == Void.TYPE ? "" : "return ").append(methodName).append("(").append(String.join(",", mappedSuperList)).append(")").append(resolvedReturnType ? ".data" : "").append(";}");
 				}
@@ -370,7 +370,7 @@ public final class GenerateHolders {
 			addMethodMap1("Block", "replace", "updateOrDestroy");
 			addMethodMap1("Block", "scheduledTick", "tick");
 			addMethodMap1("Block", "shouldDropItemsOnExplosion", "dropFromExplosion");
-			addMethodMap1("BlockEntity", "getPosition", "getBlockPos", "getPos");
+			addMethodMap1("BlockEntity", "getBlockPos", "getPos");
 			addMethodMap1("BlockEntity", "getWorld", "getLevel");
 			addMethodMap1("BlockEntity", "markDirty", "setChanged");
 			addMethodMap1("BlockEntity", "markRemoved", "setRemoved");
@@ -394,15 +394,61 @@ public final class GenerateHolders {
 			addMethodMap1("BlockPos", "up", "above");
 			addMethodMap1("BlockPos", "west");
 			addMethodMap1("BlockState", "get", "getValue");
+			addMethodMap1("BlockState", "getBlock");
 			addMethodMap1("BlockState", "hasProperty", "contains");
 			addMethodMap1("BlockState", "with", "setValue");
+			addMethodMap1("BlockView|World", "getBlockState");
+			addMethodMap1("BlockView|World", "getDismountHeight", "getBlockFloorHeight");
+			addMethodMap1("BlockView|World", "getFluidState");
+			addMethodMap1("BlockView|World", "raycastBlock", "clipWithInteractionOverride");
 			addMethodMap1("BooleanProperty", "create", "of");
-			addMethodMap1("BooleanProperty", "getValues", "getPossibleValues");
-			addMethodMap1("DirectionProperty", "getValues", "getPossibleValues");
+			addMethodMap1("BooleanProperty|DirectionProperty|EnumProperty|IntegerProperty|Property", "getName", "name");
+			addMethodMap1("BooleanProperty|DirectionProperty|EnumProperty|IntegerProperty|Property", "getValues", "getPossibleValues");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "addScoreboardTag", "addCommandTag", "addTag");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "canBeSpectated", "broadcastToPlayer");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "canExplosionDestroyBlock", "shouldBlockExplode");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getArmorItems", "getArmorSlots");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getBlockPos", "blockPosition");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getBodyY", "getY");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getDismountLocationForPassenger", "updatePassengerForDismount");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getEntityName", "getScoreboardName");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getEntityWorld", "getCommandSenderWorld");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getEyeY");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getHandItems", "getHandSlots", "getItemsHand");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getHeightOffset", "getMyRidingOffset");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getHorizontalFacing", "getDirection");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getItemsEquipped", "getAllSlots");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getMountedHeightOffset", "getPassengersRidingOffset");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getMovementDirection", "getMotionDirection");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getParticleX", "getRandomX");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getParticleZ", "getRandomZ");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getRandomBodyY", "getRandomY");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getRootVehicle");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getScoreboardTags", "getCommandTags", "getTags");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getSoundCategory", "getSoundSource");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getSwimHeight", "getFluidJumpThreshold", "method_29241");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getType");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getUuid", "getUUID");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getUuidAsString", "getStringUUID");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getVehicle");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "hasPermissionLevel", "hasPermissions");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "interact", "interactOn");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "interactAt");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "kill");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "offsetX", "getX");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "offsetZ", "getZ");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "onPlayerCollision", "playerTouch");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "removeScoreboardTag", "removeTag");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "setBodyYaw", "setYBodyRot");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "setHeadYaw", "setYHeadRot");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "shouldRender", "shouldRenderAtSqrDistance");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "squaredDistanceTo", "distanceToSqr");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "startRiding");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "stopRiding");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "tick");
+			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "tickRiding", "rideTick");
 			addMethodMap1("EnumProperty", "create", "of");
-			addMethodMap1("EnumProperty", "getValues", "getPossibleValues");
 			addMethodMap1("IntegerProperty", "create", "of");
-			addMethodMap1("IntegerProperty", "getValues", "getPossibleValues");
 			addMethodMap1("Item", "appendTooltip", "appendHoverText");
 			addMethodMap1("Item", "asItem");
 			addMethodMap1("Item", "byRawId", "byId");
@@ -423,15 +469,29 @@ public final class GenerateHolders {
 			addMethodMap1("Item", "usageTick", "onUseTick");
 			addMethodMap1("Item", "useOnBlock", "useOn");
 			addMethodMap1("Item", "useOnEntity", "interactLivingEntity");
+			addMethodMap1("ItemPlacementContext", "canPlace");
+			addMethodMap1("ItemPlacementContext", "canReplaceExisting", "replacingClickedOnBlock");
+			addMethodMap1("ItemPlacementContext", "getBlockPos", "getClickedPos");
+			addMethodMap1("ItemPlacementContext", "getClickedFace", "getSide");
+			addMethodMap1("ItemPlacementContext", "getHand");
+			addMethodMap1("ItemPlacementContext", "getHitPos", "getClickLocation");
+			addMethodMap1("ItemPlacementContext", "getPlayer");
+			addMethodMap1("ItemPlacementContext", "getPlayerFacing", "getHorizontalPlayerFacing", "getHorizontalDirection");
+			addMethodMap1("ItemPlacementContext", "getPlayerLookDirection", "getNearestLookingDirection");
+			addMethodMap1("ItemPlacementContext", "getPlayerYaw", "getRotation");
+			addMethodMap1("ItemPlacementContext", "getStack", "getItemInHand");
+			addMethodMap1("ItemPlacementContext", "getWorld", "getLevel");
+			addMethodMap1("ItemPlacementContext", "hitsInsideBlock", "isInside");
+			addMethodMap1("ItemPlacementContext", "offset", "at");
+			addMethodMap1("ItemPlacementContext", "shouldCancelInteraction", "isSecondaryUseActive");
+			addMethodMap1("PlayerEntity|ServerPlayerEntity", "isCreative");
+			addMethodMap1("VoxelShapes", "fullCube", "block");
 			addMethodMap1("World", "breakBlock", "destroyBlock");
 			addMethodMap1("World", "containsFluid", "containsAnyLiquid");
 			addMethodMap1("World", "destroyBlockProgress", "setBlockBreakingInfo");
-			addMethodMap1("World", "getBlockState");
 			addMethodMap1("World", "getChunkAsView", "getChunkForCollisions");
 			addMethodMap1("World", "getChunkManager", "getChunkSource");
-			addMethodMap1("World", "getDismountHeight", "getBlockFloorHeight");
 			addMethodMap1("World", "getEntityById", "getEntity");
-			addMethodMap1("World", "getFluidState");
 			addMethodMap1("World", "getLunarTime", "dayTime");
 			addMethodMap1("World", "getNextMapId", "getFreeMapId");
 			addMethodMap1("World", "getPlayerByUuid", "getPlayerByUUID");
@@ -453,7 +513,6 @@ public final class GenerateHolders {
 			addMethodMap1("World", "isThundering");
 			addMethodMap1("World", "isTopSolid", "loadedAndEntityCanStandOn");
 			addMethodMap1("World", "isWater", "isWaterAt");
-			addMethodMap1("World", "raycastBlock", "clipWithInteractionOverride");
 			addMethodMap1("World", "removeBlock");
 			addMethodMap1("World", "setBlockState", "setBlockAndUpdate", "setBlock");
 			addMethodMap1("World", "spawnEntity", "addFreshEntity");
@@ -467,6 +526,8 @@ public final class GenerateHolders {
 			addMethodMap2("BlockPos", "offset", "long|Direction", "add", "relative");
 			addMethodMap2("BlockPos", "offset", "long|int|int|int", "add", "relative");
 			addMethodMap2("BlockPos", "offset", "Vector3i", "add", "relative");
+			addMethodMap2("BlockState", "canBeReplaced", "ItemPlacementContext", "canReplace");
+			addMethodMap2("BlockView|World", "getBlockEntity", "BlockPos");
 			addMethodMap2("ChunkManager", "getWorldChunk", "int|int", "getChunkNow");
 			addMethodMap2("ChunkManager", "getWorldChunk", "int|int|boolean", "getChunk");
 			addMethodMap2("DirectionProperty", "create", "java.lang.String|java.lang.Class<T>", "of");
@@ -475,9 +536,12 @@ public final class GenerateHolders {
 			addMethodMap2("DirectionProperty", "create", "java.lang.String|java.lang.Class<T>|T[]", "of");
 			addMethodMap2("DirectionProperty", "create", "java.lang.String|java.util.Collection<Direction>", "of");
 			addMethodMap2("DirectionProperty", "create", "java.lang.String|java.util.function.Predicate<Direction>", "of");
+			addMethodMap2("Entity|PlayerEntity|ServerPlayerEntity", "getPitch", "float", "getViewXRot");
+			addMethodMap2("Entity|PlayerEntity|ServerPlayerEntity", "getPosition", "", "getPos", "position");
+			addMethodMap2("Entity|PlayerEntity|ServerPlayerEntity", "getYaw", "float", "getViewYRot");
 			addMethodMap2("Item", "hasRecipeRemainder", "", "hasCraftingRemainingItem");
 			addMethodMap2("Item", "isCorrectToolForDrops", "BlockState", "isSuitableFor");
-			addMethodMap2("World", "getBlockEntity", "BlockPos");
+			addMethodMap2("PlayerEntity|ServerPlayerEntity", "isHolding", "Item");
 			addMethodMap2("World", "getClosestPlayer", "double|double|double|double|boolean", "getNearestPlayer");
 			addMethodMap2("World", "getClosestPlayer", "double|double|double|double|java.util.function.Predicate", "getNearestPlayer");
 			addMethodMap2("World", "getPlayers", "", "players");
@@ -513,6 +577,7 @@ public final class GenerateHolders {
 
 			final String newMethodName2 = methodMap.get(String.format("%s|%s", methodName, String.join("|", signature)));
 			if (newMethodName2 == null) {
+				stringBuilder.append("@Deprecated ");
 				return methodName;
 			} else {
 				stringBuilder.append("@org.mtr.mapping.annotation.MappedMethod ");
@@ -533,10 +598,12 @@ public final class GenerateHolders {
 		}
 
 		private static void addMethodMap(String className, String newMethodName, String... methods) {
-			GLOBAL_METHOD_MAP.computeIfAbsent(className, methodMap -> new HashMap<>());
-			final Map<String, String> methodMap = GLOBAL_METHOD_MAP.get(className);
-			for (final String method : methods) {
-				methodMap.put(method, newMethodName);
+			for (final String classNameSplit : className.split("\\|")) {
+				GLOBAL_METHOD_MAP.computeIfAbsent(classNameSplit, methodMap -> new HashMap<>());
+				final Map<String, String> methodMap = GLOBAL_METHOD_MAP.get(classNameSplit);
+				for (final String method : methods) {
+					methodMap.put(method, newMethodName);
+				}
 			}
 		}
 	}
