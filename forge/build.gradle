@@ -35,7 +35,7 @@ subprojects {
 		withJavadocJar()
 	}
 
-	build {
+	jar {
 		doLast {
 			buildTools.copyBuildFile()
 		}

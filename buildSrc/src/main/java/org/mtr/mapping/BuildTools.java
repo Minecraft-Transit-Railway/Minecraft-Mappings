@@ -77,7 +77,7 @@ public class BuildTools {
 		if (!isGenerator) {
 			final Path directory = rootPath.resolve("build/release");
 			Files.createDirectories(directory);
-			Files.copy(path.resolve(String.format("build/libs/%s-mapping-%s.jar", minecraftVersion, version)), directory.resolve(String.format("Minecraft-Mappings-%s-%s-%s.jar", loader, minecraftVersion, version)), StandardCopyOption.REPLACE_EXISTING);
+			Files.copy(path.resolve(String.format(loader.equals("fabric") ? "build/devlibs/%s-mapping-%s-dev.jar" : "build/libs/%s-mapping-%s.jar", minecraftVersion, version)), directory.resolve(String.format("Minecraft-Mappings-%s-%s-%s.jar", loader, minecraftVersion, version)), StandardCopyOption.REPLACE_EXISTING);
 		}
 	}
 

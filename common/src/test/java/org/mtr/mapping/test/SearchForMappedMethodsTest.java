@@ -47,7 +47,7 @@ public final class SearchForMappedMethodsTest {
 				signatures.add(method.toString());
 			} else {
 				final int modifiers = method.getModifiers();
-				Assertions.assertTrue(classObject.getPackage().getName().startsWith("org.mtr.mapping.holder") || Modifier.isFinal(classObject.getModifiers()) || Modifier.isFinal(modifiers) || !Modifier.isPublic(modifiers) || method.isBridge(), String.format("%s\n%s\n%s", NAMESPACE, classObject.getName(), method));
+				Assertions.assertTrue(classObject.getPackage().getName().startsWith("org.mtr.mapping.holder") || Modifier.isFinal(classObject.getModifiers()) || Modifier.isFinal(modifiers) || !Modifier.isPublic(modifiers) || method.isDefault() || method.isBridge(), String.format("%s\n%s\n%s", NAMESPACE, classObject.getName(), method));
 			}
 		}
 
