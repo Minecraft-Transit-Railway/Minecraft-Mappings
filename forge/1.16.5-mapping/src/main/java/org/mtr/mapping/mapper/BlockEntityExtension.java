@@ -4,6 +4,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraftforge.common.util.Constants;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
 
@@ -51,7 +52,7 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 	public final SUpdateTileEntityPacket getUpdatePacket2() {
 		final CompoundNBT compoundNBT = new CompoundNBT();
 		writeCompoundTag(new CompoundTag(compoundNBT));
-		return new SUpdateTileEntityPacket(getBlockPos(), -1, compoundNBT);
+		return new SUpdateTileEntityPacket(worldPosition, -1, compoundNBT);
 	}
 
 	@Override
@@ -66,5 +67,14 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 
 	@MappedMethod
 	public void blockEntityTick() {
+	}
+
+	@MappedMethod
+	@Override
+	public void markDirty2() {
+		super.markDirty2();
+		if (level != null && !level.isClientSide) {
+			level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE);
+		}
 	}
 }

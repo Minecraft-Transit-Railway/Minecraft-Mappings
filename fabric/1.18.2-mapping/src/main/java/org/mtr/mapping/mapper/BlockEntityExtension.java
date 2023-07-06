@@ -47,4 +47,13 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping {
 	@MappedMethod
 	public void blockEntityTick() {
 	}
+
+	@MappedMethod
+	@Override
+	public void markDirty2() {
+		super.markDirty2();
+		if (world != null && !world.isClient) {
+			world.updateListeners(pos, getCachedState(), getCachedState(), net.minecraft.block.Block.NOTIFY_LISTENERS);
+		}
+	}
 }

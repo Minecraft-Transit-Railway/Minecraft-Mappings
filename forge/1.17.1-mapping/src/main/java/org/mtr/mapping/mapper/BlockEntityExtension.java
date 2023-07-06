@@ -1,6 +1,8 @@
 package org.mtr.mapping.mapper;
 
+import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.extensions.IForgeBlockEntity;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
@@ -49,10 +51,24 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 	public final ClientboundBlockEntityDataPacket getUpdatePacket2() {
 		final net.minecraft.nbt.CompoundTag compoundTag = new net.minecraft.nbt.CompoundTag();
 		writeCompoundTag(new CompoundTag(compoundTag));
-		return new ClientboundBlockEntityDataPacket(getBlockPos(), -1, compoundTag);
+		return new ClientboundBlockEntityDataPacket(worldPosition, -1, compoundTag);
+	}
+
+	@Override
+	public final void onDataPacket2(Connection connection, ClientboundBlockEntityDataPacket packet) {
+		readCompoundTag(new CompoundTag(packet.getTag()));
 	}
 
 	@MappedMethod
 	public void blockEntityTick() {
+	}
+
+	@MappedMethod
+	@Override
+	public void markDirty2() {
+		super.markDirty2();
+		if (level != null && !level.isClientSide) {
+			level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
+		}
 	}
 }

@@ -3,6 +3,7 @@ package org.mtr.mapping.mapper;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.extensions.IForgeBlockEntity;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
@@ -53,5 +54,14 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 
 	@MappedMethod
 	public void blockEntityTick() {
+	}
+
+	@MappedMethod
+	@Override
+	public void markDirty2() {
+		super.markDirty2();
+		if (level != null && level.isClientSide) {
+			level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
+		}
 	}
 }

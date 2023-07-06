@@ -15,14 +15,20 @@ import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public final class GenerateHolders {
 
 	private final Map<Class<?>, HolderInfo> classMap = new HashMap<>();
 	private final JsonObject classesObject = new JsonObject();
+	private static final Set<String> BLACKLISTED_SIGNATURES = Arrays.stream(Enum.class.getMethods()).map(GenerateHolders::serializeMethod).collect(Collectors.toSet());
 	private static final Path PATH = Paths.get("@path@");
-	private static final String GENERATE_KEY = "@generate@";
 	private static final String NAMESPACE = "@namespace@";
+
+	static {
+		BLACKLISTED_SIGNATURES.add(serializeMethod(Modifier.PUBLIC | Modifier.STATIC, "values"));
+		BLACKLISTED_SIGNATURES.add(serializeMethod(Modifier.PUBLIC | Modifier.STATIC, "valueOf", "java.lang.String"));
+	}
 
 	public void put(String newClassName, Class<?> classObject, String... blacklistMethods) {
 		final HolderInfo holderInfo = new HolderInfo(newClassName, false, blacklistMethods);
@@ -37,7 +43,7 @@ public final class GenerateHolders {
 	}
 
 	public void generate() throws IOException {
-		Assumptions.assumeFalse(GENERATE_KEY.contains("@"));
+		Assumptions.assumeFalse(NAMESPACE.contains("@"));
 		final Path holdersPath = PATH.resolve("src/main/java/org/mtr/mapping/holder");
 		FileUtils.deleteDirectory(holdersPath.toFile());
 
@@ -59,11 +65,15 @@ public final class GenerateHolders {
 	private void generate(Path holdersPath, Class<?> classObject, HolderInfo holderInfo) throws IOException {
 		final StringBuilder mainStringBuilder = new StringBuilder("package org.mtr.mapping.holder;public ");
 		final String staticClassName = formatClassName(classObject.getName());
+		final Map<Class<?>, Map<Type, Type>> classTree = new HashMap<>();
+		walkClassTree(classTree, classObject, classObject1 -> new Type[]{classObject1.getGenericSuperclass()}, classObject1 -> new Class<?>[]{classObject1.getSuperclass()});
+		walkClassTree(classTree, classObject, Class::getGenericInterfaces, Class::getInterfaces);
 
 		if (classObject.isEnum()) {
 			mainStringBuilder.append("enum ").append(holderInfo.className).append("{");
 			appendIfNotEmpty(mainStringBuilder, classObject.getEnumConstants(), "", "", ",", enumConstant -> String.format("%1$s(%2$s.%1$s)", ((Enum<?>) enumConstant).name(), staticClassName));
-			mainStringBuilder.append(";public final ").append(staticClassName).append(" data;").append(holderInfo.className).append("(").append(staticClassName).append(" data){this.data=data;}");
+			mainStringBuilder.append(";public final ").append(staticClassName).append(" data;").append(holderInfo.className).append("(").append(staticClassName).append(" data){this.data=data;}public static ").append(holderInfo.className).append(" convert(").append(staticClassName).append(" data){return data==null?null:values()[data.ordinal()];}");
+			processMethods(classObject.getMethods(), mainStringBuilder, staticClassName, staticClassName, holderInfo, classTree);
 		} else {
 			mainStringBuilder.append(holderInfo.abstractMapping ? "abstract" : "final").append(" class ").append(holderInfo.className);
 			appendGenerics(mainStringBuilder, classObject, true);
@@ -78,7 +88,6 @@ public final class GenerateHolders {
 				mainStringBuilder.append("org.mtr.mapping.tool.Dummy{public final ").append(className).append(" data;public ").append(holderInfo.className).append("(").append(className).append(" data){this.data=data;}");
 			}
 
-			final Map<Class<?>, Map<Type, Type>> classTree = walkClassTree(classObject);
 			processMethods(Modifier.isAbstract(classObject.getModifiers()) && !holderInfo.abstractMapping ? new Executable[0] : classObject.getConstructors(), mainStringBuilder, className, staticClassName, holderInfo, classTree);
 			processMethods(classObject.getMethods(), mainStringBuilder, className, staticClassName, holderInfo, classTree);
 		}
@@ -100,10 +109,11 @@ public final class GenerateHolders {
 			final int modifiers = executable.getModifiers();
 			final String originalMethodName = executable.getName();
 
-			if (isValidExecutable(executable, originalParameterList, parameterList, superList, mappedSuperList, resolvedSignature, forceResolvedSignature, typeMap) && (!Modifier.isFinal(modifiers) && !Modifier.isAbstract(modifiers) || !holderInfo.abstractMapping) && !holderInfo.blacklist.contains(originalMethodName)) {
+			if (isValidExecutable(executable, originalParameterList, parameterList, superList, mappedSuperList, resolvedSignature, forceResolvedSignature, typeMap) && (!Modifier.isAbstract(modifiers) || !holderInfo.abstractMapping) && !holderInfo.blacklist.contains(originalMethodName)) {
 				final boolean isStatic = Modifier.isStatic(modifiers);
+				final boolean isFinal = Modifier.isFinal(modifiers);
 				final boolean isMethod = executable instanceof Method;
-				final boolean generateExtraMethod = holderInfo.abstractMapping && !isStatic && isMethod;
+				final boolean generateExtraMethod = holderInfo.abstractMapping && !isStatic && !isFinal && isMethod;
 				final String methodName = String.format("%s%s", holderInfo.getMappedMethod(mainStringBuilder, originalMethodName, forceResolvedSignature), holderInfo.abstractMapping ? "2" : "");
 				mainStringBuilder.append("public ");
 
@@ -166,8 +176,7 @@ public final class GenerateHolders {
 	}
 
 	private boolean isValidExecutable(Executable executable, List<String> originalParameterList, List<String> parameterList, List<String> superList, List<String> mappedSuperList, List<String> resolvedSignature, List<String> forceResolvedSignature, Map<Type, Type> typeMap) {
-		final Class<?> declaringClass = executable.getDeclaringClass();
-		if (!Modifier.isPublic(executable.getModifiers()) || executable.isSynthetic() || declaringClass.equals(Object.class)) {
+		if (!Modifier.isPublic(executable.getModifiers()) || executable.isSynthetic() || BLACKLISTED_SIGNATURES.contains(serializeMethod(executable))) {
 			return false;
 		}
 
@@ -233,7 +242,15 @@ public final class GenerateHolders {
 			stringBuilder.append(isResolved ? resolvedClassName.className : formatClassName(mappedType.getTypeName()));
 		} else {
 			isResolved = false;
-			stringBuilder.append(formatClassName(mappedType.getTypeName()));
+			if (type instanceof WildcardType) {
+				stringBuilder.append("?");
+				final Type[] upperBounds = Arrays.stream(((WildcardType) type).getUpperBounds()).filter(upperBound -> !upperBound.equals(Object.class)).toArray(Type[]::new);
+				final Type[] lowerBounds = Arrays.stream(((WildcardType) type).getLowerBounds()).filter(lowerBound -> !lowerBound.equals(Object.class)).toArray(Type[]::new);
+				final boolean useUpper = upperBounds.length > 0;
+				appendIfNotEmpty(stringBuilder, useUpper ? upperBounds : lowerBounds, useUpper ? " extends " : " super ", "", "&", boundType -> formatClassName(getOrReturn(typeMap, boundType).getTypeName()));
+			} else {
+				stringBuilder.append(formatClassName(mappedType.getTypeName()));
+			}
 		}
 
 		if (isParameterized) {
@@ -263,33 +280,29 @@ public final class GenerateHolders {
 		});
 	}
 
-	private static Map<Class<?>, Map<Type, Type>> walkClassTree(Class<?> classObject) {
-		final Map<Class<?>, Map<Type, Type>> genericClassTree = new HashMap<>();
-		Class<?> superClassObject = classObject;
+	private static void walkClassTree(Map<Class<?>, Map<Type, Type>> genericClassTree, Class<?> classObject, Function<Class<?>, Type[]> getGenericTypes, Function<Class<?>, Class<?>[]> getSuper) {
+		final Type[] genericTypes = getGenericTypes.apply(classObject);
+		final Class<?>[] newClassObjects = getSuper.apply(classObject);
 
-		while (true) {
-			final Type genericType = superClassObject.getGenericSuperclass();
-			superClassObject = superClassObject.getSuperclass();
+		for (final Class<?> newClassObject : newClassObjects) {
+			if (newClassObject != null) {
+				final Map<Type, Type> typeMap = new HashMap<>();
 
-			if (superClassObject == null) {
-				break;
+				for (final Type genericType : genericTypes) {
+					if (genericType instanceof ParameterizedType) {
+						iterateTwoArrays(newClassObject.getTypeParameters(), ((ParameterizedType) genericType).getActualTypeArguments(), (type, mappedType) -> typeMap.put(type, genericClassTree.values().stream().map(previousTypeMap -> previousTypeMap.get(mappedType)).filter(Objects::nonNull).findFirst().orElse(mappedType)));
+					}
+				}
+
+				genericClassTree.put(newClassObject, typeMap);
+				walkClassTree(genericClassTree, newClassObject, getGenericTypes, getSuper);
 			}
-
-			final Map<Type, Type> typeMap = new HashMap<>();
-
-			if (genericType instanceof ParameterizedType) {
-				iterateTwoArrays(superClassObject.getTypeParameters(), ((ParameterizedType) genericType).getActualTypeArguments(), (type, mappedType) -> typeMap.put(type, genericClassTree.values().stream().map(previousTypeMap -> previousTypeMap.get(mappedType)).filter(Objects::nonNull).findFirst().orElse(mappedType)));
-			}
-
-			genericClassTree.put(superClassObject, typeMap);
 		}
-
-		return genericClassTree;
 	}
 
 	private static String appendWrap(Type returnTypeClass, String resolvedType, String methodCall) {
 		if (returnTypeClass instanceof Class && ((Class<?>) returnTypeClass).isEnum()) {
-			return String.format("%s.valueOf(%s.toString())", resolvedType, methodCall);
+			return String.format("%s.convert(%s)", resolvedType, methodCall);
 		} else {
 			return String.format("new %s(%s)", resolvedType, methodCall);
 		}
@@ -324,6 +337,19 @@ public final class GenerateHolders {
 		return className.replace("$", ".");
 	}
 
+	private static String serializeMethod(Executable executable) {
+		final Type[] types = executable.getGenericParameterTypes();
+		final String[] typesString = new String[types.length];
+		for (int i = 0; i < types.length; i++) {
+			typesString[i] = types[i].getTypeName();
+		}
+		return serializeMethod(executable.getModifiers(), executable.getName(), typesString);
+	}
+
+	private static String serializeMethod(int modifiers, String name, String... parameters) {
+		return String.format("%s %s %s", modifiers, name, String.join(",", parameters));
+	}
+
 	public static final class HolderInfo {
 
 		private final String className;
@@ -340,11 +366,13 @@ public final class GenerateHolders {
 			addMethodMap1("Block", "emitsRedstonePower", "isSignalSource");
 			addMethodMap1("Block", "getBlockFromItem", "byItem");
 			addMethodMap1("Block", "getComparatorOutput", "getAnalogOutputSignal");
+			addMethodMap1("Block", "getDefaultState", "defaultBlockState");
 			addMethodMap1("Block", "getFluidState");
 			addMethodMap1("Block", "getInteractionShape", "getRaycastShape");
 			addMethodMap1("Block", "getOcclusionShape", "getCullingShape");
 			addMethodMap1("Block", "getOutlineShape", "getShape");
 			addMethodMap1("Block", "getPlacementState", "getStateForPlacement");
+			addMethodMap1("Block", "getRawIdFromState", "getId");
 			addMethodMap1("Block", "getSidesShape", "getBlockSupportShape");
 			addMethodMap1("Block", "getStateForNeighborUpdate", "updateShape");
 			addMethodMap1("Block", "getStrongRedstonePower", "getDirectSignal");
@@ -366,6 +394,7 @@ public final class GenerateHolders {
 			addMethodMap1("Block", "onPlace", "onBlockAdded");
 			addMethodMap1("Block", "onPlaced", "setPlacedBy");
 			addMethodMap1("Block", "onRemove", "onStateReplaced");
+			addMethodMap1("Block", "onUse", "use");
 			addMethodMap1("Block", "randomDisplayTick", "animateTick");
 			addMethodMap1("Block", "replace", "updateOrDestroy");
 			addMethodMap1("Block", "scheduledTick", "tick");
@@ -404,6 +433,21 @@ public final class GenerateHolders {
 			addMethodMap1("BooleanProperty", "create", "of");
 			addMethodMap1("BooleanProperty|DirectionProperty|EnumProperty|IntegerProperty|Property", "getName", "name");
 			addMethodMap1("BooleanProperty|DirectionProperty|EnumProperty|IntegerProperty|Property", "getValues", "getPossibleValues");
+			addMethodMap1("Direction", "asRotation", "toYRot");
+			addMethodMap1("Direction", "byId", "from2DDataValue");
+			addMethodMap1("Direction", "fromHorizontal", "from3DDataValue");
+			addMethodMap1("Direction", "fromRotation", "fromYRot");
+			addMethodMap1("Direction", "getAxis");
+			addMethodMap1("Direction", "getFacing", "getNearest");
+			addMethodMap1("Direction", "getHorizontal", "get2DDataValue");
+			addMethodMap1("Direction", "getId", "get3DDataValue");
+			addMethodMap1("Direction", "getOffsetX", "getStepX");
+			addMethodMap1("Direction", "getOffsetY", "getStepY");
+			addMethodMap1("Direction", "getOffsetZ", "getStepZ");
+			addMethodMap1("Direction", "getOpposite");
+			addMethodMap1("Direction", "getUnitVector", "step");
+			addMethodMap1("Direction", "getVector", "getNormal");
+			addMethodMap1("Direction", "pointsTo", "isFacingAngle", "method_30928");
 			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "addScoreboardTag", "addCommandTag", "addTag");
 			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "canBeSpectated", "broadcastToPlayer");
 			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "canExplosionDestroyBlock", "shouldBlockExplode");
@@ -530,6 +574,8 @@ public final class GenerateHolders {
 			addMethodMap2("BlockView|World", "getBlockEntity", "BlockPos");
 			addMethodMap2("ChunkManager", "getWorldChunk", "int|int", "getChunkNow");
 			addMethodMap2("ChunkManager", "getWorldChunk", "int|int|boolean", "getChunk");
+			addMethodMap2("Direction", "rotateYClockwise", "", "getClockWise");
+			addMethodMap2("Direction", "rotateYCounterclockwise", "", "getCounterClockWise");
 			addMethodMap2("DirectionProperty", "create", "java.lang.String|java.lang.Class<T>", "of");
 			addMethodMap2("DirectionProperty", "create", "java.lang.String|java.lang.Class<T>|java.util.Collection<T>", "of");
 			addMethodMap2("DirectionProperty", "create", "java.lang.String|java.lang.Class<T>|java.util.function.Predicate<T>", "of");
@@ -565,7 +611,7 @@ public final class GenerateHolders {
 			this.abstractMapping = abstractMapping;
 			blacklist = holderInfo.blacklist;
 			methodMap = holderInfo.methodMap;
-			methodsArray = abstractMapping ? holderInfo.methodsArray : new JsonArray();
+			methodsArray = abstractMapping ? new JsonArray() : holderInfo.methodsArray;
 		}
 
 		private String getMappedMethod(StringBuilder stringBuilder, String methodName, List<String> signature) {

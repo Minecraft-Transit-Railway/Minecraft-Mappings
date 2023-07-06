@@ -51,7 +51,7 @@ public class BuildTools {
 			Files.write(testFolder.resolve("SearchForMappedMethodsTest.java"), newTestFile.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 
 			final String generateFile = FileUtils.readFileToString(rootPath.resolve("common/src/test/java/org/mtr/mapping/test/GenerateHolders.java").toFile(), StandardCharsets.UTF_8);
-			final String newGenerateFile = generateHolders ? generateFile.replace("@generate@", "").replace("@path@", path.toString().replace("\\", "/")).replace("@namespace@", namespace) : generateFile;
+			final String newGenerateFile = generateHolders ? generateFile.replace("@path@", path.toString().replace("\\", "/")).replace("@namespace@", namespace) : generateFile;
 			Files.write(parentPath.resolve(String.format("%s-generator/src/test/java/org/mtr/mapping/test/GenerateHolders.java", minecraftVersion)), newGenerateFile.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 		}
 	}

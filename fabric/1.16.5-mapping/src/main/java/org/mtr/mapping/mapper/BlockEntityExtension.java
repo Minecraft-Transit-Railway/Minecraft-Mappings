@@ -52,4 +52,11 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 	@MappedMethod
 	public void blockEntityTick() {
 	}
+
+	@MappedMethod
+	@Override
+	public void markDirty2() {
+		super.markDirty2();
+		sync();
+	}
 }
