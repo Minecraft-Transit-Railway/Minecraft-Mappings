@@ -76,16 +76,22 @@ public final class GenerateHolders {
 			processMethods(classObject.getMethods(), mainStringBuilder, staticClassName, staticClassName, holderInfo, classTree);
 		} else {
 			mainStringBuilder.append(holderInfo.abstractMapping ? "abstract" : "final").append(" class ").append(holderInfo.className);
-			appendGenerics(mainStringBuilder, classObject, true);
-			final StringBuilder classNameStringBuilder = new StringBuilder(staticClassName);
-			appendGenerics(classNameStringBuilder, classObject, false);
+			appendGenerics(mainStringBuilder, classObject, false, true);
 			mainStringBuilder.append(" extends ");
+			final StringBuilder classNameStringBuilder = new StringBuilder(staticClassName);
+			appendGenerics(classNameStringBuilder, classObject, false, false);
 			final String className = classNameStringBuilder.toString();
 
 			if (holderInfo.abstractMapping) {
 				mainStringBuilder.append(className).append("{");
 			} else {
-				mainStringBuilder.append("org.mtr.mapping.tool.Dummy{public final ").append(className).append(" data;public ").append(holderInfo.className).append("(").append(className).append(" data){this.data=data;}");
+				mainStringBuilder.append("org.mtr.mapping.tool.HolderBase<").append(className).append(">{public ").append(holderInfo.className).append("(").append(className).append(" data){super(data);}@org.mtr.mapping.annotation.MappedMethod public static ");
+				appendGenerics(mainStringBuilder, classObject, false, true);
+				mainStringBuilder.append(holderInfo.className);
+				appendGenerics(mainStringBuilder, classObject, false, false);
+				mainStringBuilder.append(" cast(Object data){return new ").append(holderInfo.className);
+				appendGenerics(mainStringBuilder, classObject, true, false);
+				mainStringBuilder.append("((").append(className).append(")data);}");
 			}
 
 			processMethods(Modifier.isAbstract(classObject.getModifiers()) && !holderInfo.abstractMapping ? new Executable[0] : classObject.getConstructors(), mainStringBuilder, className, staticClassName, holderInfo, classTree);
@@ -128,24 +134,19 @@ public final class GenerateHolders {
 				final Type returnTypeClass = appendMethodHeader(mainStringBuilder, executable, methodName, true, parameterList, holderInfo.className, typeMap);
 				final boolean isVoid = returnTypeClass == null || returnTypeClass == Void.TYPE;
 				final String variables = String.format("(%s)", String.join(",", superList));
-				final boolean resolvedReturnType;
+				final ResolveState resolveState;
 
 				if (isMethod) {
 					final String methodCall = String.format("%s.%s%s", isStatic ? staticClassName : holderInfo.abstractMapping ? "super" : "this.data", originalMethodName, variables);
 
 					if (isVoid) {
 						mainStringBuilder.append(methodCall);
-						resolvedReturnType = false;
+						resolveState = ResolveState.NONE;
 					} else {
 						mainStringBuilder.append("return ");
 						final StringBuilder returnStringBuilder = new StringBuilder();
-						if (appendGenerics(returnStringBuilder, returnTypeClass, typeMap, true, true, false)) {
-							mainStringBuilder.append(appendWrap(returnTypeClass, returnStringBuilder.toString(), methodCall));
-							resolvedReturnType = true;
-						} else {
-							mainStringBuilder.append(methodCall);
-							resolvedReturnType = false;
-						}
+						resolveState = appendGenerics(returnStringBuilder, returnTypeClass, typeMap, true, true, false);
+						mainStringBuilder.append(appendWrap(returnTypeClass, returnStringBuilder.toString(), methodCall, resolveState));
 					}
 
 					final StringBuilder forceResolvedReturnStringBuilder = new StringBuilder();
@@ -155,13 +156,13 @@ public final class GenerateHolders {
 					methodObject.addProperty("signature", String.format("%s %s(%s)", Modifier.toString(modifiers), forceResolvedReturnStringBuilder, String.join("|", forceResolvedSignature)));
 					holderInfo.methodsArray.add(methodObject);
 				} else {
+					mainStringBuilder.append("super");
 					if (holderInfo.abstractMapping) {
-						mainStringBuilder.append("super");
+						mainStringBuilder.append(variables);
 					} else {
-						mainStringBuilder.append("this.data=new ").append(className);
+						mainStringBuilder.append("(new ").append(className).append(variables).append(")");
 					}
-					mainStringBuilder.append(variables);
-					resolvedReturnType = false;
+					resolveState = ResolveState.NONE;
 				}
 
 				mainStringBuilder.append(";}");
@@ -169,7 +170,7 @@ public final class GenerateHolders {
 				if (generateExtraMethod) {
 					mainStringBuilder.append("@Deprecated public final ");
 					final Type returnTypeClass2 = appendMethodHeader(mainStringBuilder, executable, originalMethodName, false, originalParameterList, holderInfo.className, typeMap);
-					mainStringBuilder.append(returnTypeClass2 == null || returnTypeClass2 == Void.TYPE ? "" : "return ").append(methodName).append("(").append(String.join(",", mappedSuperList)).append(")").append(resolvedReturnType ? ".data" : "").append(";}");
+					mainStringBuilder.append(returnTypeClass2 == null || returnTypeClass2 == Void.TYPE ? "" : "return ").append(resolveState.format(String.format("%s(%s)", methodName, String.join(",", mappedSuperList)))).append(";}");
 				}
 			}
 		}
@@ -187,7 +188,7 @@ public final class GenerateHolders {
 			originalParameterList.add(String.format("%s %s", originalParameterStringBuilder, parameter.getName()));
 
 			final StringBuilder parameterStringBuilder = new StringBuilder();
-			final boolean isResolved = appendGenerics(parameterStringBuilder, type, typeMap, true, false, false);
+			final ResolveState resolveState = appendGenerics(parameterStringBuilder, type, typeMap, true, false, false);
 			parameterList.add(String.format("%s %s", parameterStringBuilder, parameter.getName()));
 			resolvedSignature.add(parameterStringBuilder.toString());
 
@@ -195,10 +196,10 @@ public final class GenerateHolders {
 			appendGenerics(forceResolvedParameterStringBuilder, type, typeMap, true, false, true);
 			forceResolvedSignature.add(forceResolvedParameterStringBuilder.toString());
 
-			superList.add(String.format("%s%s", parameter.getName(), isResolved ? ".data" : ""));
+			superList.add(resolveState.format(parameter.getName()));
 			final StringBuilder impliedParameterStringBuilder = new StringBuilder();
 			appendGenerics(impliedParameterStringBuilder, type, typeMap, true, true, false);
-			mappedSuperList.add(isResolved ? appendWrap(type, impliedParameterStringBuilder.toString(), parameter.getName()) : parameter.getName());
+			mappedSuperList.add(appendWrap(type, impliedParameterStringBuilder.toString(), parameter.getName(), resolveState));
 
 			if (!Modifier.isPublic(parameter.getType().getModifiers())) {
 				allPublicParameterTypes[0] = false;
@@ -212,7 +213,7 @@ public final class GenerateHolders {
 		final Type returnTypeClass;
 
 		if (executable instanceof Method) {
-			appendGenerics(mainStringBuilder, executable, true);
+			appendGenerics(mainStringBuilder, executable, false, true);
 			returnTypeClass = ((Method) executable).getGenericReturnType();
 			appendGenerics(mainStringBuilder, returnTypeClass, typeMap, resolve, false, false);
 			mainStringBuilder.append(" ").append(methodName);
@@ -227,21 +228,60 @@ public final class GenerateHolders {
 		return returnTypeClass;
 	}
 
-	private boolean appendGenerics(StringBuilder stringBuilder, Type type, Map<Type, Type> typeMap, boolean resolve, boolean impliedType, boolean forceResolveAll) {
+	private String appendWrap(Type returnTypeClass, String resolvedType, String methodCall, ResolveState resolveState) {
+		switch (resolveState) {
+			case RESOLVED:
+				if (returnTypeClass instanceof Class && ((Class<?>) returnTypeClass).isEnum()) {
+					return String.format("%s.convert(%s)", resolvedType, methodCall);
+				} else {
+					return String.format("new %s(%s)", resolvedType, methodCall);
+				}
+			case RESOLVED_LIST:
+			case RESOLVED_SET:
+				final Type[] types = returnTypeClass instanceof ParameterizedType ? ((ParameterizedType) returnTypeClass).getActualTypeArguments() : new Type[0];
+				if (types.length == 1 && types[0] instanceof Class) {
+					final Class<?> newReturnClass = (Class<?>) types[0];
+					final HolderInfo holderInfo = classMap.get(newReturnClass);
+					if (holderInfo != null) {
+						final boolean isEnum = newReturnClass.isEnum();
+						return String.format("org.mtr.mapping.tool.HolderBase.convert%sCollection(%s,%s::%s)", isEnum ? "Enum" : "", methodCall, holderInfo.className, isEnum ? "convert" : "new");
+					}
+				}
+			default:
+				return methodCall;
+		}
+	}
+
+	private ResolveState appendGenerics(StringBuilder stringBuilder, Type type, Map<Type, Type> typeMap, boolean resolve, boolean impliedType, boolean forceResolveAll) {
 		return appendGenerics(stringBuilder, type, typeMap, resolve, impliedType, forceResolveAll, true);
 	}
 
-	private boolean appendGenerics(StringBuilder stringBuilder, Type type, Map<Type, Type> typeMap, boolean resolve, boolean impliedType, boolean forceResolveAll, boolean isFirst) {
+	private ResolveState appendGenerics(StringBuilder stringBuilder, Type type, Map<Type, Type> typeMap, boolean resolve, boolean impliedType, boolean forceResolveAll, boolean isFirst) {
 		final boolean isParameterized = type instanceof ParameterizedType;
 		final Type mappedType = getOrReturn(typeMap, isParameterized ? ((ParameterizedType) type).getRawType() : type);
-		final boolean isResolved;
+		final ResolveState resolveState;
 
 		if ((forceResolveAll || isFirst) && mappedType instanceof Class) {
 			final HolderInfo resolvedClassName = classMap.get(mappedType);
-			isResolved = resolve && resolvedClassName != null;
+			final boolean isResolved = resolve && resolvedClassName != null;
 			stringBuilder.append(isResolved ? resolvedClassName.className : formatClassName(mappedType.getTypeName()));
+			final boolean isList = mappedType.equals(List.class);
+			final boolean isSet = mappedType.equals(Set.class);
+			final Type[] typeArguments = resolve && isParameterized && (isList || isSet) ? ((ParameterizedType) type).getActualTypeArguments() : new Type[0];
+
+			if (typeArguments.length == 1 && typeArguments[0] instanceof Class) {
+				final HolderInfo resolvedCollectionClassName = classMap.get(typeArguments[0]);
+				if (resolvedCollectionClassName == null) {
+					resolveState = ResolveState.NONE;
+				} else {
+					stringBuilder.append("<").append(resolvedCollectionClassName.className).append(">");
+					return isList ? ResolveState.RESOLVED_LIST : ResolveState.RESOLVED_SET;
+				}
+			} else {
+				resolveState = isResolved ? ResolveState.RESOLVED : ResolveState.NONE;
+			}
 		} else {
-			isResolved = false;
+			resolveState = ResolveState.NONE;
 			if (type instanceof WildcardType) {
 				stringBuilder.append("?");
 				final Type[] upperBounds = Arrays.stream(((WildcardType) type).getUpperBounds()).filter(upperBound -> !upperBound.equals(Object.class)).toArray(Type[]::new);
@@ -265,12 +305,14 @@ public final class GenerateHolders {
 			}
 		}
 
-		return isResolved;
+		return resolveState;
 	}
 
-	private static void appendGenerics(StringBuilder stringBuilder, GenericDeclaration genericDeclaration, boolean getBounds) {
+	private static void appendGenerics(StringBuilder stringBuilder, GenericDeclaration genericDeclaration, boolean impliedType, boolean getBounds) {
 		appendIfNotEmpty(stringBuilder, genericDeclaration.getTypeParameters(), "<", ">", ",", typeVariable -> {
-			if (getBounds) {
+			if (impliedType) {
+				return "";
+			} else if (getBounds) {
 				final StringBuilder extendsStringBuilder = new StringBuilder();
 				appendIfNotEmpty(extendsStringBuilder, typeVariable.getBounds(), " extends ", "", "&", Type::getTypeName);
 				return String.format("%s%s", typeVariable.getName(), extendsStringBuilder);
@@ -297,14 +339,6 @@ public final class GenerateHolders {
 				genericClassTree.put(newClassObject, typeMap);
 				walkClassTree(genericClassTree, newClassObject, getGenericTypes, getSuper);
 			}
-		}
-	}
-
-	private static String appendWrap(Type returnTypeClass, String resolvedType, String methodCall) {
-		if (returnTypeClass instanceof Class && ((Class<?>) returnTypeClass).isEnum()) {
-			return String.format("%s.convert(%s)", resolvedType, methodCall);
-		} else {
-			return String.format("new %s(%s)", resolvedType, methodCall);
 		}
 	}
 
@@ -362,9 +396,11 @@ public final class GenerateHolders {
 		static {
 			addMethodMap1("Block", "afterBreak", "playerDestroy");
 			addMethodMap1("Block", "appendTooltip", "appendHoverText");
+			addMethodMap1("Block", "asItem");
 			addMethodMap1("Block", "createCuboidShape", "box");
 			addMethodMap1("Block", "emitsRedstonePower", "isSignalSource");
 			addMethodMap1("Block", "getBlockFromItem", "byItem");
+			addMethodMap1("Block", "getCollisionShape");
 			addMethodMap1("Block", "getComparatorOutput", "getAnalogOutputSignal");
 			addMethodMap1("Block", "getDefaultState", "defaultBlockState");
 			addMethodMap1("Block", "getFluidState");
@@ -425,6 +461,7 @@ public final class GenerateHolders {
 			addMethodMap1("BlockState", "get", "getValue");
 			addMethodMap1("BlockState", "getBlock");
 			addMethodMap1("BlockState", "hasProperty", "contains");
+			addMethodMap1("BlockState", "updateNeighbors", "updateNeighbourShapes");
 			addMethodMap1("BlockState", "with", "setValue");
 			addMethodMap1("BlockView|World", "getBlockState");
 			addMethodMap1("BlockView|World", "getDismountHeight", "getBlockFloorHeight");
@@ -433,6 +470,37 @@ public final class GenerateHolders {
 			addMethodMap1("BooleanProperty", "create", "of");
 			addMethodMap1("BooleanProperty|DirectionProperty|EnumProperty|IntegerProperty|Property", "getName", "name");
 			addMethodMap1("BooleanProperty|DirectionProperty|EnumProperty|IntegerProperty|Property", "getValues", "getPossibleValues");
+			addMethodMap1("CompoundTag", "asString", "getAsString");
+			addMethodMap1("CompoundTag", "contains");
+			addMethodMap1("CompoundTag", "containsUuid", "hasUUID");
+			addMethodMap1("CompoundTag", "copy");
+			addMethodMap1("CompoundTag", "copyFrom", "merge");
+			addMethodMap1("CompoundTag", "equals");
+			addMethodMap1("CompoundTag", "getBoolean");
+			addMethodMap1("CompoundTag", "getByte");
+			addMethodMap1("CompoundTag", "getByteArray");
+			addMethodMap1("CompoundTag", "getCompound");
+			addMethodMap1("CompoundTag", "getDouble");
+			addMethodMap1("CompoundTag", "getFloat");
+			addMethodMap1("CompoundTag", "getInt");
+			addMethodMap1("CompoundTag", "getIntArray");
+			addMethodMap1("CompoundTag", "getKeys", "getAllKeys");
+			addMethodMap1("CompoundTag", "getLong");
+			addMethodMap1("CompoundTag", "getLongArray");
+			addMethodMap1("CompoundTag", "getShort");
+			addMethodMap1("CompoundTag", "getSize", "size");
+			addMethodMap1("CompoundTag", "getString");
+			addMethodMap1("CompoundTag", "getUuid", "getUUID");
+			addMethodMap1("CompoundTag", "isEmpty");
+			addMethodMap1("CompoundTag", "putBoolean");
+			addMethodMap1("CompoundTag", "putByte");
+			addMethodMap1("CompoundTag", "putDouble");
+			addMethodMap1("CompoundTag", "putFloat");
+			addMethodMap1("CompoundTag", "putInt");
+			addMethodMap1("CompoundTag", "putIntArray");
+			addMethodMap1("CompoundTag", "putString");
+			addMethodMap1("CompoundTag", "remove");
+			addMethodMap1("CompoundTag", "write");
 			addMethodMap1("Direction", "asRotation", "toYRot");
 			addMethodMap1("Direction", "byId", "from2DDataValue");
 			addMethodMap1("Direction", "fromHorizontal", "from3DDataValue");
@@ -528,6 +596,130 @@ public final class GenerateHolders {
 			addMethodMap1("ItemPlacementContext", "hitsInsideBlock", "isInside");
 			addMethodMap1("ItemPlacementContext", "offset", "at");
 			addMethodMap1("ItemPlacementContext", "shouldCancelInteraction", "isSecondaryUseActive");
+			addMethodMap1("MutableText", "asOrderedText", "getVisualOrderText");
+			addMethodMap1("MutableText", "getString", "asTruncatedString");
+			addMethodMap1("PacketBuffer", "array");
+			addMethodMap1("PacketBuffer", "arrayOffset");
+			addMethodMap1("PacketBuffer", "asReadOnly");
+			addMethodMap1("PacketBuffer", "bytesBefore");
+			addMethodMap1("PacketBuffer", "capacity");
+			addMethodMap1("PacketBuffer", "copy");
+			addMethodMap1("PacketBuffer", "ensureWritable");
+			addMethodMap1("PacketBuffer", "forEachByte");
+			addMethodMap1("PacketBuffer", "forEachByteDesc");
+			addMethodMap1("PacketBuffer", "getBoolean");
+			addMethodMap1("PacketBuffer", "getByte");
+			addMethodMap1("PacketBuffer", "getBytes");
+			addMethodMap1("PacketBuffer", "getChar");
+			addMethodMap1("PacketBuffer", "getCharSequence");
+			addMethodMap1("PacketBuffer", "getDouble");
+			addMethodMap1("PacketBuffer", "getDoubleLE");
+			addMethodMap1("PacketBuffer", "getFloat");
+			addMethodMap1("PacketBuffer", "getFloatLE");
+			addMethodMap1("PacketBuffer", "getInt");
+			addMethodMap1("PacketBuffer", "getIntLE");
+			addMethodMap1("PacketBuffer", "getMedium");
+			addMethodMap1("PacketBuffer", "getMediumLE");
+			addMethodMap1("PacketBuffer", "getUnsignedMedium");
+			addMethodMap1("PacketBuffer", "getUnsignedMediumLE");
+			addMethodMap1("PacketBuffer", "getUnsignedShort");
+			addMethodMap1("PacketBuffer", "getUnsignedShortLE");
+			addMethodMap1("PacketBuffer", "hasArray");
+			addMethodMap1("PacketBuffer", "hashCode");
+			addMethodMap1("PacketBuffer", "hasMemoryAddress");
+			addMethodMap1("PacketBuffer", "indexOf");
+			addMethodMap1("PacketBuffer", "isDirect");
+			addMethodMap1("PacketBuffer", "isReadable");
+			addMethodMap1("PacketBuffer", "isReadOnly");
+			addMethodMap1("PacketBuffer", "isWritable");
+			addMethodMap1("PacketBuffer", "maxCapacity");
+			addMethodMap1("PacketBuffer", "maxWritableBytes");
+			addMethodMap1("PacketBuffer", "readableBytes");
+			addMethodMap1("PacketBuffer", "readBlockHitResult");
+			addMethodMap1("PacketBuffer", "readBlockHitResult");
+			addMethodMap1("PacketBuffer", "readBlockPos");
+			addMethodMap1("PacketBuffer", "readBoolean");
+			addMethodMap1("PacketBuffer", "readByte");
+			addMethodMap1("PacketBuffer", "readByteArray");
+			addMethodMap1("PacketBuffer", "readBytes");
+			addMethodMap1("PacketBuffer", "readChar");
+			addMethodMap1("PacketBuffer", "readCharSequence");
+			addMethodMap1("PacketBuffer", "readDate");
+			addMethodMap1("PacketBuffer", "readDouble");
+			addMethodMap1("PacketBuffer", "readDoubleLE");
+			addMethodMap1("PacketBuffer", "readEnumConstant", "readEnum");
+			addMethodMap1("PacketBuffer", "readerIndex");
+			addMethodMap1("PacketBuffer", "readFloat");
+			addMethodMap1("PacketBuffer", "readFloatLE");
+			addMethodMap1("PacketBuffer", "readIdentifier", "readResourceLocation");
+			addMethodMap1("PacketBuffer", "readInt");
+			addMethodMap1("PacketBuffer", "readIntArray", "readVarIntArray");
+			addMethodMap1("PacketBuffer", "readIntLE");
+			addMethodMap1("PacketBuffer", "readItemStack", "readItem");
+			addMethodMap1("PacketBuffer", "readLong");
+			addMethodMap1("PacketBuffer", "readLongLE");
+			addMethodMap1("PacketBuffer", "readMedium");
+			addMethodMap1("PacketBuffer", "readMediumLE");
+			addMethodMap1("PacketBuffer", "readRetainedSlice");
+			addMethodMap1("PacketBuffer", "readShort");
+			addMethodMap1("PacketBuffer", "readShortLE");
+			addMethodMap1("PacketBuffer", "readSlice");
+			addMethodMap1("PacketBuffer", "readString", "readUtf");
+			addMethodMap1("PacketBuffer", "readUnlimitedNbt", "readAnySizeNbt");
+			addMethodMap1("PacketBuffer", "readUnsignedByte");
+			addMethodMap1("PacketBuffer", "readUnsignedInt");
+			addMethodMap1("PacketBuffer", "readUnsignedIntLE");
+			addMethodMap1("PacketBuffer", "readUnsignedMedium");
+			addMethodMap1("PacketBuffer", "readUnsignedMediumLE");
+			addMethodMap1("PacketBuffer", "readUnsignedShort");
+			addMethodMap1("PacketBuffer", "readUnsignedShortLE");
+			addMethodMap1("PacketBuffer", "readUuid", "readUUID");
+			addMethodMap1("PacketBuffer", "readVarInt");
+			addMethodMap1("PacketBuffer", "readVarLong");
+			addMethodMap1("PacketBuffer", "refCnt");
+			addMethodMap1("PacketBuffer", "release");
+			addMethodMap1("PacketBuffer", "retain");
+			addMethodMap1("PacketBuffer", "setBoolean");
+			addMethodMap1("PacketBuffer", "setBytes");
+			addMethodMap1("PacketBuffer", "setCharSequence");
+			addMethodMap1("PacketBuffer", "setDouble");
+			addMethodMap1("PacketBuffer", "setDoubleLE");
+			addMethodMap1("PacketBuffer", "setFloat");
+			addMethodMap1("PacketBuffer", "setFloatLE");
+			addMethodMap1("PacketBuffer", "skipBytes");
+			addMethodMap1("PacketBuffer", "writableBytes");
+			addMethodMap1("PacketBuffer", "writeBlockHitResult");
+			addMethodMap1("PacketBuffer", "writeBlockPos");
+			addMethodMap1("PacketBuffer", "writeBoolean");
+			addMethodMap1("PacketBuffer", "writeByte");
+			addMethodMap1("PacketBuffer", "writeByteArray");
+			addMethodMap1("PacketBuffer", "writeBytes");
+			addMethodMap1("PacketBuffer", "writeChar");
+			addMethodMap1("PacketBuffer", "writeCharSequence");
+			addMethodMap1("PacketBuffer", "writeDate");
+			addMethodMap1("PacketBuffer", "writeDouble");
+			addMethodMap1("PacketBuffer", "writeDoubleLE");
+			addMethodMap1("PacketBuffer", "writeEnumConstant", "writeEnum");
+			addMethodMap1("PacketBuffer", "writeFloat");
+			addMethodMap1("PacketBuffer", "writeFloatLE");
+			addMethodMap1("PacketBuffer", "writeIdentifier", "writeResourceLocation");
+			addMethodMap1("PacketBuffer", "writeInt");
+			addMethodMap1("PacketBuffer", "writeIntArray", "writeVarIntArray");
+			addMethodMap1("PacketBuffer", "writeIntLE");
+			addMethodMap1("PacketBuffer", "writeLong");
+			addMethodMap1("PacketBuffer", "writeLongArray");
+			addMethodMap1("PacketBuffer", "writeLongLE");
+			addMethodMap1("PacketBuffer", "writeMedium");
+			addMethodMap1("PacketBuffer", "writeMediumLE");
+			addMethodMap1("PacketBuffer", "writeResourceLocation", "writeIdentifier");
+			addMethodMap1("PacketBuffer", "writerIndex");
+			addMethodMap1("PacketBuffer", "writeShort");
+			addMethodMap1("PacketBuffer", "writeShortLE");
+			addMethodMap1("PacketBuffer", "writeString", "writeUtf");
+			addMethodMap1("PacketBuffer", "writeUuid", "writeUUID");
+			addMethodMap1("PacketBuffer", "writeVarInt");
+			addMethodMap1("PacketBuffer", "writeVarLong");
+			addMethodMap1("PacketBuffer", "writeZero");
 			addMethodMap1("PlayerEntity|ServerPlayerEntity", "isCreative");
 			addMethodMap1("VoxelShapes", "fullCube", "block");
 			addMethodMap1("World", "breakBlock", "destroyBlock");
@@ -561,6 +753,7 @@ public final class GenerateHolders {
 			addMethodMap1("World", "setBlockState", "setBlockAndUpdate", "setBlock");
 			addMethodMap1("World", "spawnEntity", "addFreshEntity");
 			addMethodMap1("World", "syncWorldEvent", "levelEvent");
+			addMethodMap1("World", "updateNeighbors", "updateNeighborsAt");
 			addMethodMap2("Block", "getPickStack", "BlockView|BlockPos|BlockState", "getCloneItemStack");
 			addMethodMap2("Block", "rotate", "BlockState|Rotation");
 			addMethodMap2("BlockPos", "offset", "Axis|int", "add", "relative");
@@ -574,6 +767,7 @@ public final class GenerateHolders {
 			addMethodMap2("BlockView|World", "getBlockEntity", "BlockPos");
 			addMethodMap2("ChunkManager", "getWorldChunk", "int|int", "getChunkNow");
 			addMethodMap2("ChunkManager", "getWorldChunk", "int|int|boolean", "getChunk");
+			addMethodMap2("CompoundTag", "putByteArray", "java.lang.String|byte[]");
 			addMethodMap2("Direction", "rotateYClockwise", "", "getClockWise");
 			addMethodMap2("Direction", "rotateYCounterclockwise", "", "getCounterClockWise");
 			addMethodMap2("DirectionProperty", "create", "java.lang.String|java.lang.Class<T>", "of");
@@ -587,7 +781,13 @@ public final class GenerateHolders {
 			addMethodMap2("Entity|PlayerEntity|ServerPlayerEntity", "getYaw", "float", "getViewYRot");
 			addMethodMap2("Item", "hasRecipeRemainder", "", "hasCraftingRemainingItem");
 			addMethodMap2("Item", "isCorrectToolForDrops", "BlockState", "isSuitableFor");
+			addMethodMap2("MutableText", "append", "java.lang.String");
+			addMethodMap2("MutableText", "formatted", "TextFormatting", "withStyle");
+			addMethodMap2("PacketBuffer", "readLongArray", "long[]");
+			addMethodMap2("PacketBuffer", "readLongArray", "long[]|int");
+			addMethodMap2("PacketBuffer", "writeItemStack", "ItemStack", "writeItem");
 			addMethodMap2("PlayerEntity|ServerPlayerEntity", "isHolding", "Item");
+			addMethodMap2("VoxelShapes", "union", "VoxelShape", "or");
 			addMethodMap2("World", "getClosestPlayer", "double|double|double|double|boolean", "getNearestPlayer");
 			addMethodMap2("World", "getClosestPlayer", "double|double|double|double|java.util.function.Predicate", "getNearestPlayer");
 			addMethodMap2("World", "getPlayers", "", "players");
@@ -651,6 +851,20 @@ public final class GenerateHolders {
 					methodMap.put(method, newMethodName);
 				}
 			}
+		}
+	}
+
+	private enum ResolveState {
+		RESOLVED("%s.data"), RESOLVED_LIST("org.mtr.mapping.tool.HolderBase.convertCollection(%s)"), RESOLVED_SET("org.mtr.mapping.tool.HolderBase.convertCollection(%s)"), NONE("%s");
+
+		private final String formatter;
+
+		ResolveState(String formatter) {
+			this.formatter = formatter;
+		}
+
+		private String format(String data) {
+			return String.format(formatter, data);
 		}
 	}
 }

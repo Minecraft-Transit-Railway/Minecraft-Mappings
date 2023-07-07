@@ -27,6 +27,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.property.*;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
+import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.*;
@@ -91,6 +92,7 @@ public final class GenerateHoldersTest {
 		generateHolders.put("ShapeContext", ShapeContext.class);
 		generateHolders.put("SoundCategory", SoundCategory.class);
 		generateHolders.put("SoundEvent", SoundEvent.class);
+		generateHolders.put("Text", Text.class);
 		generateHolders.put("TextFormatting", Formatting.class);
 		generateHolders.put("TooltipContext", TooltipContext.class);
 		generateHolders.put("Vector3d", Vec3d.class);

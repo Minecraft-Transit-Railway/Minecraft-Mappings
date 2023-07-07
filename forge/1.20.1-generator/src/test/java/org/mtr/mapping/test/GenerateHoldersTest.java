@@ -9,6 +9,7 @@ import net.minecraft.core.Position;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -102,6 +103,7 @@ public final class GenerateHoldersTest {
 		generateHolders.put("ShapeContext", CollisionContext.class);
 		generateHolders.put("SoundCategory", SoundSource.class);
 		generateHolders.put("SoundEvent", SoundEvent.class);
+		generateHolders.put("Text", Component.class);
 		generateHolders.put("TextFormatting", ChatFormatting.class);
 		generateHolders.put("TooltipContext", TooltipFlag.class);
 		generateHolders.put("Vector3d", Vec3.class);

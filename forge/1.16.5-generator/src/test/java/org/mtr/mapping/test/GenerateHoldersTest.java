@@ -34,6 +34,7 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.*;
 import net.minecraft.world.chunk.AbstractChunkProvider;
@@ -94,6 +95,7 @@ public final class GenerateHoldersTest {
 		generateHolders.put("ShapeContext", ISelectionContext.class);
 		generateHolders.put("SoundCategory", SoundCategory.class);
 		generateHolders.put("SoundEvent", SoundEvent.class);
+		generateHolders.put("Text", ITextComponent.class);
 		generateHolders.put("TextFormatting", TextFormatting.class);
 		generateHolders.put("TooltipContext", ITooltipFlag.class);
 		generateHolders.put("Vector3d", Vector3d.class);

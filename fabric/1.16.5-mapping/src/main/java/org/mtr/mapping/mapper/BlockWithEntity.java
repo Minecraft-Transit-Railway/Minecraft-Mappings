@@ -1,5 +1,6 @@
 package org.mtr.mapping.mapper;
 
+import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.world.BlockView;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.BlockEntityType;
@@ -8,11 +9,11 @@ import org.mtr.mapping.holder.BlockState;
 
 import javax.annotation.Nullable;
 
-public abstract class BlockWithEntity extends net.minecraft.block.BlockWithEntity {
+public abstract class BlockWithEntity extends BlockExtension implements BlockEntityProvider {
 
 	@MappedMethod
 	public BlockWithEntity(BlockExtension.Properties properties) {
-		super(properties.blockSettings);
+		super(properties);
 	}
 
 	@MappedMethod
