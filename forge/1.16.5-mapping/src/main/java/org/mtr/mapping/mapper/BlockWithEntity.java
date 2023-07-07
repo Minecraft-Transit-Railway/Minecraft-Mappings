@@ -16,7 +16,7 @@ public abstract class BlockWithEntity extends BlockExtension {
 	}
 
 	@MappedMethod
-	public abstract <T extends BlockEntityExtension> BlockEntityType<T> getBlockEntityTypeForTicking();
+	public abstract BlockEntityType<? extends BlockEntityExtension> getBlockEntityTypeForTicking();
 
 	@Override
 	public final boolean hasTileEntity2(BlockState state) {

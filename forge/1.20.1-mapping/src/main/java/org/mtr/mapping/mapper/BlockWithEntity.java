@@ -16,7 +16,7 @@ public abstract class BlockWithEntity extends BlockExtension implements EntityBl
 	}
 
 	@MappedMethod
-	public abstract <T extends BlockEntityExtension> BlockEntityType<T> getBlockEntityTypeForTicking();
+	public abstract BlockEntityType<? extends BlockEntityExtension> getBlockEntityTypeForTicking();
 
 	@Override
 	public final net.minecraft.world.level.block.entity.BlockEntity newBlockEntity(net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state) {

@@ -28,20 +28,22 @@ public class BuildTools {
 	private final Path rootPath;
 	private final String version;
 	private final boolean isGenerator;
+	private final boolean isCommon;
 
 	public BuildTools(Project project, boolean generateHolders) throws IOException {
 		path = project.getProjectDir().toPath();
 		version = project.getVersion().toString();
 		final String[] projectNameSplit = path.getFileName().toString().split("-");
 		minecraftVersion = projectNameSplit[0];
-		final int majorVersion = Integer.parseInt(minecraftVersion.split("\\.")[1]);
+		isCommon = minecraftVersion.equals("common");
+		final int majorVersion = isCommon ? 0 : Integer.parseInt(minecraftVersion.split("\\.")[1]);
 		javaLanguageVersion = majorVersion <= 16 ? 8 : majorVersion == 17 ? 16 : 17;
 		isGenerator = projectNameSplit.length > 1 && projectNameSplit[1].equals("generator");
 		final Path parentPath = path.getParent();
 		loader = parentPath.getFileName().toString();
-		rootPath = parentPath.getParent();
+		rootPath = isCommon ? parentPath : parentPath.getParent();
 
-		if (!isGenerator) {
+		if (!isGenerator && !isCommon) {
 			final Path testFolder = path.resolve("src/test/java/org/mtr/mapping/test");
 			Files.createDirectories(testFolder);
 			final String namespace = String.format("%s-%s", loader, minecraftVersion);
@@ -77,7 +79,11 @@ public class BuildTools {
 		if (!isGenerator) {
 			final Path directory = rootPath.resolve("build/release");
 			Files.createDirectories(directory);
-			Files.copy(path.resolve(String.format(loader.equals("fabric") ? "build/devlibs/%s-mapping-%s-dev.jar" : "build/libs/%s-mapping-%s.jar", minecraftVersion, version)), directory.resolve(String.format("Minecraft-Mappings-%s-%s-%s.jar", loader, minecraftVersion, version)), StandardCopyOption.REPLACE_EXISTING);
+			Files.copy(
+					path.resolve(isCommon ? String.format("build/libs/common-%s.jar", version) : String.format(loader.equals("fabric") ? "build/devlibs/%s-mapping-%s-dev.jar" : "build/libs/%s-mapping-%s.jar", minecraftVersion, version)),
+					directory.resolve(isCommon ? String.format("Minecraft-Mappings-common-%s.jar", version) : String.format("Minecraft-Mappings-%s-%s-%s.jar", loader, minecraftVersion, version)),
+					StandardCopyOption.REPLACE_EXISTING
+			);
 		}
 	}
 

@@ -1,3 +1,5 @@
+import org.mtr.mapping.BuildTools
+
 plugins {
 	id "java"
 }
@@ -17,6 +19,12 @@ dependencies {
 java {
 	toolchain {
 		languageVersion.set(JavaLanguageVersion.of(8))
+	}
+}
+
+build {
+	doLast {
+		new BuildTools(project, false).copyBuildFile()
 	}
 }
 
