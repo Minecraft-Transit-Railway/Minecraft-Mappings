@@ -89,9 +89,9 @@ public final class GenerateHolders {
 				appendGenerics(mainStringBuilder, classObject, false, true);
 				mainStringBuilder.append(holderInfo.className);
 				appendGenerics(mainStringBuilder, classObject, false, false);
-				mainStringBuilder.append(" cast(Object data){return new ").append(holderInfo.className);
+				mainStringBuilder.append(" cast(org.mtr.mapping.tool.HolderBase data){return new ").append(holderInfo.className);
 				appendGenerics(mainStringBuilder, classObject, true, false);
-				mainStringBuilder.append("((").append(className).append(")data);}");
+				mainStringBuilder.append("((").append(className).append(")data.data);}");
 			}
 
 			processMethods(Modifier.isAbstract(classObject.getModifiers()) && !holderInfo.abstractMapping ? new Executable[0] : classObject.getConstructors(), mainStringBuilder, className, staticClassName, holderInfo, classTree);
@@ -412,6 +412,7 @@ public final class GenerateHolders {
 			addMethodMap1("Block", "getSidesShape", "getBlockSupportShape");
 			addMethodMap1("Block", "getStateForNeighborUpdate", "updateShape");
 			addMethodMap1("Block", "getStrongRedstonePower", "getDirectSignal");
+			addMethodMap1("Block", "getTranslationKey", "getDescriptionId");
 			addMethodMap1("Block", "getVisualShape", "getCameraCollisionShape");
 			addMethodMap1("Block", "getWeakRedstonePower", "getSignal");
 			addMethodMap1("Block", "hasComparatorOutput", "hasAnalogOutputSignal");
@@ -464,17 +465,19 @@ public final class GenerateHolders {
 			addMethodMap1("BlockPos", "north");
 			addMethodMap1("BlockPos", "south");
 			addMethodMap1("BlockPos", "toImmutable", "immutable");
+			addMethodMap1("BlockPos", "toShortString");
 			addMethodMap1("BlockPos", "up", "above");
 			addMethodMap1("BlockPos", "west");
+			addMethodMap1("BlockState", "cycle");
 			addMethodMap1("BlockState", "get", "getValue");
 			addMethodMap1("BlockState", "getBlock");
 			addMethodMap1("BlockState", "hasProperty", "contains");
 			addMethodMap1("BlockState", "updateNeighbors", "updateNeighbourShapes");
 			addMethodMap1("BlockState", "with", "setValue");
-			addMethodMap1("BlockView|World", "getBlockState");
-			addMethodMap1("BlockView|World", "getDismountHeight", "getBlockFloorHeight");
-			addMethodMap1("BlockView|World", "getFluidState");
-			addMethodMap1("BlockView|World", "raycastBlock", "clipWithInteractionOverride");
+			addMethodMap1("BlockView|ServerWorld|World", "getDismountHeight", "getBlockFloorHeight");
+			addMethodMap1("BlockView|ServerWorld|World", "getFluidState");
+			addMethodMap1("BlockView|ServerWorld|World", "raycastBlock", "clipWithInteractionOverride");
+			addMethodMap1("BlockView|ServerWorld|World|WorldAccess", "getBlockState");
 			addMethodMap1("BooleanProperty", "create", "of");
 			addMethodMap1("BooleanProperty|DirectionProperty|EnumProperty|IntegerProperty|Property", "getName", "name");
 			addMethodMap1("BooleanProperty|DirectionProperty|EnumProperty|IntegerProperty|Property", "getValues", "getPossibleValues");
@@ -608,6 +611,23 @@ public final class GenerateHolders {
 			addMethodMap1("ItemPlacementContext", "hitsInsideBlock", "isInside");
 			addMethodMap1("ItemPlacementContext", "offset", "at");
 			addMethodMap1("ItemPlacementContext", "shouldCancelInteraction", "isSecondaryUseActive");
+			addMethodMap1("ItemStack", "decrement", "shrink");
+			addMethodMap1("ItemStack", "getItem");
+			addMethodMap1("ItemStack", "getOrCreateTag", "getOrCreateNbt");
+			addMethodMap1("ItemStack", "getTag", "getNbt");
+			addMethodMap1("ItemStack", "getTranslationKey", "getDescriptionId");
+			addMethodMap1("ItemStack", "increment", "grow");
+			addMethodMap1("ItemUsageContext", "getBlockPos", "getClickedPos");
+			addMethodMap1("ItemUsageContext", "getHand");
+			addMethodMap1("ItemUsageContext", "getHitPos", "getClickLocation");
+			addMethodMap1("ItemUsageContext", "getHorizontalPlayerFacing", "getHorizontalDirection", "getPlayerFacing");
+			addMethodMap1("ItemUsageContext", "getPlayer");
+			addMethodMap1("ItemUsageContext", "getPlayerYaw", "getRotation");
+			addMethodMap1("ItemUsageContext", "getSide", "getClickedFace");
+			addMethodMap1("ItemUsageContext", "getStack", "getItemInHand");
+			addMethodMap1("ItemUsageContext", "getWorld", "getLevel");
+			addMethodMap1("ItemUsageContext", "hitsInsideBlock", "isInside");
+			addMethodMap1("ItemUsageContext", "shouldCancelInteraction", "isSecondaryUseActive");
 			addMethodMap1("MutableText", "asOrderedText", "getVisualOrderText");
 			addMethodMap1("MutableText", "getString", "asTruncatedString");
 			addMethodMap1("PacketBuffer", "array");
@@ -812,7 +832,7 @@ public final class GenerateHolders {
 			addMethodMap2("BlockPos", "offset", "Vector3i", "add", "relative");
 			addMethodMap2("BlockState", "canBeReplaced", "ItemPlacementContext", "canReplace");
 			addMethodMap2("BlockState", "isOf", "Block", "is");
-			addMethodMap2("BlockView|World", "getBlockEntity", "BlockPos");
+			addMethodMap2("BlockView|ServerWorld|World|WorldAccess", "getBlockEntity", "BlockPos");
 			addMethodMap2("ChunkManager", "getWorldChunk", "int|int", "getChunkNow");
 			addMethodMap2("ChunkManager", "getWorldChunk", "int|int|boolean", "getChunk");
 			addMethodMap2("CompoundTag", "putByteArray", "java.lang.String|byte[]");
@@ -824,9 +844,11 @@ public final class GenerateHolders {
 			addMethodMap2("DirectionProperty", "create", "java.lang.String|java.lang.Class<T>|T[]", "of");
 			addMethodMap2("DirectionProperty", "create", "java.lang.String|java.util.Collection<Direction>", "of");
 			addMethodMap2("DirectionProperty", "create", "java.lang.String|java.util.function.Predicate<Direction>", "of");
+			addMethodMap2("Entity|PlayerEntity|ServerPlayerEntity", "addVelocity", "double|double|double", "push");
 			addMethodMap2("Entity|PlayerEntity|ServerPlayerEntity", "getPitch", "float", "getViewXRot");
 			addMethodMap2("Entity|PlayerEntity|ServerPlayerEntity", "getPosition", "", "getPos", "position");
 			addMethodMap2("Entity|PlayerEntity|ServerPlayerEntity", "getYaw", "float", "getViewYRot");
+			addMethodMap2("Entity|PlayerEntity|ServerPlayerEntity", "pushAwayFrom", "Entity", "push");
 			addMethodMap2("Item", "hasRecipeRemainder", "", "hasCraftingRemainingItem");
 			addMethodMap2("Item", "isCorrectToolForDrops", "BlockState", "isSuitableFor");
 			addMethodMap2("MutableText", "append", "java.lang.String");

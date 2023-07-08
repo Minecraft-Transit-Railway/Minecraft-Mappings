@@ -1,6 +1,7 @@
 package org.mtr.mapping.registry;
 
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
@@ -65,6 +66,15 @@ public final class Registry extends Dummy {
 	@MappedMethod
 	public static CreativeModeTabHolder createCreativeModeTabHolder(ResourceLocation resourceLocation, Supplier<ItemStack> iconSupplier) {
 		return new CreativeModeTabHolder(FabricItemGroup.builder(resourceLocation.data).icon(() -> iconSupplier.get().data).build());
+	}
+
+	@MappedMethod
+	public static void addItemsToCreativeModeTab(CreativeModeTabHolder creativeModeTabHolder, ItemRegistryObject... itemRegistryObjects) {
+		ItemGroupEvents.modifyEntriesEvent(creativeModeTabHolder.creativeModeTab).register(content -> {
+			for (final ItemRegistryObject itemRegistryObject : itemRegistryObjects) {
+				content.add(itemRegistryObject.get());
+			}
+		});
 	}
 
 	@MappedMethod

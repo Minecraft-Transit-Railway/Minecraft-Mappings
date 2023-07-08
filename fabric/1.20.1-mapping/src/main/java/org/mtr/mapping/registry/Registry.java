@@ -1,12 +1,15 @@
 package org.mtr.mapping.registry;
 
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.text.Text;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
@@ -69,6 +72,15 @@ public final class Registry extends Dummy {
 		final ItemGroup itemGroup = FabricItemGroup.builder().icon(() -> iconSupplier.get().data).displayName(Text.translatable(String.format("itemGroup.%s.%s", resourceLocation.data.getNamespace(), resourceLocation.data.getPath()))).build();
 		OBJECTS_TO_REGISTER.add(() -> net.minecraft.registry.Registry.register(Registries.ITEM_GROUP, resourceLocation.data, itemGroup));
 		return new CreativeModeTabHolder(itemGroup, resourceLocation.data);
+	}
+
+	@MappedMethod
+	public static void addItemsToCreativeModeTab(CreativeModeTabHolder creativeModeTabHolder, ItemRegistryObject... itemRegistryObjects) {
+		ItemGroupEvents.modifyEntriesEvent(RegistryKey.of(RegistryKeys.ITEM_GROUP, creativeModeTabHolder.resourceLocation)).register(content -> {
+			for (final ItemRegistryObject itemRegistryObject : itemRegistryObjects) {
+				content.add(itemRegistryObject.get());
+			}
+		});
 	}
 
 	@MappedMethod

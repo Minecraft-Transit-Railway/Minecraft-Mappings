@@ -62,6 +62,10 @@ public final class Registry extends Dummy {
 	}
 
 	@MappedMethod
+	public static void addItemsToCreativeModeTab(CreativeModeTabHolder creativeModeTabHolder, ItemRegistryObject... itemRegistryObjects) {
+	}
+
+	@MappedMethod
 	public static void setupPackets(ResourceLocation resourceLocation) {
 		simpleChannel = NetworkRegistry.newSimpleChannel(resourceLocation.data, () -> PROTOCOL_VERSION, Registry::validProtocol, Registry::validProtocol);
 	}

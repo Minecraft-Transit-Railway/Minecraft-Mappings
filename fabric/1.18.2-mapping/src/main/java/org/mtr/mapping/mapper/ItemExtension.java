@@ -5,8 +5,6 @@ import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.ItemAbstractMapping;
 import org.mtr.mapping.registry.CreativeModeTabHolder;
 
-import java.util.function.Supplier;
-
 public abstract class ItemExtension extends ItemAbstractMapping {
 
 	public ItemExtension(Properties properties) {
@@ -27,7 +25,7 @@ public abstract class ItemExtension extends ItemAbstractMapping {
 		}
 
 		@MappedMethod
-		public Properties creativeModeTab(CreativeModeTabHolder creativeModeTabHolder, Supplier<ItemExtension> itemSupplier) {
+		public Properties creativeModeTab(CreativeModeTabHolder creativeModeTabHolder) {
 			return new Properties(itemSettings.group(creativeModeTabHolder.creativeModeTab));
 		}
 

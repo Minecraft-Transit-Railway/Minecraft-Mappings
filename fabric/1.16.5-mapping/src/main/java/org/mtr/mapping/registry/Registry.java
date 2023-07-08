@@ -66,6 +66,10 @@ public final class Registry extends Dummy {
 	}
 
 	@MappedMethod
+	public static void addItemsToCreativeModeTab(CreativeModeTabHolder creativeModeTabHolder, ItemRegistryObject... itemRegistryObjects) {
+	}
+
+	@MappedMethod
 	public static void setupPackets(ResourceLocation resourceLocation) {
 		packetsResourceLocation = resourceLocation;
 		ServerPlayNetworking.registerGlobalReceiver(resourceLocation.data, (server, player, handler, buf, responseSender) -> {
