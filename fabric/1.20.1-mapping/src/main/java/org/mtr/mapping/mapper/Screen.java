@@ -18,6 +18,7 @@ public abstract class Screen extends net.minecraft.client.gui.screen.Screen {
 		}
 	}
 
+	@Deprecated
 	@Override
 	public final void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
 		render(new GraphicsHolder(drawContext), mouseX, mouseY, delta);
@@ -47,6 +48,7 @@ public abstract class Screen extends net.minecraft.client.gui.screen.Screen {
 		super.close();
 	}
 
+	@Deprecated
 	@Override
 	public final void close() {
 		onClose();

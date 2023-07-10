@@ -8,13 +8,13 @@ import net.minecraft.util.math.vector.Vector3f;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.MutableText;
 import org.mtr.mapping.holder.OrderedText;
-import org.mtr.mapping.tool.Dummy;
+import org.mtr.mapping.tool.DummyClass;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public final class GraphicsHolder extends Dummy {
+public final class GraphicsHolder extends DummyClass {
 
 	private int matrixPushes;
 

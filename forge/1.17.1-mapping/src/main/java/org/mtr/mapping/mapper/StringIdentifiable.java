@@ -8,6 +8,7 @@ public interface StringIdentifiable extends StringRepresentable {
 	@MappedMethod
 	String asString();
 
+	@Deprecated
 	@Override
 	default String getSerializedName() {
 		return asString();

@@ -13,6 +13,7 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 		super(type);
 	}
 
+	@Deprecated
 	@Override
 	public final CompoundTag writeNbt2(CompoundTag nbt) {
 		super.writeNbt2(nbt);
@@ -20,6 +21,7 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 		return nbt;
 	}
 
+	@Deprecated
 	@Override
 	public final void fromTag2(BlockState state, CompoundTag tag) {
 		super.fromTag2(state, tag);
@@ -34,16 +36,19 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 	public void readCompoundTag(CompoundTag compoundTag) {
 	}
 
+	@Deprecated
 	@Override
 	public final NbtCompound toClientTag(NbtCompound tag) {
 		return writeNbt(tag);
 	}
 
+	@Deprecated
 	@Override
 	public final void fromClientTag(NbtCompound tag) {
 		fromTag(getCachedState(), tag);
 	}
 
+	@Deprecated
 	@Override
 	public final void tick() {
 		blockEntityTick();

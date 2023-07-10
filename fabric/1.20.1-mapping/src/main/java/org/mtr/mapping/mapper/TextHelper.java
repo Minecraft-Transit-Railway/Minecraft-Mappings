@@ -3,9 +3,9 @@ package org.mtr.mapping.mapper;
 import net.minecraft.text.Text;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.MutableText;
-import org.mtr.mapping.tool.Dummy;
+import org.mtr.mapping.tool.DummyClass;
 
-public final class TextHelper extends Dummy {
+public final class TextHelper extends DummyClass {
 
 	@MappedMethod
 	public static MutableText translatable(String key, Object... arguments) {

@@ -34,6 +34,7 @@ import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -118,6 +119,7 @@ public final class GenerateHoldersTest {
 		generateHolders.putAbstract("BlockEntity", BlockEntity.class);
 		generateHolders.putAbstract("Entity", Entity.class);
 		generateHolders.putAbstract("Item", Item.class);
+		generateHolders.putAbstract("SlabBlock", SlabBlock.class);
 		generateHolders.generate();
 	}
 }

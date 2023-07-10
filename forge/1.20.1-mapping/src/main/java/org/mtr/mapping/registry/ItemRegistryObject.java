@@ -2,15 +2,15 @@ package org.mtr.mapping.registry;
 
 import net.minecraftforge.registries.ForgeRegistries;
 import org.mtr.mapping.annotation.MappedMethod;
+import org.mtr.mapping.holder.Item;
 import org.mtr.mapping.holder.ResourceLocation;
-import org.mtr.mapping.mapper.ItemExtension;
 import org.mtr.mapping.tool.RegistryObject;
 
 import java.util.function.Consumer;
 
-public final class ItemRegistryObject extends RegistryObject<ItemExtension> {
+public final class ItemRegistryObject extends RegistryObject<Item> {
 
-	private final net.minecraftforge.registries.RegistryObject<ItemExtension> registryObject;
+	private final net.minecraftforge.registries.RegistryObject<net.minecraft.world.item.Item> registryObject;
 
 	ItemRegistryObject(ResourceLocation resourceLocation) {
 		registryObject = net.minecraftforge.registries.RegistryObject.create(resourceLocation.data, ForgeRegistries.ITEMS);
@@ -18,8 +18,8 @@ public final class ItemRegistryObject extends RegistryObject<ItemExtension> {
 
 	@MappedMethod
 	@Override
-	public ItemExtension get() {
-		return registryObject.get();
+	public Item get() {
+		return new Item(registryObject.get());
 	}
 
 	@MappedMethod
@@ -30,7 +30,7 @@ public final class ItemRegistryObject extends RegistryObject<ItemExtension> {
 
 	@MappedMethod
 	@Override
-	public void ifPresent(Consumer<ItemExtension> consumer) {
-		registryObject.ifPresent(consumer);
+	public void ifPresent(Consumer<Item> consumer) {
+		registryObject.ifPresent(item -> consumer.accept(new Item(item)));
 	}
 }

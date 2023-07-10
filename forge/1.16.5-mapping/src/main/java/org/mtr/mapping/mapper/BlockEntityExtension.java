@@ -15,6 +15,7 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 		super(type);
 	}
 
+	@Deprecated
 	@Override
 	public final CompoundTag save2(CompoundTag compoundTag) {
 		super.save2(compoundTag);
@@ -22,6 +23,7 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 		return compoundTag;
 	}
 
+	@Deprecated
 	@Override
 	public final void load2(BlockState blockState, CompoundTag compoundTag) {
 		super.load2(blockState, compoundTag);
@@ -36,6 +38,7 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 	public void readCompoundTag(CompoundTag compoundTag) {
 	}
 
+	@Deprecated
 	@Override
 	public final CompoundTag getUpdateTag2() {
 		final CompoundTag compoundTag = new CompoundTag();
@@ -43,11 +46,13 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 		return compoundTag;
 	}
 
+	@Deprecated
 	@Override
 	public final void handleUpdateTag2(BlockState blockState, CompoundTag compoundTag) {
 		readCompoundTag(compoundTag);
 	}
 
+	@Deprecated
 	@Override
 	public final SUpdateTileEntityPacket getUpdatePacket2() {
 		final CompoundNBT compoundNBT = new CompoundNBT();
@@ -55,11 +60,13 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 		return new SUpdateTileEntityPacket(worldPosition, -1, compoundNBT);
 	}
 
+	@Deprecated
 	@Override
 	public final void onDataPacket2(NetworkManager net, SUpdateTileEntityPacket pkt) {
 		readCompoundTag(new CompoundTag(pkt.getTag()));
 	}
 
+	@Deprecated
 	@Override
 	public final void tick() {
 		blockEntityTick();

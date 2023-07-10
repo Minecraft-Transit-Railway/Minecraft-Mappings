@@ -2,15 +2,15 @@ package org.mtr.mapping.registry;
 
 import net.minecraftforge.registries.ForgeRegistries;
 import org.mtr.mapping.annotation.MappedMethod;
+import org.mtr.mapping.holder.Block;
 import org.mtr.mapping.holder.ResourceLocation;
-import org.mtr.mapping.mapper.BlockExtension;
 import org.mtr.mapping.tool.RegistryObject;
 
 import java.util.function.Consumer;
 
-public final class BlockRegistryObject extends RegistryObject<BlockExtension> {
+public final class BlockRegistryObject extends RegistryObject<Block> {
 
-	private final net.minecraftforge.fmllegacy.RegistryObject<BlockExtension> registryObject;
+	private final net.minecraftforge.fmllegacy.RegistryObject<net.minecraft.world.level.block.Block> registryObject;
 
 	BlockRegistryObject(ResourceLocation resourceLocation) {
 		registryObject = net.minecraftforge.fmllegacy.RegistryObject.of(resourceLocation.data, ForgeRegistries.BLOCKS);
@@ -18,8 +18,8 @@ public final class BlockRegistryObject extends RegistryObject<BlockExtension> {
 
 	@MappedMethod
 	@Override
-	public BlockExtension get() {
-		return registryObject.get();
+	public Block get() {
+		return new Block(registryObject.get());
 	}
 
 	@MappedMethod
@@ -30,7 +30,7 @@ public final class BlockRegistryObject extends RegistryObject<BlockExtension> {
 
 	@MappedMethod
 	@Override
-	public void ifPresent(Consumer<BlockExtension> consumer) {
-		registryObject.ifPresent(consumer);
+	public void ifPresent(Consumer<Block> consumer) {
+		registryObject.ifPresent(block -> consumer.accept(new Block(block)));
 	}
 }

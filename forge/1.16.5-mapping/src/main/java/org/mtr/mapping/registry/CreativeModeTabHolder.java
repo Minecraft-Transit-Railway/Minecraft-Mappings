@@ -23,6 +23,7 @@ public final class CreativeModeTabHolder {
 			this.iconSupplier = iconSupplier;
 		}
 
+		@Deprecated
 		@Override
 		public net.minecraft.item.ItemStack makeIcon() {
 			return iconSupplier.get().data;

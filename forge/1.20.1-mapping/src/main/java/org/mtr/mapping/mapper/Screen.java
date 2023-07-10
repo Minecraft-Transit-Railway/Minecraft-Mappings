@@ -18,6 +18,7 @@ public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
 		}
 	}
 
+	@Deprecated
 	@Override
 	public final void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
 		render(new GraphicsHolder(guiGraphics), mouseX, mouseY, delta);
@@ -53,6 +54,7 @@ public abstract class Screen extends net.minecraft.client.gui.screens.Screen {
 		return super.isPauseScreen();
 	}
 
+	@Deprecated
 	@Override
 	public final boolean isPauseScreen() {
 		return shouldPause();

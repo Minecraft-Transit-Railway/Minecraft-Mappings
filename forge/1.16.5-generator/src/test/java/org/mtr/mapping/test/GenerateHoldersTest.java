@@ -2,6 +2,7 @@ package org.mtr.mapping.test;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.SlabBlock;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.client.world.ClientWorld;
@@ -110,6 +111,7 @@ public final class GenerateHoldersTest {
 		generateHolders.putAbstract("BlockEntity", TileEntity.class);
 		generateHolders.putAbstract("Entity", Entity.class);
 		generateHolders.putAbstract("Item", Item.class);
+		generateHolders.putAbstract("SlabBlock", SlabBlock.class);
 		generateHolders.generate();
 	}
 }

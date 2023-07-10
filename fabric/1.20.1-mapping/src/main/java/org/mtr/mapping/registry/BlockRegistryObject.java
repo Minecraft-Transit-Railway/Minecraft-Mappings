@@ -1,23 +1,23 @@
 package org.mtr.mapping.registry;
 
 import org.mtr.mapping.annotation.MappedMethod;
-import org.mtr.mapping.mapper.BlockExtension;
+import org.mtr.mapping.holder.Block;
 import org.mtr.mapping.tool.RegistryObject;
 
 import java.util.function.Consumer;
 
-public final class BlockRegistryObject extends RegistryObject<BlockExtension> {
+public final class BlockRegistryObject extends RegistryObject<Block> {
 
-	private final BlockExtension blockExtension;
+	private final Block block;
 
-	BlockRegistryObject(BlockExtension blockExtension) {
-		this.blockExtension = blockExtension;
+	BlockRegistryObject(Block block) {
+		this.block = block;
 	}
 
 	@MappedMethod
 	@Override
-	public BlockExtension get() {
-		return blockExtension;
+	public Block get() {
+		return block;
 	}
 
 	@MappedMethod
@@ -28,7 +28,7 @@ public final class BlockRegistryObject extends RegistryObject<BlockExtension> {
 
 	@MappedMethod
 	@Override
-	public void ifPresent(Consumer<BlockExtension> consumer) {
-		consumer.accept(blockExtension);
+	public void ifPresent(Consumer<Block> consumer) {
+		consumer.accept(block);
 	}
 }

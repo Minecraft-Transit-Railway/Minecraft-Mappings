@@ -4,30 +4,21 @@ import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.BlockEntityType;
 import org.mtr.mapping.holder.BlockPos;
 import org.mtr.mapping.holder.BlockState;
-import org.mtr.mapping.holder.BlockView;
+import org.mtr.mapping.tool.DummyInterface;
 
 import javax.annotation.Nullable;
 
-public abstract class BlockWithEntity extends BlockExtension {
+public interface BlockWithEntity extends DummyInterface {
 
 	@MappedMethod
-	public BlockWithEntity(BlockExtension.Properties properties) {
-		super(properties);
-	}
+	BlockEntityType<? extends BlockEntityExtension> getBlockEntityType();
 
 	@MappedMethod
-	public abstract BlockEntityType<? extends BlockEntityExtension> getBlockEntityTypeForTicking();
+	BlockEntitySupplier createBlockEntity();
 
-	@Override
-	public final boolean hasTileEntity2(BlockState state) {
-		return true;
+	@FunctionalInterface
+	interface BlockEntitySupplier {
+		@MappedMethod
+		BlockEntityExtension create(BlockEntityType<? extends BlockEntityExtension> type, @Nullable BlockPos blockPos, @Nullable BlockState state);
 	}
-
-	@Override
-	public final org.mtr.mapping.holder.BlockEntity createTileEntity2(BlockState state, BlockView world) {
-		return new org.mtr.mapping.holder.BlockEntity(createBlockEntity(null, null));
-	}
-
-	@MappedMethod
-	public abstract BlockEntityExtension createBlockEntity(@Nullable BlockPos blockPos, @Nullable BlockState state);
 }

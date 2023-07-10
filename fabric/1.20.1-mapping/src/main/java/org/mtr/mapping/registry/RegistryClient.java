@@ -11,13 +11,13 @@ import org.mtr.mapping.holder.PacketBuffer;
 import org.mtr.mapping.holder.ResourceLocation;
 import org.mtr.mapping.mapper.BlockEntityExtension;
 import org.mtr.mapping.mapper.BlockEntityRenderer;
-import org.mtr.mapping.tool.Dummy;
+import org.mtr.mapping.tool.DummyClass;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public final class RegistryClient extends Dummy {
+public final class RegistryClient extends DummyClass {
 
 	private static final List<Runnable> OBJECTS_TO_REGISTER = new ArrayList<>();
 

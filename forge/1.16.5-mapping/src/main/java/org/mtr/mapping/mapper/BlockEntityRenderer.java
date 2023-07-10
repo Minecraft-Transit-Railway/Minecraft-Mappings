@@ -13,6 +13,7 @@ public abstract class BlockEntityRenderer<T extends BlockEntityExtension> extend
 		super(argument.data);
 	}
 
+	@Deprecated
 	@Override
 	public final void render(T entity, float tickDelta, MatrixStack matrices, IRenderTypeBuffer vertexConsumers, int light, int overlay) {
 		render(entity, tickDelta, new GraphicsHolder(matrices, vertexConsumers), light, overlay);

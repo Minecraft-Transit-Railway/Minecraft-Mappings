@@ -89,7 +89,7 @@ public final class GenerateHolders {
 				appendGenerics(mainStringBuilder, classObject, false, true);
 				mainStringBuilder.append(holderInfo.className);
 				appendGenerics(mainStringBuilder, classObject, false, false);
-				mainStringBuilder.append(" cast(org.mtr.mapping.tool.HolderBase data){return new ").append(holderInfo.className);
+				mainStringBuilder.append(" cast(org.mtr.mapping.tool.HolderBase<?> data){return new ").append(holderInfo.className);
 				appendGenerics(mainStringBuilder, classObject, true, false);
 				mainStringBuilder.append("((").append(className).append(")data.data);}");
 			}
@@ -617,6 +617,7 @@ public final class GenerateHolders {
 			addMethodMap1("ItemStack", "getTag", "getNbt");
 			addMethodMap1("ItemStack", "getTranslationKey", "getDescriptionId");
 			addMethodMap1("ItemStack", "increment", "grow");
+			addMethodMap1("ItemStack", "isEmpty");
 			addMethodMap1("ItemUsageContext", "getBlockPos", "getClickedPos");
 			addMethodMap1("ItemUsageContext", "getHand");
 			addMethodMap1("ItemUsageContext", "getHitPos", "getClickLocation");
@@ -753,6 +754,7 @@ public final class GenerateHolders {
 			addMethodMap1("PacketBuffer", "writeVarLong");
 			addMethodMap1("PacketBuffer", "writeZero");
 			addMethodMap1("PlayerEntity|ServerPlayerEntity", "isCreative");
+			addMethodMap1("PlayerEntity|ServerPlayerEntity", "getMainHandStack", "getMainHandItem");
 			addMethodMap1("Vector3d", "crossProduct", "cross");
 			addMethodMap1("Vector3d", "distanceTo");
 			addMethodMap1("Vector3d", "dotProduct", "dot");

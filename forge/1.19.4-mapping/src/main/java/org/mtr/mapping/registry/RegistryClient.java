@@ -7,11 +7,11 @@ import org.mtr.mapping.holder.BlockEntityType;
 import org.mtr.mapping.holder.ResourceLocation;
 import org.mtr.mapping.mapper.BlockEntityExtension;
 import org.mtr.mapping.mapper.BlockEntityRenderer;
-import org.mtr.mapping.tool.Dummy;
+import org.mtr.mapping.tool.DummyClass;
 
 import java.util.function.Function;
 
-public final class RegistryClient extends Dummy {
+public final class RegistryClient extends DummyClass {
 
 	@MappedMethod
 	public static void init() {

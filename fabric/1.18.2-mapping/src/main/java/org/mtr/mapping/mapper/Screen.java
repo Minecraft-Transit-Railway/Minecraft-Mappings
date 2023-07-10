@@ -18,6 +18,7 @@ public abstract class Screen extends net.minecraft.client.gui.screen.Screen {
 		}
 	}
 
+	@Deprecated
 	@Override
 	public final void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		render(new GraphicsHolder(matrices, null), mouseX, mouseY, delta);
@@ -47,6 +48,7 @@ public abstract class Screen extends net.minecraft.client.gui.screen.Screen {
 		super.close();
 	}
 
+	@Deprecated
 	@Override
 	public final void close() {
 		onClose();

@@ -3,6 +3,7 @@ package org.mtr.mapping.test;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.block.SlabBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.item.TooltipContext;
@@ -107,6 +108,7 @@ public final class GenerateHoldersTest {
 		generateHolders.putAbstract("BlockEntity", BlockEntity.class);
 		generateHolders.putAbstract("Entity", Entity.class);
 		generateHolders.putAbstract("Item", Item.class);
+		generateHolders.putAbstract("SlabBlock", SlabBlock.class);
 		generateHolders.generate();
 	}
 }

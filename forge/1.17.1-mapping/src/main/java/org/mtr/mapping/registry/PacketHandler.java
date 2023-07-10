@@ -2,9 +2,9 @@ package org.mtr.mapping.registry;
 
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.PacketBuffer;
-import org.mtr.mapping.tool.Dummy;
+import org.mtr.mapping.tool.DummyClass;
 
-public abstract class PacketHandler extends Dummy {
+public abstract class PacketHandler extends DummyClass {
 
 	@MappedMethod
 	public abstract void write(PacketBuffer packetBuffer);

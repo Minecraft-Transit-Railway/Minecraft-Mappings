@@ -14,6 +14,7 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 		super(type, blockPos, blockState);
 	}
 
+	@Deprecated
 	@Override
 	public final CompoundTag save2(CompoundTag compoundTag) {
 		super.save2(compoundTag);
@@ -21,6 +22,7 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 		return compoundTag;
 	}
 
+	@Deprecated
 	@Override
 	public final void load2(CompoundTag compoundTag) {
 		super.load2(compoundTag);
@@ -35,6 +37,7 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 	public void readCompoundTag(CompoundTag compoundTag) {
 	}
 
+	@Deprecated
 	@Override
 	public final CompoundTag getUpdateTag2() {
 		final CompoundTag compoundTag = new CompoundTag();
@@ -42,11 +45,13 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 		return compoundTag;
 	}
 
+	@Deprecated
 	@Override
 	public final void handleUpdateTag2(CompoundTag tag) {
 		readCompoundTag(new CompoundTag());
 	}
 
+	@Deprecated
 	@Override
 	public final ClientboundBlockEntityDataPacket getUpdatePacket2() {
 		final net.minecraft.nbt.CompoundTag compoundTag = new net.minecraft.nbt.CompoundTag();
@@ -54,6 +59,7 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 		return new ClientboundBlockEntityDataPacket(worldPosition, -1, compoundTag);
 	}
 
+	@Deprecated
 	@Override
 	public final void onDataPacket2(Connection connection, ClientboundBlockEntityDataPacket packet) {
 		readCompoundTag(new CompoundTag(packet.getTag()));

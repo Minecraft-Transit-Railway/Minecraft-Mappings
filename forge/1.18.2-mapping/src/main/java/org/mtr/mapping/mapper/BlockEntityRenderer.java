@@ -11,6 +11,7 @@ public abstract class BlockEntityRenderer<T extends BlockEntityExtension> implem
 	public BlockEntityRenderer(BlockEntityRendererArgument argument) {
 	}
 
+	@Deprecated
 	@Override
 	public final void render(T entity, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
 		render(entity, tickDelta, new GraphicsHolder(matrices, vertexConsumers), light, overlay);

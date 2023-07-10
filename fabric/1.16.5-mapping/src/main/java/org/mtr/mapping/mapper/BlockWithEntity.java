@@ -1,6 +1,7 @@
 package org.mtr.mapping.mapper;
 
 import net.minecraft.block.BlockEntityProvider;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.world.BlockView;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.BlockEntityType;
@@ -9,21 +10,23 @@ import org.mtr.mapping.holder.BlockState;
 
 import javax.annotation.Nullable;
 
-public abstract class BlockWithEntity extends BlockExtension implements BlockEntityProvider {
+public interface BlockWithEntity extends BlockEntityProvider {
 
 	@MappedMethod
-	public BlockWithEntity(BlockExtension.Properties properties) {
-		super(properties);
-	}
+	BlockEntityType<? extends BlockEntityExtension> getBlockEntityType();
 
-	@MappedMethod
-	public abstract BlockEntityType<? extends BlockEntityExtension> getBlockEntityTypeForTicking();
-
+	@Deprecated
 	@Override
-	public final net.minecraft.block.entity.BlockEntity createBlockEntity(BlockView world) {
-		return createBlockEntity(null, null);
+	default BlockEntity createBlockEntity(BlockView world) {
+		return createBlockEntity().create(getBlockEntityType(), null, null);
 	}
 
 	@MappedMethod
-	public abstract BlockEntityExtension createBlockEntity(@Nullable BlockPos blockPos, @Nullable BlockState blockState);
+	BlockEntitySupplier createBlockEntity();
+
+	@FunctionalInterface
+	interface BlockEntitySupplier {
+		@MappedMethod
+		BlockEntityExtension create(BlockEntityType<? extends BlockEntityExtension> type, @Nullable BlockPos blockPos, @Nullable BlockState blockState);
+	}
 }

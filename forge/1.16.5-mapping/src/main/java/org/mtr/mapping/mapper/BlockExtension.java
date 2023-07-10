@@ -1,63 +1,39 @@
 package org.mtr.mapping.mapper;
 
-import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.state.StateContainer;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.BlockAbstractMapping;
-import org.mtr.mapping.holder.Property;
+import org.mtr.mapping.holder.BlockEntity;
+import org.mtr.mapping.holder.BlockState;
+import org.mtr.mapping.holder.BlockView;
 
-public abstract class BlockExtension extends BlockAbstractMapping {
+public abstract class BlockExtension extends BlockAbstractMapping implements BlockHelper {
 
 	@MappedMethod
-	public BlockExtension(Properties properties) {
+	public BlockExtension(BlockHelper.Properties properties) {
 		super(properties.blockSettings);
 	}
 
-	@MappedMethod
-	protected Property<?>[] blockProperties() {
-		return new Property[0];
-	}
-
+	@Deprecated
 	@Override
-	protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
-		final Property<?>[] oldProperties = blockProperties();
-		if (oldProperties.length > 0) {
-			final net.minecraft.state.Property<?>[] newProperties = new net.minecraft.state.Property[oldProperties.length];
-			for (int i = 0; i < oldProperties.length; i++) {
-				newProperties[i] = oldProperties[i].data;
-			}
-			builder.add(newProperties);
+	public final boolean hasTileEntity2(BlockState state) {
+		return this instanceof BlockWithEntity;
+	}
+
+	@Deprecated
+	@Override
+	public final org.mtr.mapping.holder.BlockEntity createTileEntity2(BlockState arg0, BlockView arg1) {
+		if (this instanceof BlockWithEntity) {
+			return new BlockEntity(((BlockWithEntity) this).createBlockEntity().create(((BlockWithEntity) this).getBlockEntityType(), null, null));
+		} else {
+			return super.createTileEntity2(arg0, arg1);
 		}
 	}
 
-	public static final class Properties {
-
-		final AbstractBlock.Properties blockSettings;
-
-		@MappedMethod
-		public Properties() {
-			blockSettings = AbstractBlock.Properties.of(Material.METAL);
-		}
-
-		private Properties(boolean blockPiston) {
-			blockSettings = AbstractBlock.Properties.of(blockPiston ? Material.HEAVY_METAL : Material.METAL);
-		}
-
-		private Properties(AbstractBlock.Properties blockSettings) {
-			this.blockSettings = blockSettings;
-		}
-
-		@MappedMethod
-		public Properties blockPiston(boolean blockPiston) {
-			return new Properties(blockPiston);
-		}
-
-		@MappedMethod
-		public Properties luminance(int luminance) {
-			return new Properties(blockSettings.lightLevel(blockState -> luminance));
-		}
+	@Deprecated
+	@Override
+	protected final void createBlockStateDefinition(StateContainer.Builder<Block, net.minecraft.block.BlockState> builder) {
+		createBlockStateDefinitionHelper(builder);
 	}
 }
