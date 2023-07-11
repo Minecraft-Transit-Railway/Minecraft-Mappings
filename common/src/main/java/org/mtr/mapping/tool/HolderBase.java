@@ -54,4 +54,13 @@ public abstract class HolderBase<T> {
 		}
 		return newArray;
 	}
+
+	@MappedMethod
+	public static <T, U extends HolderBase<T>> U[] convertArray(T[] array, IntFunction<U[]> supplier, Function<T, U> newInstance) {
+		final U[] newArray = supplier.apply(array.length);
+		for (int i = 0; i < array.length; i++) {
+			newArray[i] = newInstance.apply(array[i]);
+		}
+		return newArray;
+	}
 }

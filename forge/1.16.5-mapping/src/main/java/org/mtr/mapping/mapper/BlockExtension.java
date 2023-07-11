@@ -1,12 +1,8 @@
 package org.mtr.mapping.mapper;
 
-import net.minecraft.block.Block;
 import net.minecraft.state.StateContainer;
 import org.mtr.mapping.annotation.MappedMethod;
-import org.mtr.mapping.holder.BlockAbstractMapping;
-import org.mtr.mapping.holder.BlockEntity;
-import org.mtr.mapping.holder.BlockState;
-import org.mtr.mapping.holder.BlockView;
+import org.mtr.mapping.holder.*;
 
 public abstract class BlockExtension extends BlockAbstractMapping implements BlockHelper {
 
@@ -25,7 +21,7 @@ public abstract class BlockExtension extends BlockAbstractMapping implements Blo
 	@Override
 	public final org.mtr.mapping.holder.BlockEntity createTileEntity2(BlockState arg0, BlockView arg1) {
 		if (this instanceof BlockWithEntity) {
-			return new BlockEntity(((BlockWithEntity) this).createBlockEntity().create(((BlockWithEntity) this).getBlockEntityType(), null, null));
+			return new BlockEntity(((BlockWithEntity) this).createBlockEntity(null, null));
 		} else {
 			return super.createTileEntity2(arg0, arg1);
 		}
@@ -33,7 +29,17 @@ public abstract class BlockExtension extends BlockAbstractMapping implements Blo
 
 	@Deprecated
 	@Override
-	protected final void createBlockStateDefinition(StateContainer.Builder<Block, net.minecraft.block.BlockState> builder) {
+	protected final void createBlockStateDefinition(StateContainer.Builder<net.minecraft.block.Block, net.minecraft.block.BlockState> builder) {
 		createBlockStateDefinitionHelper(builder);
+	}
+
+	@MappedMethod
+	public static void scheduleBlockTick(World world, BlockPos pos, Block block, int ticks) {
+		world.getBlockTicks().scheduleTick(pos.data, block.data, ticks);
+	}
+
+	@MappedMethod
+	public static boolean hasScheduledTick(World world, BlockPos pos, Block block) {
+		return world.getBlockTicks().hasScheduledTick(pos.data, block.data);
 	}
 }
