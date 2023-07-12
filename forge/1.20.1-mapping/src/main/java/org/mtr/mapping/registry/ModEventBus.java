@@ -11,7 +11,7 @@ import org.mtr.mapping.holder.Block;
 import org.mtr.mapping.holder.Item;
 import org.mtr.mapping.holder.ResourceLocation;
 import org.mtr.mapping.mapper.BlockEntityExtension;
-import org.mtr.mapping.mapper.BlockItem;
+import org.mtr.mapping.mapper.BlockItemExtension;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 public final class ModEventBus {
 
 	static final Map<ResourceLocation, Supplier<Block>> BLOCKS = new HashMap<>();
-	static final Map<ResourceLocation, Supplier<BlockItem>> BLOCK_ITEMS = new HashMap<>();
+	static final Map<ResourceLocation, Supplier<BlockItemExtension>> BLOCK_ITEMS = new HashMap<>();
 	static final Map<ResourceLocation, Supplier<Item>> ITEMS = new HashMap<>();
 	static final Map<ResourceLocation, Supplier<BlockEntityType<? extends BlockEntityExtension>>> BLOCK_ENTITY_TYPES = new HashMap<>();
 	static final Set<CreativeModeTabHolder> CREATIVE_MODE_TABS = new HashSet<>();

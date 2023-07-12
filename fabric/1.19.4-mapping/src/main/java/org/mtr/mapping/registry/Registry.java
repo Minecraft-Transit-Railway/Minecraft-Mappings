@@ -10,7 +10,7 @@ import net.minecraft.registry.Registries;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
 import org.mtr.mapping.mapper.BlockEntityExtension;
-import org.mtr.mapping.mapper.BlockItem;
+import org.mtr.mapping.mapper.BlockItemExtension;
 import org.mtr.mapping.mapper.ItemHelper;
 import org.mtr.mapping.tool.DummyClass;
 import org.mtr.mapping.tool.HolderBase;
@@ -45,7 +45,7 @@ public final class Registry extends DummyClass {
 	public static BlockRegistryObject registerBlockWithBlockItem(ResourceLocation resourceLocation, Supplier<Block> supplier) {
 		final Block block = supplier.get();
 		OBJECTS_TO_REGISTER.add(() -> net.minecraft.registry.Registry.register(Registries.BLOCK, resourceLocation.data, block.data));
-		OBJECTS_TO_REGISTER.add(() -> net.minecraft.registry.Registry.register(Registries.ITEM, resourceLocation.data, new BlockItem(block, new ItemHelper.Properties())));
+		OBJECTS_TO_REGISTER.add(() -> net.minecraft.registry.Registry.register(Registries.ITEM, resourceLocation.data, new BlockItemExtension(block, new ItemHelper.Properties())));
 		return new BlockRegistryObject(block);
 	}
 

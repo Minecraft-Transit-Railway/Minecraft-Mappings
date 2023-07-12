@@ -25,6 +25,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -126,6 +127,7 @@ public final class GenerateHoldersTest {
 		generateHolders.put("WorldChunk", LevelChunk.class);
 		generateHolders.putAbstract("Block", Block.class);
 		generateHolders.putAbstract("BlockEntity", BlockEntity.class);
+		generateHolders.putAbstract("BlockItem", BlockItem.class);
 		generateHolders.putAbstract("Entity", Entity.class);
 		generateHolders.putAbstract("Item", Item.class);
 		generateHolders.putAbstract("SlabBlock", SlabBlock.class);

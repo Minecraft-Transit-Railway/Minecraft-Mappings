@@ -9,7 +9,7 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
 import org.mtr.mapping.mapper.BlockEntityExtension;
-import org.mtr.mapping.mapper.BlockItem;
+import org.mtr.mapping.mapper.BlockItemExtension;
 import org.mtr.mapping.mapper.ItemHelper;
 import org.mtr.mapping.tool.DummyClass;
 import org.mtr.mapping.tool.HolderBase;
@@ -40,7 +40,7 @@ public final class Registry extends DummyClass {
 	public static BlockRegistryObject registerBlockWithBlockItem(ResourceLocation resourceLocation, Supplier<Block> supplier) {
 		ModEventBus.BLOCKS.add(supplier);
 		final BlockRegistryObject blockRegistryObject = new BlockRegistryObject(resourceLocation);
-		ModEventBus.BLOCK_ITEMS.add(() -> new BlockItem(blockRegistryObject.get(), new ItemHelper.Properties()));
+		ModEventBus.BLOCK_ITEMS.add(() -> new BlockItemExtension(blockRegistryObject.get(), new ItemHelper.Properties()));
 		return blockRegistryObject;
 	}
 

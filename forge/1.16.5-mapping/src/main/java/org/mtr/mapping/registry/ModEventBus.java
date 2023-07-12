@@ -6,7 +6,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.mtr.mapping.holder.Block;
 import org.mtr.mapping.holder.Item;
 import org.mtr.mapping.mapper.BlockEntityExtension;
-import org.mtr.mapping.mapper.BlockItem;
+import org.mtr.mapping.mapper.BlockItemExtension;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 public final class ModEventBus {
 
 	static final Set<Supplier<Block>> BLOCKS = new HashSet<>();
-	static final Set<Supplier<BlockItem>> BLOCK_ITEMS = new HashSet<>();
+	static final Set<Supplier<BlockItemExtension>> BLOCK_ITEMS = new HashSet<>();
 	static final Set<Supplier<Item>> ITEMS = new HashSet<>();
 	static final Set<Supplier<TileEntityType<? extends BlockEntityExtension>>> BLOCK_ENTITY_TYPES = new HashSet<>();
 
