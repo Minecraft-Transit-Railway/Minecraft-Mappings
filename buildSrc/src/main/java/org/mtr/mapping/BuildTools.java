@@ -64,27 +64,25 @@ public final class BuildTools {
 			final String newGenerateFile = skipGenerate ? generateFile : generateFile.replace("@path@", path.toString().replace("\\", "/")).replace("@namespace@", namespace).replace("@writeFiles@", shouldSetup ? "true" : "false");
 			Files.write(parentPath.resolve(String.format("%s-generator/src/test/java/org/mtr/mapping/test/GenerateHolders.java", minecraftVersion)), newGenerateFile.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 
-			if (shouldSetup) {
-				final StringBuilder mainStringBuilder = new StringBuilder("package org.mtr.mapping.test;public interface MethodMaps {static void setMethodMaps() {");
-				final List<String> methods = new ArrayList<>();
-				int i = 0;
-				while (i < GLOBAL_METHOD_MAP.size()) {
-					mainStringBuilder.append("setMethodMaps").append(i).append("();");
-					final StringBuilder stringBuilder = new StringBuilder("static void setMethodMaps").append(i).append("(){");
-					int j = 0;
-					while (j < 100 && i < GLOBAL_METHOD_MAP.size()) {
-						stringBuilder.append(GLOBAL_METHOD_MAP.get(i));
-						i++;
-						j++;
-					}
-					stringBuilder.append("}");
-					methods.add(stringBuilder.toString());
+			final StringBuilder mainStringBuilder = new StringBuilder("package org.mtr.mapping.test;public interface MethodMaps {static void setMethodMaps() {");
+			final List<String> methods = new ArrayList<>();
+			int i = 0;
+			while (i < GLOBAL_METHOD_MAP.size()) {
+				mainStringBuilder.append("setMethodMaps").append(i).append("();");
+				final StringBuilder stringBuilder = new StringBuilder("static void setMethodMaps").append(i).append("(){");
+				int j = 0;
+				while (j < 100 && i < GLOBAL_METHOD_MAP.size()) {
+					stringBuilder.append(GLOBAL_METHOD_MAP.get(i));
+					i++;
+					j++;
 				}
-				mainStringBuilder.append("}");
-				methods.forEach(mainStringBuilder::append);
-				mainStringBuilder.append("}");
-				Files.write(parentPath.resolve(String.format("%s-generator/src/test/java/org/mtr/mapping/test/MethodMaps.java", minecraftVersion)), mainStringBuilder.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+				stringBuilder.append("}");
+				methods.add(stringBuilder.toString());
 			}
+			mainStringBuilder.append("}");
+			methods.forEach(mainStringBuilder::append);
+			mainStringBuilder.append("}");
+			Files.write(parentPath.resolve(String.format("%s-generator/src/test/java/org/mtr/mapping/test/MethodMaps.java", minecraftVersion)), mainStringBuilder.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 		}
 	}
 
