@@ -24,7 +24,7 @@ java {
 
 build {
 	doLast {
-		new BuildTools(project, false).copyBuildFile()
+		new BuildTools(project, "").copyBuildFile()
 	}
 }
 

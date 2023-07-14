@@ -9,7 +9,7 @@ subprojects {
 	apply plugin: "java"
 	apply plugin: "net.minecraftforge.gradle"
 
-	final BuildTools buildTools = new BuildTools(project, rootProject.getProperties().containsKey("generate"))
+	final BuildTools buildTools = new BuildTools(project, rootProject.getProperties().getOrDefault("generate", "").toString())
 	final minecraftVersion = buildTools.minecraftVersion
 
 	minecraft {

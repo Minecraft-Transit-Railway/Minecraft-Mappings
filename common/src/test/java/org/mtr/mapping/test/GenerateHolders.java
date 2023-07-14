@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -24,6 +25,7 @@ public final class GenerateHolders {
 	private static final Set<String> BLACKLISTED_SIGNATURES = Arrays.stream(Enum.class.getMethods()).map(GenerateHolders::serializeMethod).collect(Collectors.toSet());
 	private static final Path PATH = Paths.get("@path@");
 	private static final String NAMESPACE = "@namespace@";
+	private static final boolean WRITE_FILES = Boolean.parseBoolean("@writeFiles@");
 
 	static {
 		BLACKLISTED_SIGNATURES.add(serializeMethod(Modifier.PUBLIC | Modifier.STATIC, "values"));
@@ -45,21 +47,27 @@ public final class GenerateHolders {
 	public void generate() throws IOException {
 		Assumptions.assumeFalse(NAMESPACE.contains("@"));
 		final Path holdersPath = PATH.resolve("src/main/java/org/mtr/mapping/holder");
-		FileUtils.deleteDirectory(holdersPath.toFile());
+
+		if (WRITE_FILES) {
+			FileUtils.deleteDirectory(holdersPath.toFile());
+		}
 
 		for (Map.Entry<Class<?>, HolderInfo> classEntry : classMap.entrySet()) {
+			final Class<?> classObject = classEntry.getKey();
 			final HolderInfo holderInfo = classEntry.getValue();
 			if (holderInfo.abstractMapping) {
-				generate(holdersPath, classEntry.getKey(), new HolderInfo(holderInfo, holderInfo.className + "AbstractMapping", true));
-				generate(holdersPath, classEntry.getKey(), new HolderInfo(holderInfo, holderInfo.className, false));
+				generate(holdersPath, classObject, new HolderInfo(holderInfo, holderInfo.className + "AbstractMapping", true));
+				generate(holdersPath, classObject, new HolderInfo(holderInfo, holderInfo.className, false));
 			} else {
-				generate(holdersPath, classEntry.getKey(), holderInfo);
+				generate(holdersPath, classObject, holderInfo);
 			}
 		}
 
-		final Path methodsPath = PATH.resolve("../../build/existingMethods");
-		Files.createDirectories(methodsPath);
-		Files.write(methodsPath.resolve(String.format("%s.json", NAMESPACE)), classesObject.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+		if (!WRITE_FILES) {
+			final Path methodsPath = PATH.resolve("../../build/existingMethods");
+			Files.createDirectories(methodsPath);
+			Files.write(methodsPath.resolve(String.format("%s.json", NAMESPACE)), classesObject.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+		}
 	}
 
 	private void generate(Path holdersPath, Class<?> classObject, HolderInfo holderInfo) throws IOException {
@@ -78,9 +86,7 @@ public final class GenerateHolders {
 			mainStringBuilder.append(holderInfo.abstractMapping ? "abstract" : "final").append(" class ").append(holderInfo.className);
 			appendGenerics(mainStringBuilder, classObject, false, true);
 			mainStringBuilder.append(" extends ");
-			final StringBuilder classNameStringBuilder = new StringBuilder(staticClassName);
-			appendGenerics(classNameStringBuilder, classObject, false, false);
-			final String className = classNameStringBuilder.toString();
+			final String className = staticClassName + getStringFromMethod(stringBuilder -> appendGenerics(stringBuilder, classObject, false, false));
 
 			if (holderInfo.abstractMapping) {
 				mainStringBuilder.append(className).append("{");
@@ -101,8 +107,11 @@ public final class GenerateHolders {
 		}
 
 		mainStringBuilder.append("}");
-		Files.createDirectories(holdersPath);
-		Files.write(holdersPath.resolve(String.format("%s.java", holderInfo.className)), mainStringBuilder.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+
+		if (WRITE_FILES) {
+			Files.createDirectories(holdersPath);
+			Files.write(holdersPath.resolve(String.format("%s.java", holderInfo.className)), mainStringBuilder.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+		}
 	}
 
 	private void processMethods(Executable[] executables, StringBuilder mainStringBuilder, String className, String staticClassName, HolderInfo holderInfo, Map<Class<?>, Map<Type, Type>> classTree) {
@@ -112,17 +121,18 @@ public final class GenerateHolders {
 			final List<String> superList = new ArrayList<>();
 			final List<String> mappedSuperList = new ArrayList<>();
 			final List<String> resolvedSignature = new ArrayList<>();
-			final List<String> forceResolvedSignature = new ArrayList<>();
 			final Map<Type, Type> typeMap = classTree.get(executable.getDeclaringClass());
 			final int modifiers = executable.getModifiers();
 			final String originalMethodName = executable.getName();
 
-			if (isValidExecutable(executable, originalParameterList, parameterList, superList, mappedSuperList, resolvedSignature, forceResolvedSignature, typeMap) && (!Modifier.isAbstract(modifiers) || !holderInfo.abstractMapping) && !holderInfo.blacklist.contains(originalMethodName)) {
+			if (isValidExecutable(executable, originalParameterList, parameterList, superList, mappedSuperList, resolvedSignature, typeMap) && (!Modifier.isAbstract(modifiers) || !holderInfo.abstractMapping) && !holderInfo.blacklist.contains(originalMethodName)) {
 				final boolean isStatic = Modifier.isStatic(modifiers);
 				final boolean isFinal = Modifier.isFinal(modifiers);
 				final boolean isMethod = executable instanceof Method;
 				final boolean generateExtraMethod = holderInfo.abstractMapping && !isStatic && !isFinal && isMethod;
-				final String methodName = String.format("%s%s", holderInfo.getMappedMethod(mainStringBuilder, originalMethodName, forceResolvedSignature), holderInfo.abstractMapping ? "2" : "");
+
+				final String signatureKey = String.format("%s %s", Modifier.toString(modifiers), getStringFromMethod(stringBuilder -> appendMethodHeader(stringBuilder, executable, "", true, resolvedSignature, holderInfo.className, typeMap)));
+				final String methodName = String.format("%s%s", holderInfo.getMappedMethod(mainStringBuilder, signatureKey, originalMethodName), holderInfo.abstractMapping ? "2" : "");
 				mainStringBuilder.append("public ");
 
 				if (isStatic) {
@@ -151,11 +161,9 @@ public final class GenerateHolders {
 						mainStringBuilder.append(appendWrap(returnTypeClass, returnStringBuilder.toString(), methodCall, resolveState));
 					}
 
-					final StringBuilder forceResolvedReturnStringBuilder = new StringBuilder();
-					appendGenerics(forceResolvedReturnStringBuilder, returnTypeClass, typeMap, true, false, true);
 					final JsonObject methodObject = new JsonObject();
 					methodObject.addProperty("name", originalMethodName);
-					methodObject.addProperty("signature", String.format("%s %s(%s)", Modifier.toString(modifiers), forceResolvedReturnStringBuilder, String.join("|", forceResolvedSignature)));
+					methodObject.addProperty("signature", signatureKey);
 					holderInfo.methodsArray.add(methodObject);
 				} else {
 					mainStringBuilder.append("super");
@@ -178,30 +186,22 @@ public final class GenerateHolders {
 		}
 	}
 
-	private boolean isValidExecutable(Executable executable, List<String> originalParameterList, List<String> parameterList, List<String> superList, List<String> mappedSuperList, List<String> resolvedSignature, List<String> forceResolvedSignature, Map<Type, Type> typeMap) {
+	private boolean isValidExecutable(Executable executable, List<String> originalParameterList, List<String> parameterList, List<String> superList, List<String> mappedSuperList, List<String> resolvedSignature, Map<Type, Type> typeMap) {
 		if (!Modifier.isPublic(executable.getModifiers()) || executable.isSynthetic() || BLACKLISTED_SIGNATURES.contains(serializeMethod(executable))) {
 			return false;
 		}
 
 		final boolean[] allPublicParameterTypes = {true};
 		iterateTwoArrays(executable.getParameters(), executable.getGenericParameterTypes(), (parameter, type) -> {
-			final StringBuilder originalParameterStringBuilder = new StringBuilder();
-			appendGenerics(originalParameterStringBuilder, type, typeMap, false, false, false);
-			originalParameterList.add(String.format("%s %s", originalParameterStringBuilder, parameter.getName()));
+			originalParameterList.add(String.format("%s %s", getStringFromMethod(stringBuilder -> appendGenerics(stringBuilder, type, typeMap, false, false, false)), parameter.getName()));
 
 			final StringBuilder parameterStringBuilder = new StringBuilder();
 			final ResolveState resolveState = appendGenerics(parameterStringBuilder, type, typeMap, true, false, false);
 			parameterList.add(String.format("%s %s", parameterStringBuilder, parameter.getName()));
 			resolvedSignature.add(parameterStringBuilder.toString());
 
-			final StringBuilder forceResolvedParameterStringBuilder = new StringBuilder();
-			appendGenerics(forceResolvedParameterStringBuilder, type, typeMap, true, false, true);
-			forceResolvedSignature.add(forceResolvedParameterStringBuilder.toString());
-
 			superList.add(resolveState.format(parameter.getName()));
-			final StringBuilder impliedParameterStringBuilder = new StringBuilder();
-			appendGenerics(impliedParameterStringBuilder, type, typeMap, true, true, false);
-			mappedSuperList.add(appendWrap(type, impliedParameterStringBuilder.toString(), parameter.getName(), resolveState));
+			mappedSuperList.add(appendWrap(type, getStringFromMethod(stringBuilder -> appendGenerics(stringBuilder, type, typeMap, true, true, false)), parameter.getName(), resolveState));
 
 			if (!Modifier.isPublic(parameter.getType().getModifiers())) {
 				allPublicParameterTypes[0] = false;
@@ -226,7 +226,11 @@ public final class GenerateHolders {
 
 		mainStringBuilder.append("(").append(String.join(",", parameterList)).append(")");
 		appendIfNotEmpty(mainStringBuilder, executable.getGenericExceptionTypes(), "throws ", "", ",", Type::getTypeName);
-		mainStringBuilder.append("{");
+
+		if (!methodName.isEmpty()) {
+			mainStringBuilder.append("{");
+		}
+
 		return returnTypeClass;
 	}
 
@@ -299,11 +303,7 @@ public final class GenerateHolders {
 			if (impliedType) {
 				stringBuilder.append("<>");
 			} else {
-				appendIfNotEmpty(stringBuilder, ((ParameterizedType) type).getActualTypeArguments(), "<", ">", ",", innerType -> {
-					final StringBuilder innerStringBuilder = new StringBuilder();
-					appendGenerics(innerStringBuilder, innerType, typeMap, resolve, false, forceResolveAll, false);
-					return innerStringBuilder.toString();
-				});
+				appendIfNotEmpty(stringBuilder, ((ParameterizedType) type).getActualTypeArguments(), "<", ">", ",", innerType -> getStringFromMethod(innerStringBuilder -> appendGenerics(innerStringBuilder, innerType, typeMap, resolve, false, forceResolveAll, false)));
 			}
 		}
 
@@ -315,9 +315,7 @@ public final class GenerateHolders {
 			if (impliedType) {
 				return "";
 			} else if (getBounds) {
-				final StringBuilder extendsStringBuilder = new StringBuilder();
-				appendIfNotEmpty(extendsStringBuilder, typeVariable.getBounds(), " extends ", "", "&", Type::getTypeName);
-				return String.format("%s%s", typeVariable.getName(), extendsStringBuilder);
+				return String.format("%s%s", typeVariable.getName(), getStringFromMethod(extendsStringBuilder -> appendIfNotEmpty(extendsStringBuilder, typeVariable.getBounds(), " extends ", "", "&", Type::getTypeName)));
 			} else {
 				return typeVariable.getName();
 			}
@@ -369,6 +367,12 @@ public final class GenerateHolders {
 		}
 	}
 
+	private static String getStringFromMethod(Consumer<StringBuilder> consumer) {
+		final StringBuilder stringBuilder = new StringBuilder();
+		consumer.accept(stringBuilder);
+		return stringBuilder.toString();
+	}
+
 	private static String formatClassName(String className) {
 		return className.replace("$", ".");
 	}
@@ -386,7 +390,7 @@ public final class GenerateHolders {
 		return String.format("%s %s %s", modifiers, name, String.join(",", parameters));
 	}
 
-	public static final class HolderInfo {
+	static final class HolderInfo {
 
 		private final String className;
 		private final boolean abstractMapping;
@@ -396,545 +400,7 @@ public final class GenerateHolders {
 		private static final Map<String, Map<String, String>> GLOBAL_METHOD_MAP = new HashMap<>();
 
 		static {
-			addMethodMap1("Block|SlabBlock", "afterBreak", "playerDestroy");
-			addMethodMap1("Block|SlabBlock", "appendTooltip", "appendHoverText");
-			addMethodMap1("Block|SlabBlock", "asItem");
-			addMethodMap1("Block|SlabBlock", "createCuboidShape", "box");
-			addMethodMap1("Block|SlabBlock", "emitsRedstonePower", "isSignalSource");
-			addMethodMap1("Block|SlabBlock", "getAmbientOcclusionLightLevel", "getShadeBrightness");
-			addMethodMap1("Block|SlabBlock", "getBlockFromItem", "byItem");
-			addMethodMap1("Block|SlabBlock", "getCollisionShape");
-			addMethodMap1("Block|SlabBlock", "getComparatorOutput", "getAnalogOutputSignal");
-			addMethodMap1("Block|SlabBlock", "getDefaultState", "defaultBlockState");
-			addMethodMap1("Block|SlabBlock", "getFluidState");
-			addMethodMap1("Block|SlabBlock", "getInteractionShape", "getRaycastShape");
-			addMethodMap1("Block|SlabBlock", "getOcclusionShape", "getCullingShape");
-			addMethodMap1("Block|SlabBlock", "getOutlineShape", "getShape");
-			addMethodMap1("Block|SlabBlock", "getPlacementState", "getStateForPlacement");
-			addMethodMap1("Block|SlabBlock", "getRawIdFromState", "getId");
-			addMethodMap1("Block|SlabBlock", "getSidesShape", "getBlockSupportShape");
-			addMethodMap1("Block|SlabBlock", "getStateForNeighborUpdate", "updateShape");
-			addMethodMap1("Block|SlabBlock", "getStrongRedstonePower", "getDirectSignal");
-			addMethodMap1("Block|SlabBlock", "getTranslationKey", "getDescriptionId");
-			addMethodMap1("Block|SlabBlock", "getVisualShape", "getCameraCollisionShape");
-			addMethodMap1("Block|SlabBlock", "getWeakRedstonePower", "getSignal");
-			addMethodMap1("Block|SlabBlock", "hasComparatorOutput", "hasAnalogOutputSignal");
-			addMethodMap1("Block|SlabBlock", "hasRandomTicks", "isRandomlyTicking");
-			addMethodMap1("Block|SlabBlock", "isFaceFullSquare", "isFaceFull");
-			addMethodMap1("Block|SlabBlock", "isSideInvisible", "skipRendering");
-			addMethodMap1("Block|SlabBlock", "isTranslucent", "isTransparent", "propagatesSkylightDown");
-			addMethodMap1("Block|SlabBlock", "mirror");
-			addMethodMap1("Block|SlabBlock", "getStateFromRawId", "stateById");
-			addMethodMap1("Block|SlabBlock", "neighborUpdate", "neighborChanged");
-			addMethodMap1("Block|SlabBlock", "onBlockBreakStart", "attack");
-			addMethodMap1("Block|SlabBlock", "onBreak", "playerWillDestroy");
-			addMethodMap1("Block|SlabBlock", "onBroken", "destroy");
-			addMethodMap1("Block|SlabBlock", "onDestroyedByExplosion", "wasExploded");
-			addMethodMap1("Block|SlabBlock", "onDestroyedByExplosion", "wasExploded");
-			addMethodMap1("Block|SlabBlock", "onEntityCollision", "entityInside");
-			addMethodMap1("Block|SlabBlock", "onEntityLand", "updateEntityAfterFallOn");
-			addMethodMap1("Block|SlabBlock", "onPlace", "onBlockAdded");
-			addMethodMap1("Block|SlabBlock", "onPlaced", "setPlacedBy");
-			addMethodMap1("Block|SlabBlock", "onRemove", "onStateReplaced");
-			addMethodMap1("Block|SlabBlock", "onUse", "use");
-			addMethodMap1("Block|SlabBlock", "randomDisplayTick", "animateTick");
-			addMethodMap1("Block|SlabBlock", "replace", "updateOrDestroy");
-			addMethodMap1("Block|SlabBlock", "scheduledTick", "tick");
-			addMethodMap1("Block|SlabBlock", "shouldDropItemsOnExplosion", "dropFromExplosion");
-			addMethodMap1("BlockEntity", "getBlockPos", "getPos");
-			addMethodMap1("BlockEntity", "getWorld", "getLevel");
-			addMethodMap1("BlockEntity", "markDirty", "setChanged");
-			addMethodMap1("BlockEntity", "markRemoved", "setRemoved");
-			addMethodMap1("BlockHitResult", "createMissed", "miss");
-			addMethodMap1("BlockHitResult", "getBlockPos");
-			addMethodMap1("BlockHitResult", "getPos", "getLocation");
-			addMethodMap1("BlockHitResult", "getSide", "getDirection");
-			addMethodMap1("BlockHitResult", "isInsideBlock", "isInside");
-			addMethodMap1("BlockHitResult", "squaredDistanceTo", "distanceTo");
-			addMethodMap1("BlockHitResult", "withBlockPos", "withPosition");
-			addMethodMap1("BlockHitResult", "withSide", "withDirection");
-			addMethodMap1("BlockPos", "asLong");
-			addMethodMap1("BlockPos", "asLong");
-			addMethodMap1("BlockPos", "crossProduct", "cross");
-			addMethodMap1("BlockPos", "down", "below");
-			addMethodMap1("BlockPos", "east");
-			addMethodMap1("BlockPos", "fromLong", "of");
-			addMethodMap1("BlockPos", "getManhattanDistance", "distManhattan");
-			addMethodMap1("BlockPos", "getX", "unpackLongX");
-			addMethodMap1("BlockPos", "getX", "unpackLongX");
-			addMethodMap1("BlockPos", "getY", "unpackLongY");
-			addMethodMap1("BlockPos", "getY", "unpackLongY");
-			addMethodMap1("BlockPos", "getZ", "unpackLongZ");
-			addMethodMap1("BlockPos", "getZ", "unpackLongZ");
-			addMethodMap1("BlockPos", "isWithinDistance", "closerThan", "closerToCenterThan");
-			addMethodMap1("BlockPos", "north");
-			addMethodMap1("BlockPos", "south");
-			addMethodMap1("BlockPos", "toImmutable", "immutable");
-			addMethodMap1("BlockPos", "toShortString");
-			addMethodMap1("BlockPos", "up", "above");
-			addMethodMap1("BlockPos", "west");
-			addMethodMap1("BlockState", "cycle");
-			addMethodMap1("BlockState", "get", "getValue");
-			addMethodMap1("BlockState", "getBlock");
-			addMethodMap1("BlockState", "hasProperty", "contains");
-			addMethodMap1("BlockState", "updateNeighbors", "updateNeighbourShapes");
-			addMethodMap1("BlockState", "with", "setValue");
-			addMethodMap1("BlockView|ServerWorld|World", "getDismountHeight", "getBlockFloorHeight");
-			addMethodMap1("BlockView|ServerWorld|World", "getFluidState");
-			addMethodMap1("BlockView|ServerWorld|World", "raycastBlock", "clipWithInteractionOverride");
-			addMethodMap1("BlockView|ServerWorld|World|WorldAccess", "getBlockState");
-			addMethodMap1("BooleanProperty", "create", "of");
-			addMethodMap1("BooleanProperty|DirectionProperty|EnumProperty|IntegerProperty|Property", "getName", "name");
-			addMethodMap1("BooleanProperty|DirectionProperty|EnumProperty|IntegerProperty|Property", "getValues", "getPossibleValues");
-			addMethodMap1("CompoundTag", "asString", "getAsString");
-			addMethodMap1("CompoundTag", "contains");
-			addMethodMap1("CompoundTag", "containsUuid", "hasUUID");
-			addMethodMap1("CompoundTag", "copy");
-			addMethodMap1("CompoundTag", "copyFrom", "merge");
-			addMethodMap1("CompoundTag", "equals");
-			addMethodMap1("CompoundTag", "getBoolean");
-			addMethodMap1("CompoundTag", "getByte");
-			addMethodMap1("CompoundTag", "getByteArray");
-			addMethodMap1("CompoundTag", "getCompound");
-			addMethodMap1("CompoundTag", "getDouble");
-			addMethodMap1("CompoundTag", "getFloat");
-			addMethodMap1("CompoundTag", "getInt");
-			addMethodMap1("CompoundTag", "getIntArray");
-			addMethodMap1("CompoundTag", "getKeys", "getAllKeys");
-			addMethodMap1("CompoundTag", "getLong");
-			addMethodMap1("CompoundTag", "getLongArray");
-			addMethodMap1("CompoundTag", "getShort");
-			addMethodMap1("CompoundTag", "getSize", "size");
-			addMethodMap1("CompoundTag", "getString");
-			addMethodMap1("CompoundTag", "getUuid", "getUUID");
-			addMethodMap1("CompoundTag", "isEmpty");
-			addMethodMap1("CompoundTag", "putBoolean");
-			addMethodMap1("CompoundTag", "putByte");
-			addMethodMap1("CompoundTag", "putDouble");
-			addMethodMap1("CompoundTag", "putFloat");
-			addMethodMap1("CompoundTag", "putInt");
-			addMethodMap1("CompoundTag", "putIntArray");
-			addMethodMap1("CompoundTag", "putLong");
-			addMethodMap1("CompoundTag", "putLongArray");
-			addMethodMap1("CompoundTag", "putShort");
-			addMethodMap1("CompoundTag", "putString");
-			addMethodMap1("CompoundTag", "putUuid", "putUUID");
-			addMethodMap1("CompoundTag", "remove");
-			addMethodMap1("CompoundTag", "write");
-			addMethodMap1("Direction", "asRotation", "toYRot");
-			addMethodMap1("Direction", "byId", "from2DDataValue");
-			addMethodMap1("Direction", "fromHorizontal", "from3DDataValue");
-			addMethodMap1("Direction", "fromRotation", "fromYRot");
-			addMethodMap1("Direction", "getAxis");
-			addMethodMap1("Direction", "getFacing", "getNearest");
-			addMethodMap1("Direction", "getHorizontal", "get2DDataValue");
-			addMethodMap1("Direction", "getId", "get3DDataValue");
-			addMethodMap1("Direction", "getOffsetX", "getStepX");
-			addMethodMap1("Direction", "getOffsetY", "getStepY");
-			addMethodMap1("Direction", "getOffsetZ", "getStepZ");
-			addMethodMap1("Direction", "getOpposite");
-			addMethodMap1("Direction", "getUnitVector", "step");
-			addMethodMap1("Direction", "getVector", "getNormal");
-			addMethodMap1("Direction", "pointsTo", "isFacingAngle", "method_30928");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "addScoreboardTag", "addCommandTag", "addTag");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "canBeSpectated", "broadcastToPlayer");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "canExplosionDestroyBlock", "shouldBlockExplode");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getArmorItems", "getArmorSlots");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getBlockPos", "blockPosition");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getBodyY", "getY");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getDismountLocationForPassenger", "updatePassengerForDismount");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getEntityName", "getScoreboardName");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getEntityWorld", "getCommandSenderWorld");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getEyeY");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getHandItems", "getHandSlots", "getItemsHand");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getHeightOffset", "getMyRidingOffset");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getHorizontalFacing", "getDirection");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getItemsEquipped", "getAllSlots");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getMountedHeightOffset", "getPassengersRidingOffset");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getMovementDirection", "getMotionDirection");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getParticleX", "getRandomX");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getParticleZ", "getRandomZ");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getRandomBodyY", "getRandomY");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getRootVehicle");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getScoreboardTags", "getCommandTags", "getTags");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getSoundCategory", "getSoundSource");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getSwimHeight", "getFluidJumpThreshold", "method_29241");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getType");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getUuid", "getUUID");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getUuidAsString", "getStringUUID");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "getVehicle");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "hasPermissionLevel", "hasPermissions");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "interact", "interactOn");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "interactAt");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "kill");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "offsetX", "getX");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "offsetZ", "getZ");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "onPlayerCollision", "playerTouch");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "removeScoreboardTag", "removeTag");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "setBodyYaw", "setYBodyRot");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "setHeadYaw", "setYHeadRot");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "shouldRender", "shouldRenderAtSqrDistance");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "squaredDistanceTo", "distanceToSqr");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "startRiding");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "stopRiding");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "tick");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "tickRiding", "rideTick");
-			addMethodMap1("EnumProperty", "create", "of");
-			addMethodMap1("IntegerProperty", "create", "of");
-			addMethodMap1("BlockItem|Item", "appendTooltip", "appendHoverText");
-			addMethodMap1("BlockItem|Item", "asItem");
-			addMethodMap1("BlockItem|Item", "byRawId", "byId");
-			addMethodMap1("BlockItem|Item", "canMine", "canAttackBlock");
-			addMethodMap1("BlockItem|Item", "finishUsing", "finishUsingItem");
-			addMethodMap1("BlockItem|Item", "fromBlock", "byBlock");
-			addMethodMap1("BlockItem|Item", "getDefaultStack", "getDefaultInstance");
-			addMethodMap1("BlockItem|Item", "getRawId", "getId");
-			addMethodMap1("BlockItem|Item", "hasGlint", "isFoil");
-			addMethodMap1("BlockItem|Item", "inventoryTick");
-			addMethodMap1("BlockItem|Item", "isEnchantable");
-			addMethodMap1("BlockItem|Item", "isFood", "isEdible");
-			addMethodMap1("BlockItem|Item", "isNbtSynced", "shouldOverrideMultiplayerNbt", "shouldSyncTagToClient");
-			addMethodMap1("BlockItem|Item", "isNetworkSynced", "isComplex");
-			addMethodMap1("BlockItem|Item", "onCraft", "onCraftedBy");
-			addMethodMap1("BlockItem|Item", "onStoppedUsing", "releaseUsing");
-			addMethodMap1("BlockItem|Item", "postMine", "mineBlock");
-			addMethodMap1("BlockItem|Item", "usageTick", "onUseTick");
-			addMethodMap1("BlockItem|Item", "useOnBlock", "useOn");
-			addMethodMap1("BlockItem|Item", "useOnEntity", "interactLivingEntity");
-			addMethodMap1("ItemPlacementContext", "canPlace");
-			addMethodMap1("ItemPlacementContext", "canReplaceExisting", "replacingClickedOnBlock");
-			addMethodMap1("ItemPlacementContext", "getBlockPos", "getClickedPos");
-			addMethodMap1("ItemPlacementContext", "getClickedFace", "getSide");
-			addMethodMap1("ItemPlacementContext", "getHand");
-			addMethodMap1("ItemPlacementContext", "getHitPos", "getClickLocation");
-			addMethodMap1("ItemPlacementContext", "getPlayer");
-			addMethodMap1("ItemPlacementContext", "getPlayerFacing", "getHorizontalPlayerFacing", "getHorizontalDirection");
-			addMethodMap1("ItemPlacementContext", "getPlayerLookDirection", "getNearestLookingDirection");
-			addMethodMap1("ItemPlacementContext", "getPlayerYaw", "getRotation");
-			addMethodMap1("ItemPlacementContext", "getStack", "getItemInHand");
-			addMethodMap1("ItemPlacementContext", "getWorld", "getLevel");
-			addMethodMap1("ItemPlacementContext", "hitsInsideBlock", "isInside");
-			addMethodMap1("ItemPlacementContext", "offset", "at");
-			addMethodMap1("ItemPlacementContext", "shouldCancelInteraction", "isSecondaryUseActive");
-			addMethodMap1("ItemStack", "decrement", "shrink");
-			addMethodMap1("ItemStack", "getItem");
-			addMethodMap1("ItemStack", "getOrCreateTag", "getOrCreateNbt");
-			addMethodMap1("ItemStack", "getTag", "getNbt");
-			addMethodMap1("ItemStack", "getTranslationKey", "getDescriptionId");
-			addMethodMap1("ItemStack", "increment", "grow");
-			addMethodMap1("ItemStack", "isEmpty");
-			addMethodMap1("ItemUsageContext", "getBlockPos", "getClickedPos");
-			addMethodMap1("ItemUsageContext", "getHand");
-			addMethodMap1("ItemUsageContext", "getHitPos", "getClickLocation");
-			addMethodMap1("ItemUsageContext", "getHorizontalPlayerFacing", "getHorizontalDirection", "getPlayerFacing");
-			addMethodMap1("ItemUsageContext", "getPlayer");
-			addMethodMap1("ItemUsageContext", "getPlayerYaw", "getRotation");
-			addMethodMap1("ItemUsageContext", "getSide", "getClickedFace");
-			addMethodMap1("ItemUsageContext", "getStack", "getItemInHand");
-			addMethodMap1("ItemUsageContext", "getWorld", "getLevel");
-			addMethodMap1("ItemUsageContext", "hitsInsideBlock", "isInside");
-			addMethodMap1("ItemUsageContext", "shouldCancelInteraction", "isSecondaryUseActive");
-			addMethodMap1("MutableText", "asOrderedText", "getVisualOrderText");
-			addMethodMap1("MutableText", "getString", "asTruncatedString");
-			addMethodMap1("PacketBuffer", "array");
-			addMethodMap1("PacketBuffer", "arrayOffset");
-			addMethodMap1("PacketBuffer", "asReadOnly");
-			addMethodMap1("PacketBuffer", "bytesBefore");
-			addMethodMap1("PacketBuffer", "capacity");
-			addMethodMap1("PacketBuffer", "copy");
-			addMethodMap1("PacketBuffer", "ensureWritable");
-			addMethodMap1("PacketBuffer", "forEachByte");
-			addMethodMap1("PacketBuffer", "forEachByteDesc");
-			addMethodMap1("PacketBuffer", "getBoolean");
-			addMethodMap1("PacketBuffer", "getByte");
-			addMethodMap1("PacketBuffer", "getBytes");
-			addMethodMap1("PacketBuffer", "getChar");
-			addMethodMap1("PacketBuffer", "getCharSequence");
-			addMethodMap1("PacketBuffer", "getDouble");
-			addMethodMap1("PacketBuffer", "getDoubleLE");
-			addMethodMap1("PacketBuffer", "getFloat");
-			addMethodMap1("PacketBuffer", "getFloatLE");
-			addMethodMap1("PacketBuffer", "getInt");
-			addMethodMap1("PacketBuffer", "getIntLE");
-			addMethodMap1("PacketBuffer", "getMedium");
-			addMethodMap1("PacketBuffer", "getMediumLE");
-			addMethodMap1("PacketBuffer", "getUnsignedMedium");
-			addMethodMap1("PacketBuffer", "getUnsignedMediumLE");
-			addMethodMap1("PacketBuffer", "getUnsignedShort");
-			addMethodMap1("PacketBuffer", "getUnsignedShortLE");
-			addMethodMap1("PacketBuffer", "hasArray");
-			addMethodMap1("PacketBuffer", "hashCode");
-			addMethodMap1("PacketBuffer", "hasMemoryAddress");
-			addMethodMap1("PacketBuffer", "indexOf");
-			addMethodMap1("PacketBuffer", "isDirect");
-			addMethodMap1("PacketBuffer", "isReadable");
-			addMethodMap1("PacketBuffer", "isReadOnly");
-			addMethodMap1("PacketBuffer", "isWritable");
-			addMethodMap1("PacketBuffer", "maxCapacity");
-			addMethodMap1("PacketBuffer", "maxWritableBytes");
-			addMethodMap1("PacketBuffer", "readableBytes");
-			addMethodMap1("PacketBuffer", "readBlockHitResult");
-			addMethodMap1("PacketBuffer", "readBlockHitResult");
-			addMethodMap1("PacketBuffer", "readBlockPos");
-			addMethodMap1("PacketBuffer", "readBoolean");
-			addMethodMap1("PacketBuffer", "readByte");
-			addMethodMap1("PacketBuffer", "readByteArray");
-			addMethodMap1("PacketBuffer", "readBytes");
-			addMethodMap1("PacketBuffer", "readChar");
-			addMethodMap1("PacketBuffer", "readCharSequence");
-			addMethodMap1("PacketBuffer", "readDate");
-			addMethodMap1("PacketBuffer", "readDouble");
-			addMethodMap1("PacketBuffer", "readDoubleLE");
-			addMethodMap1("PacketBuffer", "readEnumConstant", "readEnum");
-			addMethodMap1("PacketBuffer", "readerIndex");
-			addMethodMap1("PacketBuffer", "readFloat");
-			addMethodMap1("PacketBuffer", "readFloatLE");
-			addMethodMap1("PacketBuffer", "readIdentifier", "readResourceLocation");
-			addMethodMap1("PacketBuffer", "readInt");
-			addMethodMap1("PacketBuffer", "readIntArray", "readVarIntArray");
-			addMethodMap1("PacketBuffer", "readIntLE");
-			addMethodMap1("PacketBuffer", "readItemStack", "readItem");
-			addMethodMap1("PacketBuffer", "readLong");
-			addMethodMap1("PacketBuffer", "readLongLE");
-			addMethodMap1("PacketBuffer", "readMedium");
-			addMethodMap1("PacketBuffer", "readMediumLE");
-			addMethodMap1("PacketBuffer", "readRetainedSlice");
-			addMethodMap1("PacketBuffer", "readShort");
-			addMethodMap1("PacketBuffer", "readShortLE");
-			addMethodMap1("PacketBuffer", "readSlice");
-			addMethodMap1("PacketBuffer", "readString", "readUtf");
-			addMethodMap1("PacketBuffer", "readUnlimitedNbt", "readAnySizeNbt");
-			addMethodMap1("PacketBuffer", "readUnsignedByte");
-			addMethodMap1("PacketBuffer", "readUnsignedInt");
-			addMethodMap1("PacketBuffer", "readUnsignedIntLE");
-			addMethodMap1("PacketBuffer", "readUnsignedMedium");
-			addMethodMap1("PacketBuffer", "readUnsignedMediumLE");
-			addMethodMap1("PacketBuffer", "readUnsignedShort");
-			addMethodMap1("PacketBuffer", "readUnsignedShortLE");
-			addMethodMap1("PacketBuffer", "readUuid", "readUUID");
-			addMethodMap1("PacketBuffer", "readVarInt");
-			addMethodMap1("PacketBuffer", "readVarLong");
-			addMethodMap1("PacketBuffer", "refCnt");
-			addMethodMap1("PacketBuffer", "release");
-			addMethodMap1("PacketBuffer", "retain");
-			addMethodMap1("PacketBuffer", "setBoolean");
-			addMethodMap1("PacketBuffer", "setBytes");
-			addMethodMap1("PacketBuffer", "setCharSequence");
-			addMethodMap1("PacketBuffer", "setDouble");
-			addMethodMap1("PacketBuffer", "setDoubleLE");
-			addMethodMap1("PacketBuffer", "setFloat");
-			addMethodMap1("PacketBuffer", "setFloatLE");
-			addMethodMap1("PacketBuffer", "skipBytes");
-			addMethodMap1("PacketBuffer", "writableBytes");
-			addMethodMap1("PacketBuffer", "writeBlockHitResult");
-			addMethodMap1("PacketBuffer", "writeBlockPos");
-			addMethodMap1("PacketBuffer", "writeBoolean");
-			addMethodMap1("PacketBuffer", "writeByte");
-			addMethodMap1("PacketBuffer", "writeByteArray");
-			addMethodMap1("PacketBuffer", "writeBytes");
-			addMethodMap1("PacketBuffer", "writeChar");
-			addMethodMap1("PacketBuffer", "writeCharSequence");
-			addMethodMap1("PacketBuffer", "writeDate");
-			addMethodMap1("PacketBuffer", "writeDouble");
-			addMethodMap1("PacketBuffer", "writeDoubleLE");
-			addMethodMap1("PacketBuffer", "writeEnumConstant", "writeEnum");
-			addMethodMap1("PacketBuffer", "writeFloat");
-			addMethodMap1("PacketBuffer", "writeFloatLE");
-			addMethodMap1("PacketBuffer", "writeIdentifier", "writeResourceLocation");
-			addMethodMap1("PacketBuffer", "writeInt");
-			addMethodMap1("PacketBuffer", "writeIntArray", "writeVarIntArray");
-			addMethodMap1("PacketBuffer", "writeIntLE");
-			addMethodMap1("PacketBuffer", "writeLong");
-			addMethodMap1("PacketBuffer", "writeLongArray");
-			addMethodMap1("PacketBuffer", "writeLongLE");
-			addMethodMap1("PacketBuffer", "writeMedium");
-			addMethodMap1("PacketBuffer", "writeMediumLE");
-			addMethodMap1("PacketBuffer", "writeResourceLocation", "writeIdentifier");
-			addMethodMap1("PacketBuffer", "writerIndex");
-			addMethodMap1("PacketBuffer", "writeShort");
-			addMethodMap1("PacketBuffer", "writeShortLE");
-			addMethodMap1("PacketBuffer", "writeString", "writeUtf");
-			addMethodMap1("PacketBuffer", "writeUuid", "writeUUID");
-			addMethodMap1("PacketBuffer", "writeVarInt");
-			addMethodMap1("PacketBuffer", "writeVarLong");
-			addMethodMap1("PacketBuffer", "writeZero");
-			addMethodMap1("PlayerEntity|ServerPlayerEntity", "getGameProfile");
-			addMethodMap1("PlayerEntity|ServerPlayerEntity", "getMainHandStack", "getMainHandItem");
-			addMethodMap1("PlayerEntity|ServerPlayerEntity", "isCreative");
-			addMethodMap1("Entity|PlayerEntity|ServerPlayerEntity", "isSneaking", "isShiftKeyDown");
-			addMethodMap1("Scoreboard", "addObjective");
-			addMethodMap1("Scoreboard", "addPlayerToTeam");
-			addMethodMap1("Scoreboard", "addTeam", "addPlayerTeam");
-			addMethodMap1("Scoreboard", "clearPlayerTeam", "removePlayerFromTeam");
-			addMethodMap1("Scoreboard", "containsObjective", "hasObjective");
-			addMethodMap1("Scoreboard", "forEachScore", "forAllObjectives");
-			addMethodMap1("Scoreboard", "getDisplaySlotId", "getDisplaySlotByName");
-			addMethodMap1("Scoreboard", "getDisplaySlotName");
-			addMethodMap1("Scoreboard", "getDisplaySlotNames");
-			addMethodMap1("Scoreboard", "getKnownPlayers", "getTrackedPlayers");
-			addMethodMap1("Scoreboard", "getNullableObjective", "getOrCreateObjective");
-			addMethodMap1("Scoreboard", "getObjective");
-			addMethodMap1("Scoreboard", "getObjectiveForSlot", "getDisplayObjective");
-			addMethodMap1("Scoreboard", "getObjectiveNames");
-			addMethodMap1("Scoreboard", "getObjectives");
-			addMethodMap1("Scoreboard", "getPlayerScore", "getOrCreatePlayerScore");
-			addMethodMap1("Scoreboard", "getPlayerTeam", "getPlayerTeam");
-			addMethodMap1("Scoreboard", "getTeam", "getPlayersTeam");
-			addMethodMap1("Scoreboard", "getTeamNames");
-			addMethodMap1("Scoreboard", "playerHasObjective", "hasPlayerScore");
-			addMethodMap1("Scoreboard", "removeObjective");
-			addMethodMap1("Scoreboard", "removeTeam", "removePlayerTeam");
-			addMethodMap1("Scoreboard", "resetEntityScore", "entityRemoved");
-			addMethodMap1("Scoreboard", "resetPlayerScore");
-			addMethodMap1("Scoreboard", "setObjectiveSlot", "setDisplayObjective");
-			addMethodMap1("Scoreboard", "updateExistingObjective", "onObjectiveChanged");
-			addMethodMap1("Scoreboard", "updateObjective", "onObjectiveAdded");
-			addMethodMap1("Scoreboard", "updatePlayerScore", "onPlayerRemoved", "onPlayerScoreRemoved");
-			addMethodMap1("Scoreboard", "updateRemovedObjective", "onObjectiveRemoved");
-			addMethodMap1("Scoreboard", "updateRemovedTeam", "onTeamRemoved");
-			addMethodMap1("Scoreboard", "updateScore", "onScoreChanged");
-			addMethodMap1("Scoreboard", "updateScoreboardTeam", "onTeamChanged");
-			addMethodMap1("Scoreboard", "updateScoreboardTeamAndPlayers", "onTeamAdded");
-			addMethodMap1("ScoreboardCriterion", "getDefaultRenderType");
-			addMethodMap1("ScoreboardCriterion", "getOrCreateStatCriterion", "byName");
-			addMethodMap1("ScoreboardCriterion", "isReadOnly");
-			addMethodMap1("ScoreboardObjective", "getCriterion", "getCriteria");
-			addMethodMap1("ScoreboardObjective", "getDisplayName");
-			addMethodMap1("ScoreboardObjective", "getName");
-			addMethodMap1("ScoreboardObjective", "getRenderType");
-			addMethodMap1("ScoreboardObjective", "getScoreboard");
-			addMethodMap1("ScoreboardObjective", "setDisplayName");
-			addMethodMap1("ScoreboardObjective", "setRenderType");
-			addMethodMap1("ScoreboardObjective", "toHoverableText", "getFormattedDisplayName");
-			addMethodMap1("ScoreboardPlayerScore", "clearScore", "reset");
-			addMethodMap1("ScoreboardPlayerScore", "getObjective");
-			addMethodMap1("ScoreboardPlayerScore", "getPlayerName", "getOwner");
-			addMethodMap1("ScoreboardPlayerScore", "getScore");
-			addMethodMap1("ScoreboardPlayerScore", "getScoreboard");
-			addMethodMap1("ScoreboardPlayerScore", "incrementScore", "add", "increment");
-			addMethodMap1("ScoreboardPlayerScore", "isLocked");
-			addMethodMap1("ScoreboardPlayerScore", "setLocked");
-			addMethodMap1("ScoreboardPlayerScore", "setScore");
-			addMethodMap1("ServerWorld|World", "breakBlock", "destroyBlock");
-			addMethodMap1("ServerWorld|World", "containsFluid", "containsAnyLiquid");
-			addMethodMap1("ServerWorld|World", "destroyBlockProgress", "setBlockBreakingInfo");
-			addMethodMap1("ServerWorld|World", "getChunkAsView", "getChunkForCollisions");
-			addMethodMap1("ServerWorld|World", "getEntityById", "getEntity");
-			addMethodMap1("ServerWorld|World", "getLunarTime", "dayTime");
-			addMethodMap1("ServerWorld|World", "getNextMapId", "getFreeMapId");
-			addMethodMap1("ServerWorld|World", "getPlayerByUuid", "getPlayerByUUID");
-			addMethodMap1("ServerWorld|World", "getRandom");
-			addMethodMap1("ServerWorld|World", "getRandomPosInChunk", "getBlockRandomPos");
-			addMethodMap1("ServerWorld|World", "getServer");
-			addMethodMap1("ServerWorld|World", "getTime", "getGameTime");
-			addMethodMap1("ServerWorld|World", "getTopPosition", "getHeightmapPos");
-			addMethodMap1("ServerWorld|World", "isAir", "isEmptyBlock");
-			addMethodMap1("ServerWorld|World", "isClient", "isClientSide");
-			addMethodMap1("ServerWorld|World", "isDay");
-			addMethodMap1("ServerWorld|World", "isDirectionSolid", "loadedAndEntityCanStandOnFace");
-			addMethodMap1("ServerWorld|World", "isEmittingRedstonePower", "hasSignal");
-			addMethodMap1("ServerWorld|World", "isNight");
-			addMethodMap1("ServerWorld|World", "isPlayerInRange", "hasNearbyAlivePlayer");
-			addMethodMap1("ServerWorld|World", "isRaining");
-			addMethodMap1("ServerWorld|World", "isSavingDisabled", "noSave");
-			addMethodMap1("ServerWorld|World", "isThundering");
-			addMethodMap1("ServerWorld|World", "isTopSolid", "loadedAndEntityCanStandOn");
-			addMethodMap1("ServerWorld|World", "isWater", "isWaterAt");
-			addMethodMap1("ServerWorld|World", "removeBlock");
-			addMethodMap1("ServerWorld|World", "setBlockState", "setBlockAndUpdate", "setBlock");
-			addMethodMap1("ServerWorld|World", "spawnEntity", "addFreshEntity");
-			addMethodMap1("ServerWorld|World", "syncWorldEvent", "levelEvent");
-			addMethodMap1("ServerWorld|World", "updateNeighbors", "updateNeighborsAt");
-			addMethodMap1("Vector3d", "crossProduct", "cross");
-			addMethodMap1("Vector3d", "distanceTo");
-			addMethodMap1("Vector3d", "dotProduct", "dot");
-			addMethodMap1("Vector3d", "floorAlongAxes", "align");
-			addMethodMap1("Vector3d", "getComponentAlongAxis", "get");
-			addMethodMap1("Vector3d", "getX", "x");
-			addMethodMap1("Vector3d", "getY", "y");
-			addMethodMap1("Vector3d", "getZ", "z");
-			addMethodMap1("Vector3d", "isInRange", "closerThan");
-			addMethodMap1("Vector3d", "length");
-			addMethodMap1("Vector3d", "lengthSquared", "lengthSqr");
-			addMethodMap1("Vector3d", "multiply", "scale");
-			addMethodMap1("Vector3d", "negate", "reverse");
-			addMethodMap1("Vector3d", "normalize");
-			addMethodMap1("Vector3d", "of", "atLowerCornerOf");
-			addMethodMap1("Vector3d", "ofBottomCenter", "atBottomCenterOf");
-			addMethodMap1("Vector3d", "ofCenter", "atCenterOf");
-			addMethodMap1("Vector3d", "ofCenter", "upFromBottomCenterOf");
-			addMethodMap1("Vector3d", "relativize", "vectorTo");
-			addMethodMap1("Vector3d", "rotateX", "xRot");
-			addMethodMap1("Vector3d", "rotateY", "yRot");
-			addMethodMap1("Vector3d", "rotateZ", "zRot");
-			addMethodMap1("Vector3d", "squaredDistanceTo", "distanceToSqr");
-			addMethodMap1("Vector3d", "subtract");
-			addMethodMap1("Vector3d", "unpackRgb", "fromRGB24");
-			addMethodMap1("Vector3f", "getX", "x");
-			addMethodMap1("Vector3f", "getY", "y");
-			addMethodMap1("Vector3f", "getZ", "z");
-			addMethodMap1("Vector3i", "crossProduct", "cross");
-			addMethodMap1("Vector3i", "down", "above");
-			addMethodMap1("Vector3i", "getComponentAlongAxis", "get");
-			addMethodMap1("Vector3i", "getManhattanDistance", "distManhattan");
-			addMethodMap1("Vector3i", "isWithinDistance", "closerThan", "closerToCenterThan");
-			addMethodMap1("Vector3i", "up", "below");
-			addMethodMap1("VoxelShapes", "empty");
-			addMethodMap1("VoxelShapes", "fullCube", "block");
-			addMethodMap1("World", "getChunkManager", "getChunkSource");
-			addMethodMap1("World", "getScoreboard");
-			addMethodMap2("Block|SlabBlock", "getPickStack", "BlockView|BlockPos|BlockState", "getCloneItemStack");
-			addMethodMap2("Block|SlabBlock", "rotate", "BlockState|Rotation");
-			addMethodMap2("BlockState", "isAir", "");
-			addMethodMap2("BlockPos", "offset", "Axis|int", "add", "relative");
-			addMethodMap2("BlockPos", "offset", "Direction", "add", "relative");
-			addMethodMap2("BlockPos", "offset", "Direction|int", "add", "relative");
-			addMethodMap2("BlockPos", "offset", "int|int|int", "add", "relative");
-			addMethodMap2("BlockPos", "offset", "long|Direction", "add", "relative");
-			addMethodMap2("BlockPos", "offset", "long|int|int|int", "add", "relative");
-			addMethodMap2("BlockPos", "offset", "Vector3i", "add", "relative");
-			addMethodMap2("BlockState", "canBeReplaced", "ItemPlacementContext", "canReplace");
-			addMethodMap2("BlockState", "isOf", "Block", "is");
-			addMethodMap2("BlockView|ServerWorld|World|WorldAccess", "getBlockEntity", "BlockPos");
-			addMethodMap2("ChunkManager", "getWorldChunk", "int|int", "getChunkNow");
-			addMethodMap2("ChunkManager", "getWorldChunk", "int|int|boolean", "getChunk");
-			addMethodMap2("CompoundTag", "putByteArray", "java.lang.String|byte[]");
-			addMethodMap2("Direction", "rotateYClockwise", "", "getClockWise");
-			addMethodMap2("Direction", "rotateYCounterclockwise", "", "getCounterClockWise");
-			addMethodMap2("DirectionProperty", "create", "java.lang.String|java.lang.Class<T>", "of");
-			addMethodMap2("DirectionProperty", "create", "java.lang.String|java.lang.Class<T>|java.util.Collection<T>", "of");
-			addMethodMap2("DirectionProperty", "create", "java.lang.String|java.lang.Class<T>|java.util.function.Predicate<T>", "of");
-			addMethodMap2("DirectionProperty", "create", "java.lang.String|java.lang.Class<T>|T[]", "of");
-			addMethodMap2("DirectionProperty", "create", "java.lang.String|java.util.Collection<Direction>", "of");
-			addMethodMap2("DirectionProperty", "create", "java.lang.String|java.util.function.Predicate<Direction>", "of");
-			addMethodMap2("Entity|PlayerEntity|ServerPlayerEntity", "addVelocity", "double|double|double", "push");
-			addMethodMap2("Entity|PlayerEntity|ServerPlayerEntity", "getPitch", "float", "getViewXRot");
-			addMethodMap2("Entity|PlayerEntity|ServerPlayerEntity", "getPosition", "", "getPos", "position");
-			addMethodMap2("Entity|PlayerEntity|ServerPlayerEntity", "getYaw", "float", "getViewYRot");
-			addMethodMap2("Entity|PlayerEntity|ServerPlayerEntity", "pushAwayFrom", "Entity", "push");
-			addMethodMap2("BlockItem|Item", "hasRecipeRemainder", "", "hasCraftingRemainingItem");
-			addMethodMap2("BlockItem|Item", "isCorrectToolForDrops", "BlockState", "isSuitableFor");
-			addMethodMap2("MutableText", "append", "java.lang.String");
-			addMethodMap2("MutableText", "formatted", "TextFormatting", "withStyle");
-			addMethodMap2("PacketBuffer", "readLongArray", "long[]");
-			addMethodMap2("PacketBuffer", "readLongArray", "long[]|int");
-			addMethodMap2("PacketBuffer", "writeItemStack", "ItemStack", "writeItem");
-			addMethodMap2("PlayerEntity|ServerPlayerEntity", "isHolding", "Item");
-			addMethodMap2("PlayerEntity|ServerPlayerEntity", "sendMessage", "Text|boolean", "displayClientMessage");
-			addMethodMap2("Scoreboard", "removePlayerFromTeam", "String", "Team");
-			addMethodMap2("ServerWorld|World", "getClosestPlayer", "double|double|double|double|boolean", "getNearestPlayer");
-			addMethodMap2("ServerWorld|World", "getClosestPlayer", "double|double|double|double|java.util.function.Predicate", "getNearestPlayer");
-			addMethodMap2("ServerWorld|World", "getPlayers", "", "players");
-			addMethodMap2("ServerWorld|World", "isChunkLoaded", "int|int", "hasChunk");
-			addMethodMap2("ServerWorld|World", "playSound", "double|double|double|SoundEvent|SoundCategory|float|float|boolean", "playLocalSound", "playSoundFromEntity");
-			addMethodMap2("ServerWorld|World", "playSound", "PlayerEntity|BlockPos|SoundEvent|SoundCategory|float|float", "playLocalSound", "playSoundFromEntity");
-			addMethodMap2("ServerWorld|World", "playSound", "PlayerEntity|double|double|double|SoundEvent|SoundCategory|float|float", "playLocalSound", "playSoundFromEntity");
-			addMethodMap2("ServerWorld|World", "playSound", "PlayerEntity|Entity|SoundEvent|SoundCategory|float|float", "playLocalSound", "playSoundFromEntity");
-			addMethodMap2("Vector3d", "add", "double|double|double");
-			addMethodMap2("Vector3d", "add", "Vector3d");
-			addMethodMap2("Vector3i", "getSquaredDistance", "Vector3i", "distSqr");
-			addMethodMap2("Vector3i", "offset", "Direction|int", "relative");
-			addMethodMap2("VoxelShapes", "union", "VoxelShape|VoxelShape", "or");
+			MethodMaps.setMethodMaps();
 		}
 
 		private HolderInfo(String className, boolean abstractMapping, String... blacklistMethods) {
@@ -953,14 +419,14 @@ public final class GenerateHolders {
 			methodsArray = abstractMapping ? new JsonArray() : holderInfo.methodsArray;
 		}
 
-		private String getMappedMethod(StringBuilder stringBuilder, String methodName, List<String> signature) {
-			final String newMethodName1 = methodMap.get(methodName);
+		private String getMappedMethod(StringBuilder stringBuilder, String signatureKey, String methodName) {
+			final String newMethodName1 = methodMap.get(String.format("%s|%s", methodName, signatureKey));
 			if (newMethodName1 != null) {
 				stringBuilder.append("@org.mtr.mapping.annotation.MappedMethod ");
 				return newMethodName1;
 			}
 
-			final String newMethodName2 = methodMap.get(String.format("%s|%s", methodName, String.join("|", signature)));
+			final String newMethodName2 = methodMap.get(methodName);
 			if (newMethodName2 == null) {
 				stringBuilder.append("@Deprecated ");
 				return methodName;
@@ -970,12 +436,12 @@ public final class GenerateHolders {
 			}
 		}
 
-		private static void addMethodMap1(String className, String newMethodName, String... methods) {
+		static void addMethodMap1(String className, String newMethodName, String... methods) {
 			addMethodMap(className, newMethodName, methods);
 			addMethodMap(className, newMethodName, newMethodName);
 		}
 
-		private static void addMethodMap2(String className, String newMethodName, String signature, String... methods) {
+		static void addMethodMap2(String className, String newMethodName, String signature, String... methods) {
 			for (final String method : methods) {
 				addMethodMap(className, newMethodName, String.format("%s|%s", method, signature));
 			}
