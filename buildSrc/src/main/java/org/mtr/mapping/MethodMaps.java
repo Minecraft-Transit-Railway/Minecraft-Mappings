@@ -26,7 +26,10 @@ public interface MethodMaps {
 		BuildTools.addMethodMap1("BlockPos", "down", "below");
 		BuildTools.addMethodMap1("BlockPos", "toImmutable", "immutable");
 		BuildTools.addMethodMap1("BlockPos", "up", "above");
+		BuildTools.addMethodMap2("BlockState", "prepare", "public final void (WorldAccess,BlockPos,int)", "updateIndirectNeighbourShapes");
+		BuildTools.addMethodMap2("BlockState", "updateNeighbors", "public final void (WorldAccess,BlockPos,int)", "updateNeighbourShapes");
 		BuildTools.addMethodMap1("BlockState", "with", "setValue");
+		BuildTools.addMethodMap1("BooleanProperty|EnumProperty|IntegerProperty", "of", "create");
 		BuildTools.addMethodMap1("CompoundTag", "getSize", "size");
 		BuildTools.addMethodMap1("Direction", "byId", "from2DDataValue");
 		BuildTools.addMethodMap1("Direction", "fromHorizontal", "from3DDataValue");
@@ -126,8 +129,10 @@ public interface MethodMaps {
 		BuildTools.addMethodMap2("Entity|PlayerEntity|ServerPlayerEntity", "getYaw", "public float (float)", "getViewYRot");
 		BuildTools.addMethodMap2("Entity|PlayerEntity|ServerPlayerEntity", "pushAwayFrom", "public void (Entity)", "push");
 		BuildTools.addMethodMap2("ServerWorld|World", "isChunkLoaded", "public boolean (int,int)", "hasChunk");
-		BuildTools.blacklist("CompoundTag", "getType", "public byte ()");
+		BuildTools.addMethodMap2("ServerWorld|World", "isSavingDisabled", "public boolean ()", "noSave");
+		BuildTools.addMethodMap2("ServerWorld|World|WorldView", "isClient", "public boolean ()", "isClientSide");
 		BuildTools.blacklist("BlockEntityType", "get", "public T (BlockView,BlockPos)");
+		BuildTools.blacklist("CompoundTag", "getType", "public byte ()");
 		BuildTools.blacklist("EntityType", "create", "public T (World)");
 	}
 }

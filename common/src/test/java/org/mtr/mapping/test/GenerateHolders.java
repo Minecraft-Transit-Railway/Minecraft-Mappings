@@ -6,6 +6,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Assumptions;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -71,7 +72,7 @@ public final class GenerateHolders {
 	}
 
 	private void generate(Path holdersPath, Class<?> classObject, HolderInfo holderInfo) throws IOException {
-		final StringBuilder mainStringBuilder = new StringBuilder("package org.mtr.mapping.holder;public ");
+		final StringBuilder mainStringBuilder = new StringBuilder("package org.mtr.mapping.holder;@javax.annotation.ParametersAreNonnullByDefault public ");
 		final String staticClassName = formatClassName(classObject.getName());
 		final Map<Class<?>, Map<Type, Type>> classTree = new HashMap<>();
 		walkClassTree(classTree, classObject, classObject1 -> new Type[]{classObject1.getGenericSuperclass()}, classObject1 -> new Class<?>[]{classObject1.getSuperclass()});
@@ -133,6 +134,7 @@ public final class GenerateHolders {
 
 				final String signatureKey = String.format("%s %s", Modifier.toString(modifiers), getStringFromMethod(stringBuilder -> appendMethodHeader(stringBuilder, executable, "", true, resolvedSignature, holderInfo.className, typeMap)));
 				final String methodName = String.format("%s%s", holderInfo.getMappedMethod(mainStringBuilder, signatureKey, originalMethodName), holderInfo.abstractMapping ? "2" : "");
+				appendAnnotations(mainStringBuilder, executable);
 				mainStringBuilder.append("public ");
 
 				if (isStatic) {
@@ -146,18 +148,16 @@ public final class GenerateHolders {
 				final Type returnTypeClass = appendMethodHeader(mainStringBuilder, executable, methodName, true, parameterList, holderInfo.className, typeMap);
 				final boolean isVoid = returnTypeClass == null || returnTypeClass == Void.TYPE;
 				final String variables = String.format("(%s)", String.join(",", superList));
-				final ResolveState resolveState;
 
 				if (isMethod) {
 					final String methodCall = String.format("%s.%s%s", isStatic ? staticClassName : holderInfo.abstractMapping ? "super" : "this.data", originalMethodName, variables);
 
 					if (isVoid) {
 						mainStringBuilder.append(methodCall);
-						resolveState = ResolveState.NONE;
 					} else {
 						mainStringBuilder.append("return ");
 						final StringBuilder returnStringBuilder = new StringBuilder();
-						resolveState = appendGenerics(returnStringBuilder, returnTypeClass, typeMap, true, true, false);
+						final ResolveState resolveState = appendGenerics(returnStringBuilder, returnTypeClass, typeMap, true, true);
 						mainStringBuilder.append(appendWrap(returnTypeClass, returnStringBuilder.toString(), methodCall, resolveState));
 					}
 
@@ -172,7 +172,6 @@ public final class GenerateHolders {
 					} else {
 						mainStringBuilder.append("(new ").append(className).append(variables).append(")");
 					}
-					resolveState = ResolveState.NONE;
 				}
 
 				mainStringBuilder.append(";}");
@@ -180,7 +179,17 @@ public final class GenerateHolders {
 				if (generateExtraMethod) {
 					mainStringBuilder.append("@Deprecated public final ");
 					final Type returnTypeClass2 = appendMethodHeader(mainStringBuilder, executable, originalMethodName, false, originalParameterList, holderInfo.className, typeMap);
-					mainStringBuilder.append(returnTypeClass2 == null || returnTypeClass2 == Void.TYPE ? "" : "return ").append(resolveState.format(String.format("%s(%s)", methodName, String.join(",", mappedSuperList)))).append(";}");
+					final String methodCall = String.format("%s(%s)", methodName, String.join(",", mappedSuperList));
+
+					if (returnTypeClass2 == null || returnTypeClass2 == Void.TYPE) {
+						mainStringBuilder.append(methodCall);
+					} else {
+						mainStringBuilder.append("final ");
+						final ResolveState resolveState = appendGenerics(mainStringBuilder, returnTypeClass, typeMap, true, false);
+						mainStringBuilder.append(" tempResult=").append(methodCall).append(";").append("return ").append(resolveState.format("tempResult", true));
+					}
+
+					mainStringBuilder.append(";}");
 				}
 			}
 		}
@@ -193,15 +202,17 @@ public final class GenerateHolders {
 
 		final boolean[] allPublicParameterTypes = {true};
 		iterateTwoArrays(executable.getParameters(), executable.getGenericParameterTypes(), (parameter, type) -> {
-			originalParameterList.add(String.format("%s %s", getStringFromMethod(stringBuilder -> appendGenerics(stringBuilder, type, typeMap, false, false, false)), parameter.getName()));
+			originalParameterList.add(String.format("%s %s", getStringFromMethod(stringBuilder -> appendGenerics(stringBuilder, type, typeMap, false, false)), parameter.getName()));
 
 			final StringBuilder parameterStringBuilder = new StringBuilder();
-			final ResolveState resolveState = appendGenerics(parameterStringBuilder, type, typeMap, true, false, false);
-			parameterList.add(String.format("%s %s", parameterStringBuilder, parameter.getName()));
+			final ResolveState resolveState = appendGenerics(parameterStringBuilder, type, typeMap, true, false);
+			final StringBuilder annotationsStringBuilder = new StringBuilder();
+			final boolean nullable = appendAnnotations(annotationsStringBuilder, parameter);
+			parameterList.add(String.format("%s%s %s", annotationsStringBuilder, parameterStringBuilder, parameter.getName()));
 			resolvedSignature.add(parameterStringBuilder.toString());
 
-			superList.add(resolveState.format(parameter.getName()));
-			mappedSuperList.add(appendWrap(type, getStringFromMethod(stringBuilder -> appendGenerics(stringBuilder, type, typeMap, true, true, false)), parameter.getName(), resolveState));
+			superList.add(resolveState.format(parameter.getName(), nullable));
+			mappedSuperList.add(appendWrap(type, getStringFromMethod(stringBuilder -> appendGenerics(stringBuilder, type, typeMap, true, true)), parameter.getName(), resolveState));
 
 			if (!Modifier.isPublic(parameter.getType().getModifiers())) {
 				allPublicParameterTypes[0] = false;
@@ -217,7 +228,7 @@ public final class GenerateHolders {
 		if (executable instanceof Method) {
 			appendGenerics(mainStringBuilder, executable, false, true);
 			returnTypeClass = ((Method) executable).getGenericReturnType();
-			appendGenerics(mainStringBuilder, returnTypeClass, typeMap, resolve, false, false);
+			appendGenerics(mainStringBuilder, returnTypeClass, typeMap, resolve, false);
 			mainStringBuilder.append(" ").append(methodName);
 		} else {
 			returnTypeClass = null;
@@ -242,8 +253,7 @@ public final class GenerateHolders {
 				} else {
 					return String.format("new %s(%s)", resolvedType, methodCall);
 				}
-			case RESOLVED_LIST:
-			case RESOLVED_SET:
+			case RESOLVED_COLLECTION:
 				final Type[] types = returnTypeClass instanceof ParameterizedType ? ((ParameterizedType) returnTypeClass).getActualTypeArguments() : new Type[0];
 				if (types.length == 1 && types[0] instanceof Class) {
 					final Class<?> newReturnClass = (Class<?>) types[0];
@@ -258,22 +268,20 @@ public final class GenerateHolders {
 		}
 	}
 
-	private ResolveState appendGenerics(StringBuilder stringBuilder, Type type, Map<Type, Type> typeMap, boolean resolve, boolean impliedType, boolean forceResolveAll) {
-		return appendGenerics(stringBuilder, type, typeMap, resolve, impliedType, forceResolveAll, true);
+	private ResolveState appendGenerics(StringBuilder stringBuilder, Type type, Map<Type, Type> typeMap, boolean resolve, boolean impliedType) {
+		return appendGenerics(stringBuilder, type, typeMap, resolve, impliedType, true);
 	}
 
-	private ResolveState appendGenerics(StringBuilder stringBuilder, Type type, Map<Type, Type> typeMap, boolean resolve, boolean impliedType, boolean forceResolveAll, boolean isFirst) {
+	private ResolveState appendGenerics(StringBuilder stringBuilder, Type type, Map<Type, Type> typeMap, boolean resolve, boolean impliedType, boolean isFirst) {
 		final boolean isParameterized = type instanceof ParameterizedType;
 		final Type mappedType = getOrReturn(typeMap, isParameterized ? ((ParameterizedType) type).getRawType() : type);
 		final ResolveState resolveState;
 
-		if ((forceResolveAll || isFirst) && mappedType instanceof Class) {
+		if (isFirst && mappedType instanceof Class) {
 			final HolderInfo resolvedClassName = classMap.get(mappedType);
 			final boolean isResolved = resolve && resolvedClassName != null;
 			stringBuilder.append(isResolved ? resolvedClassName.className : formatClassName(mappedType.getTypeName()));
-			final boolean isList = mappedType.equals(List.class);
-			final boolean isSet = mappedType.equals(Set.class);
-			final Type[] typeArguments = resolve && isParameterized && (isList || isSet) ? ((ParameterizedType) type).getActualTypeArguments() : new Type[0];
+			final Type[] typeArguments = resolve && isParameterized && (mappedType.equals(List.class) || mappedType.equals(Set.class)) ? ((ParameterizedType) type).getActualTypeArguments() : new Type[0];
 
 			if (typeArguments.length == 1 && typeArguments[0] instanceof Class) {
 				final HolderInfo resolvedCollectionClassName = classMap.get(typeArguments[0]);
@@ -281,7 +289,7 @@ public final class GenerateHolders {
 					resolveState = ResolveState.NONE;
 				} else {
 					stringBuilder.append("<").append(resolvedCollectionClassName.className).append(">");
-					return isList ? ResolveState.RESOLVED_LIST : ResolveState.RESOLVED_SET;
+					return ResolveState.RESOLVED_COLLECTION;
 				}
 			} else {
 				resolveState = isResolved ? ResolveState.RESOLVED : ResolveState.NONE;
@@ -303,7 +311,7 @@ public final class GenerateHolders {
 			if (impliedType) {
 				stringBuilder.append("<>");
 			} else {
-				appendIfNotEmpty(stringBuilder, ((ParameterizedType) type).getActualTypeArguments(), "<", ">", ",", innerType -> getStringFromMethod(innerStringBuilder -> appendGenerics(innerStringBuilder, innerType, typeMap, resolve, false, forceResolveAll, false)));
+				appendIfNotEmpty(stringBuilder, ((ParameterizedType) type).getActualTypeArguments(), "<", ">", ",", innerType -> getStringFromMethod(innerStringBuilder -> appendGenerics(innerStringBuilder, innerType, typeMap, resolve, false, false)));
 			}
 		}
 
@@ -320,6 +328,19 @@ public final class GenerateHolders {
 				return typeVariable.getName();
 			}
 		});
+	}
+
+	private static boolean appendAnnotations(StringBuilder stringBuilder, AnnotatedElement annotatedElement) {
+		boolean hasNullable = false;
+		for (final Annotation annotation : annotatedElement.getAnnotations()) {
+			if (annotation.toString().toLowerCase(Locale.ENGLISH).contains("nullable")) {
+				hasNullable = true;
+			}
+		}
+		if (hasNullable) {
+			stringBuilder.append("@javax.annotation.Nullable ");
+		}
+		return hasNullable;
 	}
 
 	private static void walkClassTree(Map<Class<?>, Map<Type, Type>> genericClassTree, Class<?> classObject, Function<Class<?>, Type[]> getGenericTypes, Function<Class<?>, Class<?>[]> getSuper) {
@@ -460,16 +481,20 @@ public final class GenerateHolders {
 	}
 
 	private enum ResolveState {
-		RESOLVED("%s.data"), RESOLVED_LIST("org.mtr.mapping.tool.HolderBase.convertCollection(%s)"), RESOLVED_SET("org.mtr.mapping.tool.HolderBase.convertCollection(%s)"), NONE("%s");
+		RESOLVED("%1$s.data", "%1$s==null?null:%1$s.data"),
+		RESOLVED_COLLECTION("org.mtr.mapping.tool.HolderBase.convertCollection(%1$s)", "%1$s==null?null:org.mtr.mapping.tool.HolderBase.convertCollection(%1$s)"),
+		NONE("%s", "%s");
 
 		private final String formatter;
+		private final String formatterNullable;
 
-		ResolveState(String formatter) {
+		ResolveState(String formatter, String formatterNullable) {
 			this.formatter = formatter;
+			this.formatterNullable = formatterNullable;
 		}
 
-		private String format(String data) {
-			return String.format(formatter, data);
+		private String format(String data, boolean nullable) {
+			return String.format(nullable ? formatterNullable : formatter, data);
 		}
 	}
 }

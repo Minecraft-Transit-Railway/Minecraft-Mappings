@@ -7,8 +7,6 @@ import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.BlockPos;
 import org.mtr.mapping.holder.BlockState;
 
-import javax.annotation.Nullable;
-
 public interface BlockWithEntity extends BlockEntityProvider {
 
 	@Deprecated
@@ -18,5 +16,5 @@ public interface BlockWithEntity extends BlockEntityProvider {
 	}
 
 	@MappedMethod
-	BlockEntityExtension createBlockEntity(@Nullable BlockPos pos, @Nullable BlockState state);
+	BlockEntityExtension createBlockEntity(BlockPos pos, BlockState state);
 }
