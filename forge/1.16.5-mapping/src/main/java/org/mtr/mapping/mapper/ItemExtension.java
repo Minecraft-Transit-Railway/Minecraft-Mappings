@@ -8,7 +8,7 @@ import org.mtr.mapping.holder.ItemAbstractMapping;
 import org.mtr.mapping.holder.PlayerEntity;
 import org.mtr.mapping.holder.World;
 
-public abstract class ItemExtension extends ItemAbstractMapping implements ItemHelper {
+public class ItemExtension extends ItemAbstractMapping implements ItemHelper {
 
 	public ItemExtension(ItemHelper.Properties properties) {
 		super(properties.itemSettings);

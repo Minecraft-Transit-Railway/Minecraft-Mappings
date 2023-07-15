@@ -6,7 +6,7 @@ import net.minecraft.state.StateContainer;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.SlabBlockAbstractMapping;
 
-public abstract class SlabBlockExtension extends SlabBlockAbstractMapping implements BlockHelper {
+public class SlabBlockExtension extends SlabBlockAbstractMapping implements BlockHelper {
 
 	@MappedMethod
 	public SlabBlockExtension(BlockHelper.Properties properties) {

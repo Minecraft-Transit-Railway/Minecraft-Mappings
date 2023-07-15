@@ -8,7 +8,7 @@ import org.mtr.mapping.holder.BlockAbstractMapping;
 import org.mtr.mapping.holder.BlockPos;
 import org.mtr.mapping.holder.World;
 
-public abstract class BlockExtension extends BlockAbstractMapping implements BlockHelper {
+public class BlockExtension extends BlockAbstractMapping implements BlockHelper {
 
 	@MappedMethod
 	public BlockExtension(BlockHelper.Properties properties) {

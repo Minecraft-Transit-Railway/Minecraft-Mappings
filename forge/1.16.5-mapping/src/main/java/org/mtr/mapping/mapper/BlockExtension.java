@@ -4,7 +4,7 @@ import net.minecraft.state.StateContainer;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
 
-public abstract class BlockExtension extends BlockAbstractMapping implements BlockHelper {
+public class BlockExtension extends BlockAbstractMapping implements BlockHelper {
 
 	@MappedMethod
 	public BlockExtension(BlockHelper.Properties properties) {

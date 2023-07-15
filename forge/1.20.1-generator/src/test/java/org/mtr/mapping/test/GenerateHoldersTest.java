@@ -25,10 +25,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.*;
@@ -130,6 +127,7 @@ public final class GenerateHoldersTest {
 		generateHolders.putAbstract("BlockItem", BlockItem.class);
 		generateHolders.putAbstract("Entity", Entity.class);
 		generateHolders.putAbstract("Item", Item.class);
+		generateHolders.putAbstract("PlaceableOnWaterItem", PlaceOnWaterBlockItem.class);
 		generateHolders.putAbstract("SlabBlock", SlabBlock.class);
 		generateHolders.generate();
 	}

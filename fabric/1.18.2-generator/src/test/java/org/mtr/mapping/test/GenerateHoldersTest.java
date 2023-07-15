@@ -110,6 +110,7 @@ public final class GenerateHoldersTest {
 		generateHolders.putAbstract("BlockItem", BlockItem.class);
 		generateHolders.putAbstract("Entity", Entity.class);
 		generateHolders.putAbstract("Item", Item.class);
+		generateHolders.putAbstract("PlaceableOnWaterItem", LilyPadItem.class);
 		generateHolders.putAbstract("SlabBlock", SlabBlock.class);
 		generateHolders.generate();
 	}
