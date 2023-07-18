@@ -33,8 +33,12 @@ logs/
 holder/
 fabric/*/src/test/java/org/mtr/mapping/test/SearchForMappedMethodsTest.java
 forge/*/src/test/java/org/mtr/mapping/test/SearchForMappedMethodsTest.java
-fabric/*/src/test/java/org/mtr/mapping/test/GenerateHolders.java
-forge/*/src/test/java/org/mtr/mapping/test/GenerateHolders.java
+fabric/*/src/test/java/org/mtr/mapping/test/ClassScannerBase.java
+forge/*/src/test/java/org/mtr/mapping/test/ClassScannerBase.java
+fabric/*/src/test/java/org/mtr/mapping/test/ClassScannerCreateMaps.java
+forge/*/src/test/java/org/mtr/mapping/test/ClassScannerCreateMaps.java
+fabric/*/src/test/java/org/mtr/mapping/test/ClassScannerGenerateHolders.java
+forge/*/src/test/java/org/mtr/mapping/test/ClassScannerGenerateHolders.java
 fabric/*/src/test/java/org/mtr/mapping/test/MethodMaps.java
 forge/*/src/test/java/org/mtr/mapping/test/MethodMaps.java
 latest.log

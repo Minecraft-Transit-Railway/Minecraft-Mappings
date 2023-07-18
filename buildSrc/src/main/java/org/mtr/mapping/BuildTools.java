@@ -1,5 +1,6 @@
 package org.mtr.mapping;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -15,6 +16,9 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public final class BuildTools {
 
@@ -25,14 +29,13 @@ public final class BuildTools {
 	private final Path path;
 	private final Path rootPath;
 	private final String version;
-	private final boolean isGenerator;
+	private final boolean isGeneratorProject;
 	private final boolean isCommon;
 
 	private static boolean needsSetup = true;
-	private static final List<String> GLOBAL_METHOD_MAP = new ArrayList<>();
 	private static final int MAPPINGS_TO_USE = 4; // Fabric 1.20.x
 
-	public BuildTools(Project project, String generateHolders) throws IOException {
+	public BuildTools(Project project, String generateProperty) throws IOException {
 		path = project.getProjectDir().toPath();
 		version = project.getVersion().toString();
 		final String[] projectNameSplit = path.getFileName().toString().split("-");
@@ -40,49 +43,27 @@ public final class BuildTools {
 		isCommon = minecraftVersion.equals("common");
 		final int majorVersion = isCommon ? 0 : Integer.parseInt(minecraftVersion.split("\\.")[1]);
 		javaLanguageVersion = majorVersion <= 16 ? 8 : majorVersion == 17 ? 16 : 17;
-		isGenerator = projectNameSplit.length > 1 && projectNameSplit[1].equals("generator");
+		isGeneratorProject = projectNameSplit.length > 1 && projectNameSplit[1].equals("generator");
 		final Path parentPath = path.getParent();
 		loader = parentPath.getFileName().toString();
 		rootPath = isCommon ? parentPath : parentPath.getParent();
-		final boolean skipGenerate = generateHolders.isEmpty();
-		final boolean shouldSetup = generateHolders.equals("normal");
+		final GenerationStatus generationStatus = generateProperty.isEmpty() ? GenerationStatus.NONE : generateProperty.equals("normal") ? GenerationStatus.GENERATE : GenerationStatus.DRY_RUN;
 
-		if (shouldSetup && needsSetup) {
+		if (generationStatus == GenerationStatus.GENERATE && needsSetup) {
 			setup(rootPath);
 		}
 
-		if (!isGenerator && !isCommon) {
+		if (!isGeneratorProject && !isCommon) {
 			final Path testFolder = path.resolve("src/test/java/org/mtr/mapping/test");
 			Files.createDirectories(testFolder);
 			final String namespace = String.format("%s-%s", loader, minecraftVersion);
+			final Path generatorTestFolder = parentPath.resolve(String.format("%s-generator/src/test/java/org/mtr/mapping/test", minecraftVersion));
 
-			final String testFile = FileUtils.readFileToString(rootPath.resolve("common/src/test/java/org/mtr/mapping/test/SearchForMappedMethodsTest.java").toFile(), StandardCharsets.UTF_8);
-			final String newTestFile = skipGenerate ? testFile.replace("@namespace@", namespace) : testFile;
-			Files.write(testFolder.resolve("SearchForMappedMethodsTest.java"), newTestFile.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-
-			final String generateFile = FileUtils.readFileToString(rootPath.resolve("common/src/test/java/org/mtr/mapping/test/GenerateHolders.java").toFile(), StandardCharsets.UTF_8);
-			final String newGenerateFile = skipGenerate ? generateFile : generateFile.replace("@path@", path.toString().replace("\\", "/")).replace("@namespace@", namespace).replace("@writeFiles@", shouldSetup ? "true" : "false");
-			Files.write(parentPath.resolve(String.format("%s-generator/src/test/java/org/mtr/mapping/test/GenerateHolders.java", minecraftVersion)), newGenerateFile.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-
-			final StringBuilder mainStringBuilder = new StringBuilder("package org.mtr.mapping.test;public interface MethodMaps {static void setMethodMaps() {");
-			final List<String> methods = new ArrayList<>();
-			int i = 0;
-			while (i < GLOBAL_METHOD_MAP.size()) {
-				mainStringBuilder.append("setMethodMaps").append(i).append("();");
-				final StringBuilder stringBuilder = new StringBuilder("static void setMethodMaps").append(i).append("(){");
-				int j = 0;
-				while (j < 100 && i < GLOBAL_METHOD_MAP.size()) {
-					stringBuilder.append(GLOBAL_METHOD_MAP.get(i));
-					i++;
-					j++;
-				}
-				stringBuilder.append("}");
-				methods.add(stringBuilder.toString());
-			}
-			mainStringBuilder.append("}");
-			methods.forEach(mainStringBuilder::append);
-			mainStringBuilder.append("}");
-			Files.write(parentPath.resolve(String.format("%s-generator/src/test/java/org/mtr/mapping/test/MethodMaps.java", minecraftVersion)), mainStringBuilder.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+			copyFile(rootPath, testFolder, path, "SearchForMappedMethodsTest", text -> generationStatus == GenerationStatus.NONE ? text.replace("@namespace@", namespace) : text);
+			copyFile(rootPath, generatorTestFolder, path, "ClassScannerBase", text -> text.replace("@namespace@", namespace).replace("@generation@", generationStatus.toString()));
+			copyFile(rootPath, generatorTestFolder, path, "ClassScannerCreateMaps", text -> text);
+			copyFile(rootPath, generatorTestFolder, path, "ClassScannerGenerateHolders", text -> text);
+			Files.deleteIfExists(generatorTestFolder.resolve("MethodMaps.java"));
 		}
 	}
 
@@ -104,7 +85,7 @@ public final class BuildTools {
 	}
 
 	public void copyBuildFile() throws IOException {
-		if (!isGenerator) {
+		if (!isGeneratorProject) {
 			final Path directory = rootPath.resolve("build/release");
 			Files.createDirectories(directory);
 			Files.copy(
@@ -115,28 +96,9 @@ public final class BuildTools {
 		}
 	}
 
-	static void addMethodMap1(String className, String newMethodName, String... methods) {
-		addMethodMap(String.format("1(\"%s\",\"%s\"", className, newMethodName), methods);
-	}
-
-	static void addMethodMap2(String className, String newMethodName, String signature, String... methods) {
-		addMethodMap(String.format("2(\"%s\",\"%s\",\"%s\"", className, newMethodName, signature), methods);
-	}
-
-	static void blacklist(String className, String method, String signature) {
-		GLOBAL_METHOD_MAP.removeIf(map -> map.startsWith(String.format("GenerateHolders.HolderInfo.addMethodMap2(\"%s\",\"%s\",\"%s\"", className, method, signature)));
-	}
-
-	private static void addMethodMap(String prefix, String... methods) {
-		final StringBuilder stringBuilder = new StringBuilder();
-		if (methods.length > 0) {
-			stringBuilder.append(",\"");
-		}
-		stringBuilder.append(String.join("\",\"", methods));
-		if (methods.length > 0) {
-			stringBuilder.append("\"");
-		}
-		GLOBAL_METHOD_MAP.add(String.format("GenerateHolders.HolderInfo.addMethodMap%s%s);", prefix, stringBuilder));
+	private static void copyFile(Path rootPath, Path testFolder, Path projectPath, String fileName, Function<String, String> replacements) throws IOException {
+		final String testFile = FileUtils.readFileToString(rootPath.resolve(String.format("common/src/test/java/org/mtr/mapping/test/%s.java", fileName)).toFile(), StandardCharsets.UTF_8);
+		Files.write(testFolder.resolve(fileName + ".java"), replacements.apply(testFile).replace("@path@", projectPath.toString().replace("\\", "/")).getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 	}
 
 	private static JsonElement getJson(String url) {
@@ -158,78 +120,105 @@ public final class BuildTools {
 
 	private static void setup(Path rootPath) throws IOException {
 		final Map<String, Map<String, List<MethodInfo>>> allContent = new HashMap<>();
+		final Path jsonPath = rootPath.resolve("build/existingMethods");
 		final Path outputPath = rootPath.resolve("build/libraryMethods");
 		Files.createDirectories(outputPath);
 		final List<String> versions = new ArrayList<>();
 
-		try (final DirectoryStream<Path> directoryStream = Files.newDirectoryStream(rootPath.resolve("build/existingMethods"))) {
-			for (Path path : directoryStream) {
-				final JsonObject classesObject = JsonParser.parseString(FileUtils.readFileToString(path.toFile(), StandardCharsets.UTF_8)).getAsJsonObject();
+		try (final DirectoryStream<Path> directoryStream = Files.newDirectoryStream(jsonPath)) {
+			for (final Path path : directoryStream) {
 				final String version = path.getFileName().toString();
-				versions.add(version);
-
-				classesObject.keySet().forEach(className -> {
-					allContent.computeIfAbsent(className, innerContent -> new HashMap<>());
-					classesObject.getAsJsonArray(className).forEach(method -> {
-						final MethodInfo methodInfo = new MethodInfo(method.getAsJsonObject(), version);
-						allContent.get(className).computeIfAbsent(methodInfo.signature, methods -> new ArrayList<>());
-						allContent.get(className).get(methodInfo.signature).add(methodInfo);
+				if (version.contains("-")) {
+					versions.add(version);
+					final JsonObject classesObject = JsonParser.parseString(FileUtils.readFileToString(path.toFile(), StandardCharsets.UTF_8)).getAsJsonObject();
+					classesObject.keySet().forEach(className -> {
+						allContent.computeIfAbsent(className, innerContent -> new HashMap<>());
+						classesObject.getAsJsonArray(className).forEach(method -> {
+							final MethodInfo methodInfo = new MethodInfo(method.getAsJsonObject(), version);
+							allContent.get(className).computeIfAbsent(methodInfo.signature, methods -> new ArrayList<>());
+							allContent.get(className).get(methodInfo.signature).add(methodInfo);
+						});
 					});
-				});
+				}
 			}
 		}
 
 		final int versionCount = versions.size();
 		Collections.sort(versions);
+		final JsonObject combinedObject = new JsonObject();
 
-		allContent.forEach((className, signatures) -> signatures.forEach((signature, methods) -> {
-			while (true) {
-				final Map<String, Set<MethodInfo>> nameToVersionMap = new HashMap<>();
-				final String[] names = new String[versionCount];
+		final Map<String, Map<String, List<List<String>>>> additionalMap = new HashMap<>();
+		final Map<String, Map<String, List<String>>> blacklistMap = new HashMap<>();
+		MethodMaps.setMethodMaps(
+				(className, newMethodName, methods) -> writeToMap(additionalMap, className, newMethodName, "", (methodsToAdd, list) -> list.add(methodsToAdd), methods),
+				(className, newMethodName, signature, methods) -> writeToMap(additionalMap, className, newMethodName, signature, (methodsToAdd, list) -> list.add(methodsToAdd), methods),
+				(className, method, signature) -> writeToMap(blacklistMap, className, method, signature, (methodsToAdd, list) -> list.addAll(methodsToAdd))
+		);
 
-				methods.forEach(methodInfo -> {
-					nameToVersionMap.computeIfAbsent(methodInfo.name, versionSet -> new HashSet<>());
-					nameToVersionMap.get(methodInfo.name).add(methodInfo);
-					names[versions.indexOf(methodInfo.version)] = methodInfo.name;
-				});
-
-				boolean end = true;
-
-				for (final Map.Entry<String, Set<MethodInfo>> nameMethods : nameToVersionMap.entrySet()) {
-					final Set<MethodInfo> methodsForName = nameMethods.getValue();
-					if (methodsForName.size() == versionCount) {
-						addMethodMap2(className, nameMethods.getKey(), signature);
-						methodsForName.forEach(methods::remove);
-						end = false;
-					}
-				}
-
-				if (end) {
-					if (methods.size() == versionCount && Arrays.stream(names).noneMatch(Objects::isNull)) {
-						final List<String> namesList = new ArrayList<>();
-						for (final String name : names) {
-							if (!namesList.contains(name)) {
-								namesList.add(name);
-							}
-						}
-						namesList.remove(names[MAPPINGS_TO_USE]);
-						Collections.sort(namesList);
-						addMethodMap2(className, names[MAPPINGS_TO_USE], signature, namesList.toArray(new String[0]));
-						methods.clear();
-					}
-					break;
-				}
-			}
-		}));
-
-		for (final Map.Entry<String, Map<String, List<MethodInfo>>> innerContent : allContent.entrySet()) {
+		allContent.forEach((className, signatures) -> {
+			final List<String> signaturesSorted = new ArrayList<>(signatures.keySet());
+			Collections.sort(signaturesSorted);
 			final List<String> fileContent = new ArrayList<>();
 			fileContent.add(String.join(",", versions));
-			final List<String> signatures = new ArrayList<>(innerContent.getValue().keySet());
-			Collections.sort(signatures);
+			final JsonObject classObject = new JsonObject();
+			final JsonArray mappingsArray = new JsonArray();
+			final JsonArray nullableArray = new JsonArray();
+			classObject.add("mappings", mappingsArray);
+			classObject.add("nullable", nullableArray);
+			combinedObject.add(className, classObject);
 
-			signatures.forEach(signature -> {
-				final List<MethodInfo> methods = innerContent.getValue().get(signature);
+			signaturesSorted.forEach(signature -> {
+				final List<MethodInfo> methods = signatures.get(signature);
+				final List<List<MethodInfo>> additionalMethodGroups = getAdditionalMethodGroups(methods, additionalMap, className, signature);
+				final List<List<MethodInfo>> additionalMethodGroupsNoSignature = getAdditionalMethodGroups(methods, additionalMap, className, "");
+				final List<String> blacklistNames = blacklistMap.getOrDefault(className, new HashMap<>()).getOrDefault(signature, new ArrayList<>());
+				final boolean[] resolveNoSignature = {true};
+
+				additionalMethodGroups.forEach(additionalMethods -> {
+					writeJson(mappingsArray, nullableArray, additionalMethods, 0);
+					additionalMethods.forEach(methods::remove);
+				});
+
+				while (true) {
+					final Map<String, List<MethodInfo>> nameToVersionMap = new HashMap<>();
+					final String[] names = new String[versionCount];
+
+					methods.forEach(methodInfo -> {
+						if (!blacklistNames.contains(methodInfo.name)) {
+							nameToVersionMap.computeIfAbsent(methodInfo.name, versionSet -> new ArrayList<>());
+							nameToVersionMap.get(methodInfo.name).add(methodInfo);
+							names[versions.indexOf(methodInfo.version)] = methodInfo.name;
+						}
+					});
+
+					final boolean[] end = {true};
+
+					nameToVersionMap.forEach((name, methodsForName) -> {
+						if (methodsForName.size() == versionCount) {
+							writeJson(mappingsArray, nullableArray, methodsForName, MAPPINGS_TO_USE);
+							methodsForName.forEach(methods::remove);
+							end[0] = false;
+						}
+					});
+
+					if (resolveNoSignature[0]) {
+						additionalMethodGroupsNoSignature.forEach(additionalMethodsNoSignature -> {
+							writeJson(mappingsArray, nullableArray, additionalMethodsNoSignature, 0);
+							additionalMethodsNoSignature.forEach(methods::remove);
+						});
+						resolveNoSignature[0] = false;
+						end[0] = false;
+					}
+
+					if (end[0]) {
+						if (methods.size() == versionCount && Arrays.stream(names).noneMatch(Objects::isNull) && methods.stream().noneMatch(method -> blacklistNames.contains(method.name))) {
+							writeJson(mappingsArray, nullableArray, methods, MAPPINGS_TO_USE);
+							methods.clear();
+						}
+						break;
+					}
+				}
+
 				methods.sort(Comparator.comparing(methodInfo -> methodInfo.name));
 				boolean isFirst = true;
 
@@ -256,23 +245,111 @@ public final class BuildTools {
 				}
 			});
 
-			Files.write(outputPath.resolve(String.format("%s.csv", innerContent.getKey())), fileContent, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+			try {
+				Files.write(outputPath.resolve(className + ".csv"), fileContent, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		});
+
+		try {
+			Files.write(jsonPath.resolve("combined.json"), combinedObject.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
-		MethodMaps.setMethodMaps();
 		needsSetup = false;
+	}
+
+	private static void writeJson(JsonArray mappingsArray, JsonArray nullableArray, List<MethodInfo> methods, int mappingToUseIndex) {
+		if (methods.size() > mappingToUseIndex) {
+			methods.sort(Comparator.comparing(methodInfo -> methodInfo.version));
+			final String name = methods.get(mappingToUseIndex).name;
+			final List<String> otherNames = methods.stream().map(methodInfo -> methodInfo.name).filter(otherName -> !otherName.equals(name)).distinct().sorted().collect(Collectors.toList());
+
+			final JsonArray namesArray = new JsonArray();
+			namesArray.add(name);
+			otherNames.forEach(namesArray::add);
+			final JsonObject mappingObject = new JsonObject();
+			mappingObject.add("names", namesArray);
+			mappingObject.addProperty("signature", methods.get(0).signature);
+			mappingsArray.add(mappingObject);
+
+			final int methodsCount = methods.get(0).parametersNullable.length;
+			final boolean[] parametersNullable = methods.stream().map(methodInfo -> methodInfo.parametersNullable).reduce(new boolean[methodsCount], (parametersNullable1, parametersNullable2) -> {
+				final boolean[] result = new boolean[methodsCount];
+				for (int i = 0; i < methodsCount; i++) {
+					result[i] = parametersNullable1[i] || parametersNullable2[i];
+				}
+				return result;
+			});
+
+			final JsonObject nullableObject = new JsonObject();
+			nullableObject.add("names", namesArray);
+			nullableObject.addProperty("signature", methods.get(0).signature);
+			final JsonArray parametersNullableArray = new JsonArray();
+			for (final boolean parameterNullable : parametersNullable) {
+				parametersNullableArray.add(parameterNullable);
+			}
+			nullableObject.add("parameters", parametersNullableArray);
+			nullableObject.addProperty("return", methods.stream().map(methodInfo -> methodInfo.returnNullable).reduce(false, (returnNullable1, returnNullable2) -> returnNullable1 || returnNullable2));
+			nullableArray.add(nullableObject);
+		}
+	}
+
+	private static <T> void writeToMap(Map<String, Map<String, List<T>>> additionalMap, String className, String newMethodName, String signature, BiConsumer<List<String>, List<T>> addToMap, String... methods) {
+		for (final String classNameSplit : className.split("\\|")) {
+			additionalMap.computeIfAbsent(classNameSplit, innerContent -> new HashMap<>());
+			additionalMap.get(classNameSplit).computeIfAbsent(signature, additionalMethods -> new ArrayList<>());
+			final List<String> methodsCombined = new ArrayList<>();
+			methodsCombined.add(newMethodName);
+			methodsCombined.addAll(Arrays.asList(methods));
+			addToMap.accept(methodsCombined, additionalMap.get(classNameSplit).get(signature));
+		}
+	}
+
+	private static List<List<MethodInfo>> getAdditionalMethodGroups(List<MethodInfo> methods, Map<String, Map<String, List<List<String>>>> map, String className, String signature) {
+		final List<List<String>> additionalMethodNameGroups = map.getOrDefault(className, new HashMap<>()).getOrDefault(signature, new ArrayList<>());
+		final List<List<MethodInfo>> additionalMethodGroups = new ArrayList<>();
+		additionalMethodNameGroups.forEach(additionalMethodNameGroup -> additionalMethodGroups.add(additionalMethodNameGroup.stream().map(a -> methods.stream().filter(b -> b.name.equals(a)).findFirst().orElse(null)).filter(Objects::nonNull).collect(Collectors.toList())));
+		return additionalMethodGroups;
+	}
+
+	@FunctionalInterface
+	interface AddMethodMap1 {
+		void add(String className, String newMethodName, String... methods);
+	}
+
+	@FunctionalInterface
+	interface AddMethodMap2 {
+		void add(String className, String newMethodName, String signature, String... methods);
+	}
+
+	@FunctionalInterface
+	interface Blacklist {
+		void add(String className, String method, String signature);
 	}
 
 	private static final class MethodInfo {
 
 		private final String name;
 		private final String signature;
+		private final boolean[] parametersNullable;
+		private final boolean returnNullable;
 		private final String version;
 
 		private MethodInfo(JsonObject jsonObject, String version) {
 			name = jsonObject.get("name").getAsString();
 			signature = jsonObject.get("signature").getAsString();
+			final JsonArray jsonArray = jsonObject.getAsJsonArray("parametersNullable");
+			parametersNullable = new boolean[jsonArray.size()];
+			for (int i = 0; i < parametersNullable.length; i++) {
+				parametersNullable[i] = jsonArray.get(i).getAsBoolean();
+			}
+			returnNullable = jsonObject.get("returnNullable").getAsBoolean();
 			this.version = version;
 		}
 	}
+
+	private enum GenerationStatus {NONE, DRY_RUN, GENERATE}
 }
