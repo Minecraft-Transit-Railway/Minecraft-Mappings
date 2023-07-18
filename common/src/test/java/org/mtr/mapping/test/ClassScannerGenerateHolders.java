@@ -31,28 +31,28 @@ public final class ClassScannerGenerateHolders extends ClassScannerBase {
 
 	@Override
 	void iterateClass(ClassInfo classInfo, String minecraftClassName, String genericsWithBounds, String generics, String genericsImplied, String enumValues) {
-		classInfo.stringBuilder.append("package org.mtr.mapping.holder;import org.mtr.mapping.annotation.MappedMethod;import org.mtr.mapping.tool.HolderBase;import javax.annotation.Nonnull;import javax.annotation.Nullable;import javax.annotation.ParametersAreNonnullByDefault;@ParametersAreNonnullByDefault public ");
+		classInfo.stringBuilder.append("package org.mtr.mapping.holder;import org.mtr.mapping.annotation.MappedMethod;import org.mtr.mapping.tool.HolderBase;import javax.annotation.Nonnull;import javax.annotation.Nullable;import javax.annotation.ParametersAreNonnullByDefault;@ParametersAreNonnullByDefault@SuppressWarnings({\"deprecation\",\"unchecked\",\"unused\"})public ");
 
 		if (classInfo.isEnum) {
 			classInfo.stringBuilder.append(String.format("enum %1$s{%3$s;public final %2$s data;%1$s(%2$s data){this.data=data;}public static %1$s convert(@Nullable %2$s data){return data==null?null:values()[data.ordinal()];}", classInfo.className, minecraftClassName, enumValues));
 		} else {
-			classInfo.stringBuilder.append(String.format("%s class %s %s extends ", classInfo.isAbstractMapping ? "abstract" : "final", getClassName(classInfo), genericsWithBounds));
+			classInfo.stringBuilder.append(String.format("%s %s %s %s extends ", classInfo.isAbstractMapping ? "abstract" : "final", classInfo.isInterface ? "interface" : "class", classInfo.getClassName(), genericsWithBounds));
 			if (classInfo.isAbstractMapping) {
 				classInfo.stringBuilder.append(String.format("%s%s{", minecraftClassName, generics));
 			} else {
-				classInfo.stringBuilder.append(String.format("HolderBase<%2$s%4$s>{public %1$s(%2$s%4$s data){super(data);}@MappedMethod public static %3$s%1$s%4$s cast(HolderBase<?> data){return new %1$s%5$s((%2$s%4$s)data.data);}@MappedMethod public static boolean isInstance(HolderBase<?> data){return data.data instanceof %2$s;}", getClassName(classInfo), minecraftClassName, genericsWithBounds, generics, genericsImplied));
+				classInfo.stringBuilder.append(String.format("HolderBase<%2$s%4$s>{public %1$s(%2$s%4$s data){super(data);}@MappedMethod public static %3$s%1$s%4$s cast(HolderBase<?> data){return new %1$s%5$s((%2$s%4$s)data.data);}@MappedMethod public static boolean isInstance(HolderBase<?> data){return data.data instanceof %2$s;}", classInfo.getClassName(), minecraftClassName, genericsWithBounds, generics, genericsImplied));
 			}
 		}
 	}
 
 	@Override
-	void iterateExecutable(ClassInfo classInfo, String minecraftClassName, String minecraftMethodName, boolean isMethod, boolean isStatic, boolean isFinal, String modifiers, String generics, TypeInfo returnType, List<TypeInfo> parameters, String exceptions, String key) {
+	void iterateExecutable(ClassInfo classInfo, String minecraftClassName, boolean isClassParameterized, String minecraftMethodName, boolean isMethod, boolean isStatic, boolean isFinal, String modifiers, String generics, TypeInfo returnType, List<TypeInfo> parameters, String exceptions, String key) {
 		final JsonObject mappingsObject = findRecord(combinedObject.getAsJsonObject(classInfo.className).getAsJsonArray("mappings"), minecraftMethodName, key);
 		final JsonObject nullableObject = findRecord(combinedObject.getAsJsonObject(classInfo.className).getAsJsonArray("nullable"), minecraftMethodName, key);
 		final boolean isVoid = returnType.resolvedTypeName.equals("void");
-		final boolean isReturnNullable = nullableObject != null && nullableObject.get("return").getAsBoolean();
+		final boolean isReturnNullable = nullableObject != null && nullableObject.get("return").getAsBoolean() || returnType.isNullable;
 
-		if (isMethod && !isVoid) {
+		if (isMethod && !isVoid && !returnType.isPrimitive) {
 			if (isReturnNullable) {
 				classInfo.stringBuilder.append("@Nullable");
 			} else {
@@ -67,12 +67,12 @@ public final class ClassScannerGenerateHolders extends ClassScannerBase {
 
 		for (int i = 0; i < parameters.size(); i++) {
 			final TypeInfo parameter = parameters.get(i);
-			final boolean isNullable = nullableObject != null && nullableObject.getAsJsonArray("parameters").get(i).getAsBoolean();
+			final boolean isNullable = !parameter.isPrimitive && (nullableObject != null && nullableObject.getAsJsonArray("parameters").get(i).getAsBoolean() || parameter.isNullable);
 			final String parameterAnnotation = isNullable ? "@Nullable " : "";
 			parameterList.add(String.format("%s%s %s", parameterAnnotation, parameter.minecraftTypeName, parameter.variableName));
 			parameterListResolved.add(String.format("%s%s %s", parameterAnnotation, parameter.resolvedTypeName, parameter.variableName));
 			variableList1.add(parameter.isResolved ? String.format(isNullable ? "%1$s==null?null:%1$s.data" : "%1$s.data", parameter.variableName) : parameter.variableName);
-			variableList2.add(parameter.isResolved ? String.format(isNullable ? "%1$s==null?null:new %2$s(%1$s)" : parameter.isEnum ? "%2$s.convert(%1$s)" : "new %2$s(%1$s)", parameter.variableName, parameter.resolvedTypeNameImplied) : parameter.variableName);
+			variableList2.add(parameter.isResolved ? String.format(String.format("%s%s", isNullable ? "%1$s==null?null:" : "", parameter.isEnum ? "%2$s.convert(%1$s)" : "new %2$s(%1$s)"), parameter.variableName, parameter.resolvedTypeNameImplied) : parameter.variableName);
 		}
 
 		final String parametersJoined = String.join(",", parameterList);
@@ -80,7 +80,7 @@ public final class ClassScannerGenerateHolders extends ClassScannerBase {
 		final String variablesJoined1 = String.join(",", variableList1);
 		final String variablesJoined2 = String.join(",", variableList2);
 
-		final String mappedMethodName = isMethod ? mappingsObject == null ? minecraftMethodName : mappingsObject.getAsJsonArray("names").get(0).getAsString() : getClassName(classInfo);
+		final String mappedMethodName = isMethod ? mappingsObject == null ? minecraftMethodName : mappingsObject.getAsJsonArray("names").get(0).getAsString() : classInfo.getClassName();
 		classInfo.stringBuilder.append(String.format(
 				"%s %s %s%s %s%s(%s)%s{",
 				mappingsObject == null ? "@Deprecated" : "@MappedMethod",
@@ -97,14 +97,14 @@ public final class ClassScannerGenerateHolders extends ClassScannerBase {
 
 		String methodCall1 = "";
 		String methodCall2 = "";
-		String methodCall3 = isMethod || !classInfo.isAbstractMapping ? String.format("%s(%s)", minecraftMethodName, variablesJoined1) : variablesJoined1;
+		String methodCall3 = isMethod || !classInfo.isAbstractMapping ? String.format("%s%s(%s)", minecraftMethodName, !isMethod && isClassParameterized ? "<>" : "", variablesJoined1) : variablesJoined1;
 
 		if (isMethod) {
 			methodCall3 = String.format("%s.%s", isStatic ? minecraftClassName : classInfo.isAbstractMapping ? "super" : "this.data", methodCall3);
 		}
 
 		if (isReturnNullable) {
-			methodCall1 = String.format("final %s tempData=%s;", returnType.minecraftTypeNameImplied, methodCall3);
+			methodCall1 = String.format("final %s tempData=%s;", returnType.minecraftTypeName, methodCall3);
 			methodCall2 = "tempData==null?null:";
 			methodCall3 = "tempData";
 		}
@@ -138,7 +138,7 @@ public final class ClassScannerGenerateHolders extends ClassScannerBase {
 		classInfo.stringBuilder.append("}");
 		try {
 			Files.createDirectories(HOLDERS_PATH);
-			Files.write(HOLDERS_PATH.resolve(getClassName(classInfo) + ".java"), classInfo.stringBuilder.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+			Files.write(HOLDERS_PATH.resolve(classInfo.getClassName() + ".java"), classInfo.stringBuilder.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -160,9 +160,5 @@ public final class ClassScannerGenerateHolders extends ClassScannerBase {
 			}
 		}
 		return null;
-	}
-
-	private static String getClassName(ClassInfo classInfo) {
-		return String.format("%s%s", classInfo.className, classInfo.isAbstractMapping ? "AbstractMapping" : "");
 	}
 }

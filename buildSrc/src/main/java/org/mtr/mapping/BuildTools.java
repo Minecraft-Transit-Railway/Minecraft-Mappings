@@ -292,7 +292,14 @@ public final class BuildTools {
 				parametersNullableArray.add(parameterNullable);
 			}
 			nullableObject.add("parameters", parametersNullableArray);
-			nullableObject.addProperty("return", methods.stream().map(methodInfo -> methodInfo.returnNullable).reduce(false, (returnNullable1, returnNullable2) -> returnNullable1 || returnNullable2));
+			boolean returnNullable = false;
+			for (final MethodInfo method : methods) {
+				if (method.returnNullable) {
+					returnNullable = true;
+					break;
+				}
+			}
+			nullableObject.addProperty("return", returnNullable);
 			nullableArray.add(nullableObject);
 		}
 	}

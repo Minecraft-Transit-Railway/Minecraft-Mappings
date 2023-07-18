@@ -26,7 +26,7 @@ public final class ClassScannerCreateMaps extends ClassScannerBase {
 	}
 
 	@Override
-	void iterateExecutable(ClassInfo classInfo, String minecraftClassName, String minecraftMethodName, boolean isMethod, boolean isStatic, boolean isFinal, String modifiers, String generics, TypeInfo returnType, List<TypeInfo> parameters, String exceptions, String key) {
+	void iterateExecutable(ClassInfo classInfo, String minecraftClassName, boolean isClassParameterized, String minecraftMethodName, boolean isMethod, boolean isStatic, boolean isFinal, String modifiers, String generics, TypeInfo returnType, List<TypeInfo> parameters, String exceptions, String key) {
 		final JsonObject methodObject = new JsonObject();
 		methodObject.addProperty("name", isMethod ? minecraftMethodName : classInfo.className);
 		methodObject.addProperty("signature", key);

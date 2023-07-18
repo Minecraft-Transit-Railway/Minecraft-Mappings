@@ -115,6 +115,7 @@ public final class ClassScannerTest {
 		scanner.putAbstract("Item", Item.class);
 		scanner.putAbstract("PlaceableOnWaterItem", LilyPadItem.class);
 		scanner.putAbstract("SlabBlock", SlabBlock.class);
+		scanner.putInterface("StringIdentifiable", IStringSerializable.class);
 		scanner.generate();
 	}
 }

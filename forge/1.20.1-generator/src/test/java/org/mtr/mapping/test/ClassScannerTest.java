@@ -19,6 +19,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -127,6 +128,7 @@ public final class ClassScannerTest {
 		scanner.putAbstract("Item", Item.class);
 		scanner.putAbstract("PlaceableOnWaterItem", PlaceOnWaterBlockItem.class);
 		scanner.putAbstract("SlabBlock", SlabBlock.class);
+		scanner.putInterface("StringIdentifiable", StringRepresentable.class);
 		scanner.generate();
 	}
 }
