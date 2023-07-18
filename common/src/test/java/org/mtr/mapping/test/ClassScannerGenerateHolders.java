@@ -46,7 +46,7 @@ public final class ClassScannerGenerateHolders extends ClassScannerBase {
 	}
 
 	@Override
-	void iterateExecutable(ClassInfo classInfo, String minecraftClassName, boolean isClassParameterized, String minecraftMethodName, boolean isMethod, boolean isStatic, boolean isFinal, String modifiers, String generics, TypeInfo returnType, List<TypeInfo> parameters, String exceptions, String key) {
+	void iterateExecutable(ClassInfo classInfo, String minecraftClassName, boolean isClassParameterized, String minecraftMethodName, boolean isMethod, boolean isStatic, boolean isFinal, boolean isAbstract, String modifiers, String generics, TypeInfo returnType, List<TypeInfo> parameters, String exceptions, String key) {
 		final JsonObject mappingsObject = findRecord(combinedObject.getAsJsonObject(classInfo.className).getAsJsonArray("mappings"), minecraftMethodName, key);
 		final JsonObject nullableObject = findRecord(combinedObject.getAsJsonObject(classInfo.className).getAsJsonArray("nullable"), minecraftMethodName, key);
 		final boolean isVoid = returnType.resolvedTypeName.equals("void");
@@ -81,10 +81,12 @@ public final class ClassScannerGenerateHolders extends ClassScannerBase {
 		final String variablesJoined2 = String.join(",", variableList2);
 
 		final String mappedMethodName = isMethod ? mappingsObject == null ? minecraftMethodName : mappingsObject.getAsJsonArray("names").get(0).getAsString() : classInfo.getClassName();
+		final boolean writeAbstractBody = !isAbstract || !classInfo.isAbstractMapping;
 		classInfo.stringBuilder.append(String.format(
-				"%s %s %s%s %s%s(%s)%s{",
+				"%s %s%s %s%s %s%s(%s)%s",
 				mappingsObject == null ? "@Deprecated" : "@MappedMethod",
 				modifiers,
+				!writeAbstractBody && !classInfo.isInterface ? " abstract" : "",
 				generics,
 				returnType.resolvedTypeName,
 				mappedMethodName,
@@ -95,41 +97,45 @@ public final class ClassScannerGenerateHolders extends ClassScannerBase {
 
 		final boolean generateExtraMethod = classInfo.isAbstractMapping && !isStatic && !isFinal && isMethod;
 
-		String methodCall1 = "";
-		String methodCall2 = "";
-		String methodCall3 = isMethod || !classInfo.isAbstractMapping ? String.format("%s%s(%s)", minecraftMethodName, !isMethod && isClassParameterized ? "<>" : "", variablesJoined1) : variablesJoined1;
+		if (writeAbstractBody) {
+			String methodCall1 = "";
+			String methodCall2 = "";
+			String methodCall3 = isMethod || !classInfo.isAbstractMapping ? String.format("%s%s(%s)", minecraftMethodName, !isMethod && isClassParameterized ? "<>" : "", variablesJoined1) : variablesJoined1;
 
-		if (isMethod) {
-			methodCall3 = String.format("%s.%s", isStatic ? minecraftClassName : classInfo.isAbstractMapping ? "super" : "this.data", methodCall3);
-		}
+			if (isMethod) {
+				methodCall3 = String.format("%s.%s", isStatic ? minecraftClassName : classInfo.isAbstractMapping ? "super" : "this.data", methodCall3);
+			}
 
-		if (isReturnNullable) {
-			methodCall1 = String.format("final %s tempData=%s;", returnType.minecraftTypeName, methodCall3);
-			methodCall2 = "tempData==null?null:";
-			methodCall3 = "tempData";
-		}
+			if (isReturnNullable) {
+				methodCall1 = String.format("final %s tempData=%s;", returnType.minecraftTypeName, methodCall3);
+				methodCall2 = "tempData==null?null:";
+				methodCall3 = "tempData";
+			}
 
-		if (returnType.isResolved) {
-			if (returnType.isEnum) {
-				methodCall3 = String.format("%s.convert(%s)", returnType.resolvedTypeNameImplied, methodCall3);
+			if (returnType.isResolved) {
+				if (returnType.isEnum) {
+					methodCall3 = String.format("%s.convert(%s)", returnType.resolvedTypeNameImplied, methodCall3);
+				} else {
+					methodCall3 = String.format("new %s(%s)", returnType.resolvedTypeNameImplied, methodCall3);
+				}
+			}
+
+			if (isMethod) {
+				if (!isVoid) {
+					methodCall2 = "return " + methodCall2;
+				}
 			} else {
-				methodCall3 = String.format("new %s(%s)", returnType.resolvedTypeNameImplied, methodCall3);
+				methodCall2 = String.format("super(%s%s", classInfo.isAbstractMapping ? "" : "new ", methodCall2);
+				methodCall3 = methodCall3 + ")";
 			}
-		}
 
-		if (isMethod) {
-			if (!isVoid) {
-				methodCall2 = "return " + methodCall2;
-			}
+			classInfo.stringBuilder.append(String.format("{%s%s%s;}", methodCall1, methodCall2, methodCall3));
 		} else {
-			methodCall2 = String.format("super(%s%s", classInfo.isAbstractMapping ? "" : "new ", methodCall2);
-			methodCall3 = methodCall3 + ")";
+			classInfo.stringBuilder.append(";");
 		}
-
-		classInfo.stringBuilder.append(String.format("%s%s%s;}", methodCall1, methodCall2, methodCall3));
 
 		if (generateExtraMethod) {
-			classInfo.stringBuilder.append(String.format("@Deprecated %s final %s%s %s(%s){%s%s2(%s)%s;}", modifiers, generics, returnType.minecraftTypeName, minecraftMethodName, parametersJoined, isVoid ? "" : "return ", mappedMethodName, variablesJoined2, returnType.isResolved ? ".data" : ""));
+			classInfo.stringBuilder.append(String.format("@Deprecated %s %s %s%s %s(%s){%s%s2(%s)%s;}", modifiers, classInfo.isInterface ? "default" : "final", generics, returnType.minecraftTypeName, minecraftMethodName, parametersJoined, isVoid ? "" : "return ", mappedMethodName, variablesJoined2, returnType.isResolved ? ".data" : ""));
 		}
 	}
 

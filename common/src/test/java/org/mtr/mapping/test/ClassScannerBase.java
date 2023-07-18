@@ -77,7 +77,7 @@ public abstract class ClassScannerBase {
 			final boolean isMethod = executable instanceof Method;
 			final int modifiers = executable.getModifiers();
 
-			if (Modifier.isPublic(modifiers) && !Modifier.isNative(modifiers) && !executable.isSynthetic() && (!Modifier.isAbstract(modifiers) || !classInfo.isAbstractMapping) && !BLACKLISTED_SIGNATURES.contains(quickSerialize(executable)) && !classInfo.blacklist.contains(minecraftMethodName) && Arrays.stream(executable.getParameters()).allMatch(parameter -> Modifier.isPublic(parameter.getType().getModifiers()))) {
+			if (Modifier.isPublic(modifiers) && !Modifier.isNative(modifiers) && !executable.isSynthetic() && !BLACKLISTED_SIGNATURES.contains(quickSerialize(executable)) && !classInfo.blacklist.contains(minecraftMethodName) && Arrays.stream(executable.getParameters()).allMatch(parameter -> Modifier.isPublic(parameter.getType().getModifiers()))) {
 				final String generics = getGenerics(executable, false, true, classMap);
 				final String exceptions = getStringFromMethod(stringBuilder -> appendIfNotEmpty(stringBuilder, executable.getGenericExceptionTypes(), "throws ", "", ",", Type::getTypeName));
 				final List<TypeInfo> parameters = new ArrayList<>();
@@ -123,7 +123,22 @@ public abstract class ClassScannerBase {
 				}
 
 				final String key = mergeWithSpaces(Modifier.toString(modifiers), generics, resolvedReturnType, String.format("(%s)", parameters.stream().map(typeInfo -> typeInfo.resolvedTypeName).collect(Collectors.joining(","))), exceptions);
-				iterateExecutable(classInfo, minecraftClassName, isClassParameterized, minecraftMethodName, isMethod, Modifier.isStatic(modifiers), Modifier.isFinal(modifiers), Modifier.toString(modifiers & ~Modifier.ABSTRACT & ~Modifier.TRANSIENT), generics, returnType, parameters, exceptions, key);
+				iterateExecutable(
+						classInfo,
+						minecraftClassName,
+						isClassParameterized,
+						minecraftMethodName,
+						isMethod,
+						Modifier.isStatic(modifiers),
+						Modifier.isFinal(modifiers),
+						Modifier.isAbstract(modifiers),
+						Modifier.toString(modifiers & ~Modifier.ABSTRACT & ~Modifier.TRANSIENT & ~(classInfo.isInterface ? Modifier.PUBLIC : 0)),
+						generics,
+						returnType,
+						parameters,
+						exceptions,
+						key
+				);
 			}
 		}
 	}
@@ -132,7 +147,7 @@ public abstract class ClassScannerBase {
 
 	abstract void iterateClass(ClassInfo classInfo, String minecraftClassName, String genericsWithBounds, String generics, String genericsImplied, String enumValues);
 
-	abstract void iterateExecutable(ClassInfo classInfo, String minecraftClassName, boolean isClassParameterized, String minecraftMethodName, boolean isMethod, boolean isStatic, boolean isFinal, String modifiers, String generics, TypeInfo returnType, List<TypeInfo> parameters, String exceptions, String key);
+	abstract void iterateExecutable(ClassInfo classInfo, String minecraftClassName, boolean isClassParameterized, String minecraftMethodName, boolean isMethod, boolean isStatic, boolean isFinal, boolean isAbstract, String modifiers, String generics, TypeInfo returnType, List<TypeInfo> parameters, String exceptions, String key);
 
 	abstract void postIterateClass(ClassInfo classInfo);
 
