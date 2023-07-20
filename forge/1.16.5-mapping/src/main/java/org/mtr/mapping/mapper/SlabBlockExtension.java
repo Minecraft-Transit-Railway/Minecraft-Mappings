@@ -4,13 +4,14 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.state.StateContainer;
 import org.mtr.mapping.annotation.MappedMethod;
+import org.mtr.mapping.holder.BlockSettings;
 import org.mtr.mapping.holder.SlabBlockAbstractMapping;
 
 public class SlabBlockExtension extends SlabBlockAbstractMapping implements BlockHelper {
 
 	@MappedMethod
-	public SlabBlockExtension(BlockHelper.Properties properties) {
-		super(properties.blockSettings);
+	public SlabBlockExtension(BlockSettings blockSettings) {
+		super(blockSettings);
 	}
 
 	@Deprecated

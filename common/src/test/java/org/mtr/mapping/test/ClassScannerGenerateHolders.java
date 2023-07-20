@@ -47,8 +47,8 @@ public final class ClassScannerGenerateHolders extends ClassScannerBase {
 
 	@Override
 	void iterateExecutable(ClassInfo classInfo, String minecraftClassName, boolean isClassParameterized, String minecraftMethodName, boolean isMethod, boolean isStatic, boolean isFinal, boolean isAbstract, String modifiers, String generics, TypeInfo returnType, List<TypeInfo> parameters, String exceptions, String key) {
-		final JsonObject mappingsObject = findRecord(combinedObject.getAsJsonObject(classInfo.className).getAsJsonArray("mappings"), minecraftMethodName, key);
-		final JsonObject nullableObject = findRecord(combinedObject.getAsJsonObject(classInfo.className).getAsJsonArray("nullable"), minecraftMethodName, key);
+		final JsonObject mappingsObject = findRecord(combinedObject.getAsJsonObject(classInfo.className).getAsJsonArray("mappings"), isMethod ? minecraftMethodName : classInfo.className, key);
+		final JsonObject nullableObject = findRecord(combinedObject.getAsJsonObject(classInfo.className).getAsJsonArray("nullable"), isMethod ? minecraftMethodName : classInfo.className, key);
 		final boolean isVoid = returnType.resolvedTypeName.equals("void");
 		final boolean isReturnNullable = nullableObject != null && nullableObject.get("return").getAsBoolean() || returnType.isNullable;
 

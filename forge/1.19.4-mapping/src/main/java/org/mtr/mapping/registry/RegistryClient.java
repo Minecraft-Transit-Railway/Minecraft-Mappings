@@ -4,7 +4,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.BlockEntityRendererArgument;
 import org.mtr.mapping.holder.BlockEntityType;
-import org.mtr.mapping.holder.ResourceLocation;
+import org.mtr.mapping.holder.Identifier;
 import org.mtr.mapping.mapper.BlockEntityExtension;
 import org.mtr.mapping.mapper.BlockEntityRenderer;
 import org.mtr.mapping.tool.DummyClass;
@@ -24,7 +24,7 @@ public final class RegistryClient extends DummyClass {
 	}
 
 	@MappedMethod
-	public static void setupPackets(ResourceLocation resourceLocation) {
+	public static void setupPackets(Identifier identifier) {
 	}
 
 	@MappedMethod

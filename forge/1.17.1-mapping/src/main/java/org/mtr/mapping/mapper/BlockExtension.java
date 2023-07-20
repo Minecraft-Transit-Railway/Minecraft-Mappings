@@ -3,16 +3,13 @@ package org.mtr.mapping.mapper;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import org.mtr.mapping.annotation.MappedMethod;
-import org.mtr.mapping.holder.Block;
-import org.mtr.mapping.holder.BlockAbstractMapping;
-import org.mtr.mapping.holder.BlockPos;
-import org.mtr.mapping.holder.World;
+import org.mtr.mapping.holder.*;
 
 public class BlockExtension extends BlockAbstractMapping implements BlockHelper {
 
 	@MappedMethod
-	public BlockExtension(BlockHelper.Properties properties) {
-		super(properties.blockSettings);
+	public BlockExtension(BlockSettings blockSettings) {
+		super(blockSettings);
 	}
 
 	@Deprecated

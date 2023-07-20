@@ -1,5 +1,6 @@
 package org.mtr.mapping.test;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SlabBlock;
@@ -54,6 +55,7 @@ public final class ClassScannerTest {
 		scanner.put("BlockEntityType", TileEntityType.class);
 		scanner.put("BlockHitResult", BlockRayTraceResult.class);
 		scanner.put("BlockPos", BlockPos.class);
+		scanner.put("BlockSettings", AbstractBlock.Properties.class);
 		scanner.put("BlockState", BlockState.class);
 		scanner.put("BlockView", IBlockReader.class);
 		scanner.put("BooleanProperty", BooleanProperty.class);
@@ -69,8 +71,11 @@ public final class ClassScannerTest {
 		scanner.put("FluidState", FluidState.class);
 		scanner.put("Hand", Hand.class);
 		scanner.put("HeightMapType", Heightmap.Type.class);
+		scanner.put("Identifier", ResourceLocation.class);
 		scanner.put("IntegerProperty", IntegerProperty.class);
+		scanner.put("ItemConvertible", IItemProvider.class);
 		scanner.put("ItemPlacementContext", BlockItemUseContext.class);
+		scanner.put("ItemSettings", Item.Properties.class);
 		scanner.put("ItemStack", ItemStack.class);
 		scanner.put("ItemUsageContext", ItemUseContext.class);
 		scanner.put("LivingEntity", LivingEntity.class);
@@ -83,7 +88,6 @@ public final class ClassScannerTest {
 		scanner.put("Position", IPosition.class);
 		scanner.put("Property", Property.class);
 		scanner.put("Random", Random.class);
-		scanner.put("ResourceLocation", ResourceLocation.class);
 		scanner.put("Rotation", Rotation.class);
 		scanner.put("Scoreboard", Scoreboard.class);
 		scanner.put("ScoreboardCriterion", ScoreCriteria.class);

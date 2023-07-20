@@ -36,6 +36,7 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.*;
 import net.minecraft.world.level.chunk.ChunkSource;
@@ -67,6 +68,7 @@ public final class ClassScannerTest {
 		scanner.put("BlockEntityType", BlockEntityType.class);
 		scanner.put("BlockHitResult", BlockHitResult.class);
 		scanner.put("BlockPos", BlockPos.class);
+		scanner.put("BlockSettings", BlockBehaviour.Properties.class);
 		scanner.put("BlockState", BlockState.class);
 		scanner.put("BlockView", BlockGetter.class);
 		scanner.put("BooleanProperty", BooleanProperty.class);
@@ -82,8 +84,11 @@ public final class ClassScannerTest {
 		scanner.put("FluidState", FluidState.class);
 		scanner.put("Hand", InteractionHand.class);
 		scanner.put("HeightMapType", Heightmap.Types.class);
+		scanner.put("Identifier", ResourceLocation.class);
 		scanner.put("IntegerProperty", IntegerProperty.class);
+		scanner.put("ItemConvertible", ItemLike.class);
 		scanner.put("ItemPlacementContext", BlockPlaceContext.class);
+		scanner.put("ItemSettings", Item.Properties.class);
 		scanner.put("ItemStack", ItemStack.class);
 		scanner.put("ItemUsageContext", UseOnContext.class);
 		scanner.put("LivingEntity", LivingEntity.class);
@@ -96,7 +101,6 @@ public final class ClassScannerTest {
 		scanner.put("Position", Position.class);
 		scanner.put("Property", Property.class);
 		scanner.put("Random", RandomSource.class);
-		scanner.put("ResourceLocation", ResourceLocation.class);
 		scanner.put("Rotation", Rotation.class);
 		scanner.put("Scoreboard", Scoreboard.class);
 		scanner.put("ScoreboardCriterion", ObjectiveCriteria.class);

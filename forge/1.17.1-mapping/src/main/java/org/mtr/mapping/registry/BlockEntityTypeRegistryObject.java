@@ -3,7 +3,7 @@ package org.mtr.mapping.registry;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.BlockEntityType;
-import org.mtr.mapping.holder.ResourceLocation;
+import org.mtr.mapping.holder.Identifier;
 import org.mtr.mapping.mapper.BlockEntityExtension;
 import org.mtr.mapping.tool.RegistryObject;
 
@@ -13,8 +13,8 @@ public final class BlockEntityTypeRegistryObject<T extends BlockEntityExtension>
 
 	private final net.minecraftforge.fmllegacy.RegistryObject<net.minecraft.world.level.block.entity.BlockEntityType<T>> registryObject;
 
-	BlockEntityTypeRegistryObject(ResourceLocation resourceLocation) {
-		registryObject = net.minecraftforge.fmllegacy.RegistryObject.of(resourceLocation.data, ForgeRegistries.BLOCK_ENTITIES);
+	BlockEntityTypeRegistryObject(Identifier identifier) {
+		registryObject = net.minecraftforge.fmllegacy.RegistryObject.of(identifier.data, ForgeRegistries.BLOCK_ENTITIES);
 	}
 
 	@MappedMethod

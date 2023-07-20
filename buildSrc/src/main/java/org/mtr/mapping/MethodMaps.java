@@ -26,8 +26,15 @@ public interface MethodMaps {
 		addMethodMap1.add("BlockPos", "down", "below");
 		addMethodMap1.add("BlockPos", "toImmutable", "immutable");
 		addMethodMap1.add("BlockPos", "up", "above");
-		addMethodMap2.add("BlockState", "prepare", "public final void (WorldAccess,BlockPos,int)", "updateIndirectNeighbourShapes");
-		addMethodMap2.add("BlockState", "updateNeighbors", "public final void (WorldAccess,BlockPos,int)", "updateNeighbourShapes");
+		addMethodMap1.add("BlockSettings", "breakInstantly", "instabreak");
+		addMethodMap1.add("BlockSettings", "dropsNothing", "noDrops", "noLootTable");
+		addMethodMap1.add("BlockSettings", "dynamicBounds", "dynamicShape");
+		addMethodMap1.add("BlockSettings", "jumpVelocityMultiplier", "jumpFactor");
+		addMethodMap1.add("BlockSettings", "noCollision", "noCollission");
+		addMethodMap1.add("BlockSettings", "nonOpaque", "noOcclusion");
+		addMethodMap1.add("BlockSettings", "slipperiness", "friction");
+		addMethodMap1.add("BlockSettings", "ticksRandomly", "randomTicks");
+		addMethodMap1.add("BlockSettings", "velocityMultiplier", "speedFactor");
 		addMethodMap1.add("BlockState", "with", "setValue");
 		addMethodMap1.add("CompoundTag", "getSize", "size");
 		addMethodMap1.add("Direction", "byId", "from2DDataValue");
@@ -65,6 +72,10 @@ public interface MethodMaps {
 		addMethodMap1.add("ItemPlacementContext", "getPlayerLookDirection", "getNearestLookingDirection");
 		addMethodMap1.add("ItemPlacementContext", "hitsInsideBlock", "isInside");
 		addMethodMap1.add("ItemPlacementContext", "shouldCancelInteraction", "isSecondaryUseActive");
+		addMethodMap1.add("ItemSettings", "fireproof", "fireResistant");
+		addMethodMap1.add("ItemSettings", "maxCount", "stacksTo");
+		addMethodMap1.add("ItemSettings", "maxDamage", "durability");
+		addMethodMap1.add("ItemSettings", "maxDamageIfAbsent", "defaultDurability");
 		addMethodMap1.add("ItemStack", "decrement", "shrink");
 		addMethodMap1.add("ItemStack", "getOrCreateTag", "getOrCreateNbt");
 		addMethodMap1.add("ItemStack", "getTag", "getNbt");
@@ -114,6 +125,8 @@ public interface MethodMaps {
 		addMethodMap1.add("Vector3i", "up", "below");
 		addMethodMap2.add("BlockItem|Item", "hasRecipeRemainder", "public boolean ()", "hasCraftingRemainingItem");
 		addMethodMap2.add("BlockPos", "add", "public BlockPos (Vector3i)", "offset");
+		addMethodMap2.add("BlockState", "prepare", "public final void (WorldAccess,BlockPos,int)", "updateIndirectNeighbourShapes");
+		addMethodMap2.add("BlockState", "updateNeighbors", "public final void (WorldAccess,BlockPos,int)", "updateNeighbourShapes");
 		addMethodMap2.add("Direction", "rotateYClockwise", "public Direction ()", "getClockWise");
 		addMethodMap2.add("Direction", "rotateYCounterclockwise", "public Direction ()", "getCounterClockWise");
 		addMethodMap2.add("Entity|PlayerEntity|ServerPlayerEntity", "addVelocity", "public void (double,double,double)", "push");

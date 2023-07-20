@@ -7,8 +7,8 @@ import org.mtr.mapping.holder.*;
 public class BlockExtension extends BlockAbstractMapping implements BlockHelper {
 
 	@MappedMethod
-	public BlockExtension(BlockHelper.Properties properties) {
-		super(properties.blockSettings);
+	public BlockExtension(BlockSettings blockSettings) {
+		super(blockSettings);
 	}
 
 	@Deprecated

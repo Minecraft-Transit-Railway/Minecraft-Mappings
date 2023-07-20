@@ -2,8 +2,8 @@ package org.mtr.mapping.registry;
 
 import net.minecraftforge.registries.ForgeRegistries;
 import org.mtr.mapping.annotation.MappedMethod;
+import org.mtr.mapping.holder.Identifier;
 import org.mtr.mapping.holder.Item;
-import org.mtr.mapping.holder.ResourceLocation;
 import org.mtr.mapping.tool.RegistryObject;
 
 import java.util.function.Consumer;
@@ -12,8 +12,8 @@ public final class ItemRegistryObject extends RegistryObject<Item> {
 
 	private final net.minecraftforge.fmllegacy.RegistryObject<net.minecraft.world.item.Item> registryObject;
 
-	ItemRegistryObject(ResourceLocation resourceLocation) {
-		registryObject = net.minecraftforge.fmllegacy.RegistryObject.of(resourceLocation.data, ForgeRegistries.ITEMS);
+	ItemRegistryObject(Identifier identifier) {
+		registryObject = net.minecraftforge.fmllegacy.RegistryObject.of(identifier.data, ForgeRegistries.ITEMS);
 	}
 
 	@MappedMethod

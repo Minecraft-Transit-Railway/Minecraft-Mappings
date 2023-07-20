@@ -4,7 +4,7 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.BlockEntityType;
-import org.mtr.mapping.holder.ResourceLocation;
+import org.mtr.mapping.holder.Identifier;
 import org.mtr.mapping.mapper.BlockEntityExtension;
 import org.mtr.mapping.tool.RegistryObject;
 
@@ -14,8 +14,8 @@ public final class BlockEntityTypeRegistryObject<T extends BlockEntityExtension>
 
 	private final net.minecraftforge.fml.RegistryObject<TileEntityType<T>> registryObject;
 
-	BlockEntityTypeRegistryObject(ResourceLocation resourceLocation) {
-		registryObject = net.minecraftforge.fml.RegistryObject.of(resourceLocation.data, ForgeRegistries.TILE_ENTITIES);
+	BlockEntityTypeRegistryObject(Identifier identifier) {
+		registryObject = net.minecraftforge.fml.RegistryObject.of(identifier.data, ForgeRegistries.TILE_ENTITIES);
 	}
 
 	@MappedMethod

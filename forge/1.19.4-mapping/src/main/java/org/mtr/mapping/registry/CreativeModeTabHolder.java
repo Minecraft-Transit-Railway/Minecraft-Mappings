@@ -10,12 +10,12 @@ import java.util.function.Supplier;
 
 public final class CreativeModeTabHolder {
 
-	public final ResourceLocation resourceLocation;
+	public final ResourceLocation identifier;
 	public final Supplier<ItemStack> iconSupplier;
 	public final List<Supplier<Item>> itemSuppliers = new ArrayList<>();
 
-	public CreativeModeTabHolder(ResourceLocation resourceLocation, Supplier<ItemStack> iconSupplier) {
-		this.resourceLocation = resourceLocation;
+	public CreativeModeTabHolder(ResourceLocation identifier, Supplier<ItemStack> iconSupplier) {
+		this.identifier = identifier;
 		this.iconSupplier = iconSupplier;
 	}
 }

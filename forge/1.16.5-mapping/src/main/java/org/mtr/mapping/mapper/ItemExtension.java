@@ -3,15 +3,12 @@ package org.mtr.mapping.mapper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import org.mtr.mapping.annotation.MappedMethod;
-import org.mtr.mapping.holder.Hand;
-import org.mtr.mapping.holder.ItemAbstractMapping;
-import org.mtr.mapping.holder.PlayerEntity;
-import org.mtr.mapping.holder.World;
+import org.mtr.mapping.holder.*;
 
 public class ItemExtension extends ItemAbstractMapping implements ItemHelper {
 
-	public ItemExtension(ItemHelper.Properties properties) {
-		super(properties.itemSettings);
+	public ItemExtension(ItemSettings itemSettings) {
+		super(itemSettings);
 	}
 
 	@Deprecated

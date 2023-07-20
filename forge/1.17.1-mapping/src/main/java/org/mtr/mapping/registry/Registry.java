@@ -10,7 +10,6 @@ import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
 import org.mtr.mapping.mapper.BlockEntityExtension;
 import org.mtr.mapping.mapper.BlockItemExtension;
-import org.mtr.mapping.mapper.ItemHelper;
 import org.mtr.mapping.tool.DummyClass;
 import org.mtr.mapping.tool.HolderBase;
 
@@ -31,43 +30,39 @@ public final class Registry extends DummyClass {
 	}
 
 	@MappedMethod
-	public static BlockRegistryObject registerBlock(ResourceLocation resourceLocation, Supplier<Block> supplier) {
+	public static BlockRegistryObject registerBlock(Identifier identifier, Supplier<Block> supplier) {
 		ModEventBus.BLOCKS.add(supplier);
-		return new BlockRegistryObject(resourceLocation);
+		return new BlockRegistryObject(identifier);
 	}
 
 	@MappedMethod
-	public static BlockRegistryObject registerBlockWithBlockItem(ResourceLocation resourceLocation, Supplier<Block> supplier) {
+	public static BlockRegistryObject registerBlockWithBlockItem(Identifier identifier, Supplier<Block> supplier, CreativeModeTabHolder creativeModeTabHolder) {
 		ModEventBus.BLOCKS.add(supplier);
-		final BlockRegistryObject blockRegistryObject = new BlockRegistryObject(resourceLocation);
-		ModEventBus.BLOCK_ITEMS.add(() -> new BlockItemExtension(blockRegistryObject.get(), new ItemHelper.Properties()));
+		final BlockRegistryObject blockRegistryObject = new BlockRegistryObject(identifier);
+		ModEventBus.BLOCK_ITEMS.add(() -> new BlockItemExtension(blockRegistryObject.get(), new ItemSettings().tab(creativeModeTabHolder.creativeModeTab)));
 		return blockRegistryObject;
 	}
 
 	@MappedMethod
-	public static ItemRegistryObject registerItem(ResourceLocation resourceLocation, Supplier<Item> supplier) {
-		ModEventBus.ITEMS.add(supplier);
-		return new ItemRegistryObject(resourceLocation);
+	public static ItemRegistryObject registerItem(Identifier identifier, Function<ItemSettings, Item> function, CreativeModeTabHolder creativeModeTabHolder) {
+		ModEventBus.ITEMS.add(() -> function.apply(new ItemSettings().tab(creativeModeTabHolder.creativeModeTab)));
+		return new ItemRegistryObject(identifier);
 	}
 
 	@MappedMethod
-	public static <T extends BlockEntityExtension> BlockEntityTypeRegistryObject<T> registerBlockEntityType(ResourceLocation resourceLocation, BiFunction<BlockPos, BlockState, T> function, Block... blocks) {
+	public static <T extends BlockEntityExtension> BlockEntityTypeRegistryObject<T> registerBlockEntityType(Identifier identifier, BiFunction<BlockPos, BlockState, T> function, Block... blocks) {
 		ModEventBus.BLOCK_ENTITY_TYPES.add(() -> BlockEntityType.Builder.of((pos, state) -> function.apply(new BlockPos(pos), new BlockState(state)), HolderBase.convertArray(blocks, net.minecraft.world.level.block.Block[]::new)).build(null));
-		return new BlockEntityTypeRegistryObject<>(resourceLocation);
+		return new BlockEntityTypeRegistryObject<>(identifier);
 	}
 
 	@MappedMethod
-	public static CreativeModeTabHolder createCreativeModeTabHolder(ResourceLocation resourceLocation, Supplier<ItemStack> iconSupplier) {
-		return new CreativeModeTabHolder(resourceLocation, iconSupplier);
+	public static CreativeModeTabHolder createCreativeModeTabHolder(Identifier identifier, Supplier<ItemStack> iconSupplier) {
+		return new CreativeModeTabHolder(identifier, iconSupplier);
 	}
 
 	@MappedMethod
-	public static void addItemsToCreativeModeTab(CreativeModeTabHolder creativeModeTabHolder, ItemRegistryObject... itemRegistryObjects) {
-	}
-
-	@MappedMethod
-	public static void setupPackets(ResourceLocation resourceLocation) {
-		simpleChannel = NetworkRegistry.newSimpleChannel(resourceLocation.data, () -> PROTOCOL_VERSION, Registry::validProtocol, Registry::validProtocol);
+	public static void setupPackets(Identifier identifier) {
+		simpleChannel = NetworkRegistry.newSimpleChannel(identifier.data, () -> PROTOCOL_VERSION, Registry::validProtocol, Registry::validProtocol);
 	}
 
 	@MappedMethod

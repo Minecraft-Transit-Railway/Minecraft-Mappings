@@ -6,10 +6,10 @@ import net.minecraft.util.Identifier;
 public final class CreativeModeTabHolder {
 
 	public final ItemGroup creativeModeTab;
-	public final Identifier resourceLocation;
+	public final Identifier identifier;
 
-	public CreativeModeTabHolder(ItemGroup creativeModeTab, Identifier resourceLocation) {
+	public CreativeModeTabHolder(ItemGroup creativeModeTab, Identifier identifier) {
 		this.creativeModeTab = creativeModeTab;
-		this.resourceLocation = resourceLocation;
+		this.identifier = identifier;
 	}
 }

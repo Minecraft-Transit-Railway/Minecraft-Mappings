@@ -7,8 +7,8 @@ import net.minecraft.network.PacketByteBuf;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.BlockEntityRendererArgument;
 import org.mtr.mapping.holder.BlockEntityType;
+import org.mtr.mapping.holder.Identifier;
 import org.mtr.mapping.holder.PacketBuffer;
-import org.mtr.mapping.holder.ResourceLocation;
 import org.mtr.mapping.mapper.BlockEntityExtension;
 import org.mtr.mapping.mapper.BlockEntityRenderer;
 import org.mtr.mapping.tool.DummyClass;
@@ -32,8 +32,8 @@ public final class RegistryClient extends DummyClass {
 	}
 
 	@MappedMethod
-	public static void setupPackets(ResourceLocation resourceLocation) {
-		ClientPlayNetworking.registerGlobalReceiver(resourceLocation.data, (client, handler, buf, responseSender) -> {
+	public static void setupPackets(Identifier identifier) {
+		ClientPlayNetworking.registerGlobalReceiver(identifier.data, (client, handler, buf, responseSender) -> {
 			final Function<PacketBuffer, ? extends PacketHandler> getInstance = Registry.PACKETS.get(buf.readString());
 			if (getInstance != null) {
 				final PacketHandler packetHandler = getInstance.apply(new PacketBuffer(buf));
@@ -44,11 +44,11 @@ public final class RegistryClient extends DummyClass {
 
 	@MappedMethod
 	public static <T extends PacketHandler> void sendPacketToServer(T data) {
-		if (Registry.packetsResourceLocation != null) {
+		if (Registry.packetsIdentifier != null) {
 			final PacketByteBuf packetByteBuf = PacketByteBufs.create();
 			packetByteBuf.writeString(data.getClass().getName());
 			data.write(new PacketBuffer(packetByteBuf));
-			ClientPlayNetworking.send(Registry.packetsResourceLocation.data, packetByteBuf);
+			ClientPlayNetworking.send(Registry.packetsIdentifier.data, packetByteBuf);
 		}
 	}
 }

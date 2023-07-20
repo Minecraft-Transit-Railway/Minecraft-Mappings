@@ -3,7 +3,7 @@ package org.mtr.mapping.registry;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.Block;
-import org.mtr.mapping.holder.ResourceLocation;
+import org.mtr.mapping.holder.Identifier;
 import org.mtr.mapping.tool.RegistryObject;
 
 import java.util.function.Consumer;
@@ -12,8 +12,8 @@ public final class BlockRegistryObject extends RegistryObject<Block> {
 
 	private final net.minecraftforge.fmllegacy.RegistryObject<net.minecraft.world.level.block.Block> registryObject;
 
-	BlockRegistryObject(ResourceLocation resourceLocation) {
-		registryObject = net.minecraftforge.fmllegacy.RegistryObject.of(resourceLocation.data, ForgeRegistries.BLOCKS);
+	BlockRegistryObject(Identifier identifier) {
+		registryObject = net.minecraftforge.fmllegacy.RegistryObject.of(identifier.data, ForgeRegistries.BLOCKS);
 	}
 
 	@MappedMethod
