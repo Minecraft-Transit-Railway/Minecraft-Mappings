@@ -10,6 +10,7 @@ import net.minecraftforge.registries.RegisterEvent;
 import org.mtr.mapping.holder.Block;
 import org.mtr.mapping.holder.Identifier;
 import org.mtr.mapping.holder.Item;
+import org.mtr.mapping.holder.SoundEvent;
 import org.mtr.mapping.mapper.BlockEntityExtension;
 import org.mtr.mapping.mapper.BlockItemExtension;
 
@@ -25,6 +26,7 @@ public final class ModEventBus {
 	static final Map<Identifier, Supplier<BlockItemExtension>> BLOCK_ITEMS = new HashMap<>();
 	static final Map<Identifier, Supplier<Item>> ITEMS = new HashMap<>();
 	static final Map<Identifier, Supplier<BlockEntityType<? extends BlockEntityExtension>>> BLOCK_ENTITY_TYPES = new HashMap<>();
+	static final Map<Identifier, Supplier<SoundEvent>> SOUND_EVENTS = new HashMap<>();
 	static final Set<CreativeModeTabHolder> CREATIVE_MODE_TABS = new HashSet<>();
 
 	@SubscribeEvent
@@ -41,5 +43,6 @@ public final class ModEventBus {
 				.displayItems((params, output) -> creativeModeTabHolder.itemSuppliers.forEach(itemSupplier -> output.accept(itemSupplier.get().data)))
 				.build()
 		)));
+		event.register(ForgeRegistries.Keys.SOUND_EVENTS, helper -> SOUND_EVENTS.forEach(((identifier, supplier) -> helper.register(identifier.data, supplier.get().data))));
 	}
 }

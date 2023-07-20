@@ -2,8 +2,11 @@ package org.mtr.mapping.mapper;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.state.StateManager;
+import net.minecraft.text.Text;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
+
+import java.util.List;
 
 public class BlockExtension extends BlockAbstractMapping implements BlockHelper {
 
@@ -16,6 +19,12 @@ public class BlockExtension extends BlockAbstractMapping implements BlockHelper 
 	@Override
 	protected final void appendProperties(StateManager.Builder<net.minecraft.block.Block, BlockState> builder) {
 		appendPropertiesHelper(builder);
+	}
+
+	@Deprecated
+	@Override
+	public final void appendTooltip2(ItemStack stack, BlockView world, List<Text> tooltip, TooltipContext options) {
+		appendTooltipHelper(stack, world, tooltip, options);
 	}
 
 	@MappedMethod

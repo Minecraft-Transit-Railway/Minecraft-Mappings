@@ -1,28 +1,55 @@
 package org.mtr.mapping.mapper;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.state.StateManager;
+import net.minecraft.state.property.Property;
+import net.minecraft.text.Text;
 import org.mtr.mapping.annotation.MappedMethod;
-import org.mtr.mapping.holder.Property;
+import org.mtr.mapping.holder.*;
 import org.mtr.mapping.tool.DummyInterface;
+import org.mtr.mapping.tool.HolderBase;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.ToIntFunction;
 
 public interface BlockHelper extends DummyInterface {
 
 	@MappedMethod
-	default Property<?>[] blockProperties() {
-		return new Property[0];
+	default void addBlockProperties(List<HolderBase<?>> properties) {
 	}
 
 	@Deprecated
-	default void appendPropertiesHelper(StateManager.Builder<Block, BlockState> builder) {
-		final Property<?>[] oldProperties = blockProperties();
-		if (oldProperties.length > 0) {
-			final net.minecraft.state.property.Property<?>[] newProperties = new net.minecraft.state.property.Property[oldProperties.length];
-			for (int i = 0; i < oldProperties.length; i++) {
-				newProperties[i] = oldProperties[i].data;
+	default void appendPropertiesHelper(StateManager.Builder<Block, net.minecraft.block.BlockState> builder) {
+		final List<HolderBase<?>> properties = new ArrayList<>();
+		addBlockProperties(properties);
+
+		if (properties.size() > 0) {
+			final Property<?>[] newProperties = new Property[properties.size()];
+			for (int i = 0; i < properties.size(); i++) {
+				final Object data = properties.get(i).data;
+				if (data instanceof Property) {
+					newProperties[i] = (Property<?>) data;
+				}
 			}
 			builder.add(newProperties);
 		}
+	}
+
+	@MappedMethod
+	default void addTooltips(ItemStack stack, @Nullable BlockView world, List<MutableText> tooltip, TooltipContext options) {
+	}
+
+	@Deprecated
+	default void appendTooltipHelper(ItemStack stack, @Nullable BlockView world, List<Text> tooltipList, TooltipContext options) {
+		final List<MutableText> newTooltipList = new ArrayList<>();
+		addTooltips(stack, world, newTooltipList, options);
+		newTooltipList.forEach(mutableText -> tooltipList.add(mutableText.data));
+	}
+
+	@MappedMethod
+	static BlockSettings setLuminance(BlockSettings blockSettings, ToIntFunction<BlockState> function) {
+		return blockSettings.luminance(blockState -> function.applyAsInt(new BlockState(blockState)));
 	}
 }

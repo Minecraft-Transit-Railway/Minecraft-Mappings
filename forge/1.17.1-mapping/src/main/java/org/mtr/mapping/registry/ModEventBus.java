@@ -5,6 +5,7 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.mtr.mapping.holder.Block;
 import org.mtr.mapping.holder.Item;
+import org.mtr.mapping.holder.SoundEvent;
 import org.mtr.mapping.mapper.BlockEntityExtension;
 import org.mtr.mapping.mapper.BlockItemExtension;
 
@@ -18,6 +19,7 @@ public final class ModEventBus {
 	static final Set<Supplier<BlockItemExtension>> BLOCK_ITEMS = new HashSet<>();
 	static final Set<Supplier<Item>> ITEMS = new HashSet<>();
 	static final Set<Supplier<BlockEntityType<? extends BlockEntityExtension>>> BLOCK_ENTITY_TYPES = new HashSet<>();
+	static final Set<Supplier<SoundEvent>> SOUND_EVENTS = new HashSet<>();
 
 	@SubscribeEvent
 	public void registerBlocks(RegistryEvent.Register<net.minecraft.world.level.block.Block> event) {
@@ -33,5 +35,10 @@ public final class ModEventBus {
 	@SubscribeEvent
 	public void registerBlockEntityTypes(RegistryEvent.Register<BlockEntityType<?>> event) {
 		BLOCK_ENTITY_TYPES.forEach(supplier -> event.getRegistry().register(supplier.get()));
+	}
+
+	@SubscribeEvent
+	public void registerSoundEvents(RegistryEvent.Register<net.minecraft.sounds.SoundEvent> event) {
+		SOUND_EVENTS.forEach(supplier -> event.getRegistry().register(supplier.get().data));
 	}
 }

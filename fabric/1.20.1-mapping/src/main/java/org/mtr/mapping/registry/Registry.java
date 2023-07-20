@@ -77,6 +77,13 @@ public final class Registry extends DummyClass {
 	}
 
 	@MappedMethod
+	public static SoundEventRegistryObject registerSoundEvent(Identifier identifier) {
+		final SoundEvent soundEvent = SoundEvent.of(identifier);
+		OBJECTS_TO_REGISTER.add(() -> net.minecraft.registry.Registry.register(Registries.SOUND_EVENT, identifier.data, soundEvent.data));
+		return new SoundEventRegistryObject(soundEvent);
+	}
+
+	@MappedMethod
 	public static void setupPackets(Identifier identifier) {
 		packetsIdentifier = identifier;
 		ServerPlayNetworking.registerGlobalReceiver(identifier.data, (server, player, handler, buf, responseSender) -> {

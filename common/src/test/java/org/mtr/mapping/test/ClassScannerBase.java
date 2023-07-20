@@ -82,47 +82,34 @@ public abstract class ClassScannerBase {
 				final String exceptions = getStringFromMethod(stringBuilder -> appendIfNotEmpty(stringBuilder, executable.getGenericExceptionTypes(), "throws ", "", ",", Type::getTypeName));
 				final List<TypeInfo> parameters = new ArrayList<>();
 
-				iterateTwoArrays(executable.getParameters(), executable.getGenericParameterTypes(), (parameter, type) -> {
-					final StringBuilder stringBuilderResolved = new StringBuilder();
-					final boolean resolved = getMappedClassName(stringBuilderResolved, type, typeMap, classMap, false);
-					parameters.add(new TypeInfo(
-							parameter.getName(),
-							getStringFromMethod(stringBuilder -> getMappedClassName(stringBuilder, type, typeMap, null, false)),
-							getStringFromMethod(stringBuilder -> getMappedClassName(stringBuilder, type, typeMap, null, true)),
-							stringBuilderResolved.toString(),
-							getStringFromMethod(stringBuilder -> getMappedClassName(stringBuilder, type, typeMap, classMap, true)),
-							resolved,
-							parameter.getType().isPrimitive(),
-							parameter.getType().isEnum(),
-							parameter.isAnnotationPresent(Nullable.class)
-					));
-				});
+				iterateTwoArrays(executable.getParameters(), executable.getGenericParameterTypes(), (parameter, type) -> parameters.add(new TypeInfo(
+						parameter.getName(),
+						type,
+						typeMap,
+						classMap,
+						parameter.getType().isPrimitive(),
+						parameter.getType().isEnum(),
+						parameter.isAnnotationPresent(Nullable.class)
+				)));
 
-				final String resolvedReturnType;
 				final TypeInfo returnType;
 
 				if (isMethod) {
 					final Type genericReturnType = ((Method) executable).getGenericReturnType();
-					final StringBuilder stringBuilderResolvedImplied = new StringBuilder();
-					final boolean isReturnResolved = getMappedClassName(stringBuilderResolvedImplied, genericReturnType, typeMap, classMap, true);
-					resolvedReturnType = getStringFromMethod(stringBuilder -> getMappedClassName(stringBuilder, genericReturnType, typeMap, classMap, false));
 					returnType = new TypeInfo(
 							null,
-							getStringFromMethod(stringBuilder -> getMappedClassName(stringBuilder, genericReturnType, typeMap, null, false)),
-							getStringFromMethod(stringBuilder -> getMappedClassName(stringBuilder, genericReturnType, typeMap, null, true)),
-							resolvedReturnType,
-							stringBuilderResolvedImplied.toString(),
-							isReturnResolved,
+							genericReturnType,
+							typeMap,
+							classMap,
 							genericReturnType instanceof Class && ((Class<?>) genericReturnType).isPrimitive(),
 							((Method) executable).getReturnType().isEnum(),
 							executable.isAnnotationPresent(Nullable.class)
 					);
 				} else {
-					resolvedReturnType = "";
-					returnType = new TypeInfo(null, resolvedReturnType, resolvedReturnType, resolvedReturnType, resolvedReturnType, false, true, false, false);
+					returnType = new TypeInfo();
 				}
 
-				final String key = mergeWithSpaces(Modifier.toString(modifiers), generics, resolvedReturnType, String.format("(%s)", parameters.stream().map(typeInfo -> typeInfo.resolvedTypeName).collect(Collectors.joining(","))), exceptions);
+				final String key = mergeWithSpaces(Modifier.toString(modifiers), generics, returnType.resolvedTypeName, String.format("(%s)", parameters.stream().map(typeInfo -> typeInfo.resolvedTypeName).collect(Collectors.joining(","))), exceptions);
 				iterateExecutable(
 						classInfo,
 						minecraftClassName,
@@ -333,16 +320,29 @@ public abstract class ClassScannerBase {
 		final boolean isEnum;
 		final boolean isNullable;
 
-		private TypeInfo(String variableName, String minecraftTypeName, String minecraftTypeNameImplied, String resolvedTypeName, String resolvedTypeNameImplied, boolean isResolved, boolean isPrimitive, boolean isEnum, boolean isNullable) {
+		private TypeInfo(String variableName, Type type, Map<Type, Type> typeMap, Map<Class<?>, ClassInfo> classMap, boolean isPrimitive, boolean isEnum, boolean isNullable) {
 			this.variableName = variableName;
-			this.minecraftTypeName = minecraftTypeName;
-			this.minecraftTypeNameImplied = minecraftTypeNameImplied;
-			this.resolvedTypeName = resolvedTypeName;
-			this.resolvedTypeNameImplied = resolvedTypeNameImplied;
-			this.isResolved = isResolved;
+			this.minecraftTypeName = getStringFromMethod(stringBuilder -> getMappedClassName(stringBuilder, type, typeMap, null, false));
+			this.minecraftTypeNameImplied = getStringFromMethod(stringBuilder -> getMappedClassName(stringBuilder, type, typeMap, null, true));
+			final StringBuilder stringBuilderResolved = new StringBuilder();
+			isResolved = getMappedClassName(stringBuilderResolved, type, typeMap, classMap, false);
+			this.resolvedTypeName = stringBuilderResolved.toString();
+			this.resolvedTypeNameImplied = getStringFromMethod(stringBuilder -> getMappedClassName(stringBuilder, type, typeMap, classMap, true));
 			this.isPrimitive = isPrimitive;
 			this.isEnum = isEnum;
 			this.isNullable = isNullable;
+		}
+
+		private TypeInfo() {
+			this.variableName = null;
+			this.minecraftTypeName = "";
+			this.minecraftTypeNameImplied = "";
+			this.resolvedTypeName = "";
+			this.resolvedTypeNameImplied = "";
+			this.isResolved = false;
+			this.isPrimitive = true;
+			this.isEnum = false;
+			this.isNullable = false;
 		}
 	}
 

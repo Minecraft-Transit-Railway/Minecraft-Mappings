@@ -66,6 +66,12 @@ public final class Registry extends DummyClass {
 	}
 
 	@MappedMethod
+	public static SoundEventRegistryObject registerSoundEvent(Identifier identifier) {
+		ModEventBus.SOUND_EVENTS.put(identifier, () -> SoundEvent.createVariableRangeEvent(identifier));
+		return new SoundEventRegistryObject(identifier);
+	}
+
+	@MappedMethod
 	public static void setupPackets(Identifier identifier) {
 		simpleChannel = NetworkRegistry.newSimpleChannel(identifier.data, () -> PROTOCOL_VERSION, Registry::validProtocol, Registry::validProtocol);
 	}

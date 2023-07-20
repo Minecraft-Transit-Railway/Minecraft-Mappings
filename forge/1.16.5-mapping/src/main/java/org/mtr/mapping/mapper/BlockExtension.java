@@ -1,8 +1,12 @@
 package org.mtr.mapping.mapper;
 
 import net.minecraft.state.StateContainer;
+import net.minecraft.util.text.ITextComponent;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 public class BlockExtension extends BlockAbstractMapping implements BlockHelper {
 
@@ -31,6 +35,12 @@ public class BlockExtension extends BlockAbstractMapping implements BlockHelper 
 	@Override
 	protected final void createBlockStateDefinition(StateContainer.Builder<net.minecraft.block.Block, net.minecraft.block.BlockState> builder) {
 		createBlockStateDefinitionHelper(builder);
+	}
+
+	@Deprecated
+	@Override
+	public final void appendHoverText2(ItemStack stack, @Nullable BlockView world, List<ITextComponent> tooltipList, TooltipContext options) {
+		appendTooltipHelper(stack, world, tooltipList, options);
 	}
 
 	@MappedMethod
