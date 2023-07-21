@@ -3,7 +3,11 @@ package org.mtr.mapping.test;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.client.color.block.BlockColorProvider;
+import net.minecraft.client.color.item.ItemColorProvider;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -47,6 +51,7 @@ public final class ClassScannerTest {
 		scanner.put("BlockEntityType", BlockEntityType.class);
 		scanner.put("BlockHitResult", BlockHitResult.class);
 		scanner.put("BlockPos", BlockPos.class);
+		scanner.put("BlockRenderView", BlockRenderView.class);
 		scanner.put("BlockSettings", AbstractBlock.Settings.class);
 		scanner.put("BlockState", BlockState.class);
 		scanner.put("BlockView", BlockView.class);
@@ -70,6 +75,7 @@ public final class ClassScannerTest {
 		scanner.put("ItemSettings", Item.Settings.class);
 		scanner.put("ItemStack", ItemStack.class);
 		scanner.put("ItemUsageContext", ItemUsageContext.class);
+		scanner.put("KeyBinding", KeyBinding.class);
 		scanner.put("LivingEntity", LivingEntity.class);
 		scanner.put("MathHelper", MathHelper.class);
 		scanner.put("Mirror", BlockMirror.class);
@@ -80,6 +86,7 @@ public final class ClassScannerTest {
 		scanner.put("Position", Position.class);
 		scanner.put("Property", Property.class);
 		scanner.put("Random", Random.class);
+		scanner.put("RenderLayer", RenderLayer.class);
 		scanner.put("Rotation", BlockRotation.class);
 		scanner.put("Scoreboard", Scoreboard.class);
 		scanner.put("ScoreboardCriterion", ScoreboardCriterion.class);
@@ -111,6 +118,8 @@ public final class ClassScannerTest {
 		scanner.putAbstract("Item", Item.class);
 		scanner.putAbstract("PlaceableOnWaterItem", LilyPadItem.class);
 		scanner.putAbstract("SlabBlock", SlabBlock.class);
+		scanner.putInterface("BlockColorProvider", BlockColorProvider.class);
+		scanner.putInterface("ItemColorProvider", ItemColorProvider.class);
 		scanner.putInterface("StringIdentifiable", StringIdentifiable.class);
 		scanner.generate();
 	}

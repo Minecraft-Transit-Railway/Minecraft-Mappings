@@ -77,7 +77,14 @@ public abstract class ClassScannerBase {
 			final boolean isMethod = executable instanceof Method;
 			final int modifiers = executable.getModifiers();
 
-			if (Modifier.isPublic(modifiers) && !Modifier.isNative(modifiers) && !executable.isSynthetic() && !BLACKLISTED_SIGNATURES.contains(quickSerialize(executable)) && !classInfo.blacklist.contains(minecraftMethodName) && Arrays.stream(executable.getParameters()).allMatch(parameter -> Modifier.isPublic(parameter.getType().getModifiers()))) {
+			if (Modifier.isPublic(modifiers)
+					&& !Modifier.isNative(modifiers)
+					&& !executable.isSynthetic()
+					&& !BLACKLISTED_SIGNATURES.contains(quickSerialize(executable))
+					&& !classInfo.blacklist.contains(minecraftMethodName)
+					&& (!isMethod || Modifier.isPublic(((Method) executable).getReturnType().getModifiers()))
+					&& Arrays.stream(executable.getParameters()).allMatch(parameter -> Modifier.isPublic(parameter.getType().getModifiers()))
+			) {
 				final String generics = getGenerics(executable, false, true, classMap);
 				final String exceptions = getStringFromMethod(stringBuilder -> appendIfNotEmpty(stringBuilder, executable.getGenericExceptionTypes(), "throws ", "", ",", Type::getTypeName));
 				final List<TypeInfo> parameters = new ArrayList<>();

@@ -4,6 +4,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.material.Material;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
 import org.mtr.mapping.tool.DummyInterface;
@@ -49,7 +50,22 @@ public interface BlockHelper extends DummyInterface {
 	}
 
 	@MappedMethod
-	static BlockSettings setLuminance(BlockSettings blockSettings, ToIntFunction<BlockState> function) {
-		return blockSettings.lightLevel(blockState -> function.applyAsInt(new BlockState(blockState)));
+	static BlockSettings setLuminance(BlockSettings blockSettings, ToIntFunction<BlockState> luminanceFunction) {
+		return blockSettings.lightLevel(blockState -> luminanceFunction.applyAsInt(new BlockState(blockState)));
+	}
+
+	@MappedMethod
+	static BlockSettings createBlockSettings(boolean blockPiston) {
+		return BlockSettings.of(blockPiston ? Material.HEAVY_METAL : Material.METAL);
+	}
+
+	@MappedMethod
+	static BlockSettings createBlockSettings(ToIntFunction<BlockState> luminanceFunction) {
+		return setLuminance(createBlockSettings(false), luminanceFunction);
+	}
+
+	@MappedMethod
+	static BlockSettings createBlockSettings(boolean blockPiston, ToIntFunction<BlockState> luminanceFunction) {
+		return setLuminance(createBlockSettings(blockPiston), luminanceFunction);
 	}
 }

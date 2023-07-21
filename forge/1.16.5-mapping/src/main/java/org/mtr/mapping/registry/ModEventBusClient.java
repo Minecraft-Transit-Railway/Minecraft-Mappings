@@ -1,7 +1,6 @@
 package org.mtr.mapping.registry;
 
 import net.minecraftforge.client.event.ColorHandlerEvent;
-import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
@@ -12,18 +11,12 @@ import java.util.function.Consumer;
 public final class ModEventBusClient {
 
 	static final List<Runnable> CLIENT_OBJECTS_TO_REGISTER = new ArrayList<>();
-	static final List<Consumer<EntityRenderersEvent.RegisterRenderers>> BLOCK_ENTITY_RENDERERS = new ArrayList<>();
 	static final List<Consumer<ColorHandlerEvent.Block>> BLOCK_COLORS = new ArrayList<>();
 	static final List<Consumer<ColorHandlerEvent.Item>> ITEM_COLORS = new ArrayList<>();
 
 	@SubscribeEvent
 	public static void registerClient(FMLCommonSetupEvent event) {
 		CLIENT_OBJECTS_TO_REGISTER.forEach(Runnable::run);
-	}
-
-	@SubscribeEvent
-	public static void registerBlockEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
-		BLOCK_ENTITY_RENDERERS.forEach(consumer -> consumer.accept(event));
 	}
 
 	@SubscribeEvent

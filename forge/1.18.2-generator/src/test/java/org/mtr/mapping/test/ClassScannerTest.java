@@ -2,7 +2,11 @@ package org.mtr.mapping.test;
 
 import com.mojang.math.Vector3f;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.color.block.BlockColor;
+import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -69,6 +73,7 @@ public final class ClassScannerTest {
 		scanner.put("BlockEntityType", BlockEntityType.class);
 		scanner.put("BlockHitResult", BlockHitResult.class);
 		scanner.put("BlockPos", BlockPos.class);
+		scanner.put("BlockRenderView", BlockAndTintGetter.class);
 		scanner.put("BlockSettings", BlockBehaviour.Properties.class);
 		scanner.put("BlockState", BlockState.class);
 		scanner.put("BlockView", BlockGetter.class);
@@ -92,6 +97,7 @@ public final class ClassScannerTest {
 		scanner.put("ItemSettings", Item.Properties.class);
 		scanner.put("ItemStack", ItemStack.class);
 		scanner.put("ItemUsageContext", UseOnContext.class);
+		scanner.put("KeyBinding", KeyMapping.class);
 		scanner.put("LivingEntity", LivingEntity.class);
 		scanner.put("MathHelper", Mth.class);
 		scanner.put("Mirror", Mirror.class);
@@ -102,6 +108,7 @@ public final class ClassScannerTest {
 		scanner.put("Position", Position.class);
 		scanner.put("Property", Property.class);
 		scanner.put("Random", Random.class);
+		scanner.put("RenderLayer", RenderType.class);
 		scanner.put("Rotation", Rotation.class);
 		scanner.put("Scoreboard", Scoreboard.class);
 		scanner.put("ScoreboardCriterion", ObjectiveCriteria.class);
@@ -133,6 +140,8 @@ public final class ClassScannerTest {
 		scanner.putAbstract("Item", Item.class);
 		scanner.putAbstract("PlaceableOnWaterItem", WaterLilyBlockItem.class);
 		scanner.putAbstract("SlabBlock", SlabBlock.class);
+		scanner.putInterface("BlockColorProvider", BlockColor.class);
+		scanner.putInterface("ItemColorProvider", ItemColor.class);
 		scanner.putInterface("StringIdentifiable", StringRepresentable.class);
 		scanner.generate();
 	}

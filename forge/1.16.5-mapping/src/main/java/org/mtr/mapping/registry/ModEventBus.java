@@ -9,36 +9,36 @@ import org.mtr.mapping.holder.SoundEvent;
 import org.mtr.mapping.mapper.BlockEntityExtension;
 import org.mtr.mapping.mapper.BlockItemExtension;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 public final class ModEventBus {
 
-	static final Set<Supplier<Block>> BLOCKS = new HashSet<>();
-	static final Set<Supplier<BlockItemExtension>> BLOCK_ITEMS = new HashSet<>();
-	static final Set<Supplier<Item>> ITEMS = new HashSet<>();
-	static final Set<Supplier<TileEntityType<? extends BlockEntityExtension>>> BLOCK_ENTITY_TYPES = new HashSet<>();
-	static final Set<Supplier<SoundEvent>> SOUND_EVENTS = new HashSet<>();
+	static final List<Supplier<Block>> BLOCKS = new ArrayList<>();
+	static final List<Supplier<BlockItemExtension>> BLOCK_ITEMS = new ArrayList<>();
+	static final List<Supplier<Item>> ITEMS = new ArrayList<>();
+	static final List<Supplier<TileEntityType<? extends BlockEntityExtension>>> BLOCK_ENTITY_TYPES = new ArrayList<>();
+	static final List<Supplier<SoundEvent>> SOUND_EVENTS = new ArrayList<>();
 
 	@SubscribeEvent
-	public void registerBlocks(RegistryEvent.Register<net.minecraft.block.Block> event) {
+	public static void registerBlocks(RegistryEvent.Register<net.minecraft.block.Block> event) {
 		BLOCKS.forEach(supplier -> event.getRegistry().register(supplier.get().data));
 	}
 
 	@SubscribeEvent
-	public void registerItems(RegistryEvent.Register<net.minecraft.item.Item> event) {
+	public static void registerItems(RegistryEvent.Register<net.minecraft.item.Item> event) {
 		BLOCK_ITEMS.forEach(supplier -> event.getRegistry().register(supplier.get()));
 		ITEMS.forEach(supplier -> event.getRegistry().register(supplier.get().data));
 	}
 
 	@SubscribeEvent
-	public void registerBlockEntityTypes(RegistryEvent.Register<TileEntityType<?>> event) {
+	public static void registerBlockEntityTypes(RegistryEvent.Register<TileEntityType<?>> event) {
 		BLOCK_ENTITY_TYPES.forEach(supplier -> event.getRegistry().register(supplier.get()));
 	}
 
 	@SubscribeEvent
-	public void registerSoundEvents(RegistryEvent.Register<net.minecraft.util.SoundEvent> event) {
+	public static void registerSoundEvents(RegistryEvent.Register<net.minecraft.util.SoundEvent> event) {
 		SOUND_EVENTS.forEach(supplier -> event.getRegistry().register(supplier.get().data));
 	}
 }

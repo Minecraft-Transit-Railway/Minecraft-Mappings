@@ -1,14 +1,15 @@
 package org.mtr.mapping.registry;
 
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.network.PacketByteBuf;
 import org.mtr.mapping.annotation.MappedMethod;
-import org.mtr.mapping.holder.BlockEntityRendererArgument;
-import org.mtr.mapping.holder.BlockEntityType;
-import org.mtr.mapping.holder.Identifier;
-import org.mtr.mapping.holder.PacketBuffer;
+import org.mtr.mapping.holder.*;
 import org.mtr.mapping.mapper.BlockEntityExtension;
 import org.mtr.mapping.mapper.BlockEntityRenderer;
 import org.mtr.mapping.tool.DummyClass;
@@ -27,8 +28,36 @@ public final class RegistryClient extends DummyClass {
 	}
 
 	@MappedMethod
-	public static <T extends BlockEntityType<U>, U extends BlockEntityExtension> void registerBlockEntityRenderer(T blockEntityType, Function<BlockEntityRendererArgument, BlockEntityRenderer<U>> rendererInstance) {
-		OBJECTS_TO_REGISTER.add(() -> BlockEntityRendererFactories.register(blockEntityType.data, context -> rendererInstance.apply(new BlockEntityRendererArgument(context))));
+	public static <T extends BlockEntityTypeRegistryObject<U>, U extends BlockEntityExtension> void registerBlockEntityRenderer(T blockEntityType, Function<BlockEntityRendererArgument, BlockEntityRenderer<U>> rendererInstance) {
+		OBJECTS_TO_REGISTER.add(() -> BlockEntityRendererFactories.register(blockEntityType.get().data, context -> rendererInstance.apply(new BlockEntityRendererArgument(context))));
+	}
+
+	@MappedMethod
+	public static void registerBlockRenderType(RenderLayer renderLayer, BlockRegistryObject block) {
+		OBJECTS_TO_REGISTER.add(() -> BlockRenderLayerMap.INSTANCE.putBlock(block.get().data, renderLayer.data));
+	}
+
+	@MappedMethod
+	public static KeyBinding registerKeyBinding(String translationKey, int key, String categoryKey) {
+		return new KeyBinding(KeyBindingHelper.registerKeyBinding(new net.minecraft.client.option.KeyBinding(translationKey, InputUtil.Type.KEYSYM, key, categoryKey)));
+	}
+
+	@MappedMethod
+	public static void registerBlockColors(BlockColorProvider blockColorProvider, BlockRegistryObject... blocks) {
+		final net.minecraft.block.Block[] newBlocks = new net.minecraft.block.Block[blocks.length];
+		for (int i = 0; i < blocks.length; i++) {
+			newBlocks[i] = blocks[i].get().data;
+		}
+		ColorProviderRegistry.BLOCK.register((blockState, blockRenderView, blockPos, tintIndex) -> blockColorProvider.getColor2(new BlockState(blockState), blockRenderView == null ? null : new BlockRenderView(blockRenderView), blockPos == null ? null : new BlockPos(blockPos), tintIndex), newBlocks);
+	}
+
+	@MappedMethod
+	public static void registerItemColors(ItemColorProvider itemColorProvider, ItemRegistryObject... items) {
+		final net.minecraft.item.Item[] newItems = new net.minecraft.item.Item[items.length];
+		for (int i = 0; i < items.length; i++) {
+			newItems[i] = items[i].get().data;
+		}
+		ColorProviderRegistry.ITEM.register((itemStack, tintIndex) -> itemColorProvider.getColor2(new ItemStack(itemStack), tintIndex), newItems);
 	}
 
 	@MappedMethod

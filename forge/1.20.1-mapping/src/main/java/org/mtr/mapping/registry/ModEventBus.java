@@ -14,10 +14,10 @@ import org.mtr.mapping.holder.SoundEvent;
 import org.mtr.mapping.mapper.BlockEntityExtension;
 import org.mtr.mapping.mapper.BlockItemExtension;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Supplier;
 
 public final class ModEventBus {
@@ -27,10 +27,10 @@ public final class ModEventBus {
 	static final Map<Identifier, Supplier<Item>> ITEMS = new HashMap<>();
 	static final Map<Identifier, Supplier<BlockEntityType<? extends BlockEntityExtension>>> BLOCK_ENTITY_TYPES = new HashMap<>();
 	static final Map<Identifier, Supplier<SoundEvent>> SOUND_EVENTS = new HashMap<>();
-	static final Set<CreativeModeTabHolder> CREATIVE_MODE_TABS = new HashSet<>();
+	static final List<CreativeModeTabHolder> CREATIVE_MODE_TABS = new ArrayList<>();
 
 	@SubscribeEvent
-	public void register(RegisterEvent event) {
+	public static void register(RegisterEvent event) {
 		event.register(ForgeRegistries.Keys.BLOCKS, helper -> BLOCKS.forEach((identifier, supplier) -> helper.register(identifier.data, supplier.get().data)));
 		event.register(ForgeRegistries.Keys.ITEMS, helper -> {
 			BLOCK_ITEMS.forEach((identifier, supplier) -> helper.register(identifier.data, supplier.get()));

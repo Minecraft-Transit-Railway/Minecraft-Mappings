@@ -1,6 +1,7 @@
 package org.mtr.mapping.mapper;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.text.Text;
@@ -49,7 +50,22 @@ public interface BlockHelper extends DummyInterface {
 	}
 
 	@MappedMethod
-	static BlockSettings setLuminance(BlockSettings blockSettings, ToIntFunction<BlockState> function) {
-		return blockSettings.luminance(blockState -> function.applyAsInt(new BlockState(blockState)));
+	static BlockSettings setLuminance(BlockSettings blockSettings, ToIntFunction<BlockState> luminanceFunction) {
+		return blockSettings.luminance(blockState -> luminanceFunction.applyAsInt(new BlockState(blockState)));
+	}
+
+	@MappedMethod
+	static BlockSettings createBlockSettings(boolean blockPiston) {
+		return BlockSettings.create().pistonBehavior(blockPiston ? PistonBehavior.BLOCK : PistonBehavior.NORMAL);
+	}
+
+	@MappedMethod
+	static BlockSettings createBlockSettings(ToIntFunction<BlockState> luminanceFunction) {
+		return setLuminance(createBlockSettings(false), luminanceFunction);
+	}
+
+	@MappedMethod
+	static BlockSettings createBlockSettings(boolean blockPiston, ToIntFunction<BlockState> luminanceFunction) {
+		return setLuminance(createBlockSettings(blockPiston), luminanceFunction);
 	}
 }

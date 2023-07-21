@@ -173,9 +173,10 @@ public final class BuildTools {
 				final List<List<MethodInfo>> additionalMethodGroupsNoSignature = getAdditionalMethodGroups(methods, additionalMap, className, "");
 				final List<String> blacklistNames = blacklistMap.getOrDefault(className, new HashMap<>()).getOrDefault(signature, new ArrayList<>());
 				final boolean[] resolveNoSignature = {true};
+				final Set<String> duplicateMappingCheck = new HashSet<>();
 
 				additionalMethodGroups.forEach(additionalMethods -> {
-					writeJson(mappingsArray, nullableArray, additionalMethods, 0);
+					writeJson(mappingsArray, nullableArray, additionalMethods, 0, className, duplicateMappingCheck);
 					additionalMethods.forEach(methods::remove);
 				});
 
@@ -195,7 +196,7 @@ public final class BuildTools {
 
 					nameToVersionMap.forEach((name, methodsForName) -> {
 						if (methodsForName.size() == versionCount) {
-							writeJson(mappingsArray, nullableArray, methodsForName, MAPPINGS_TO_USE);
+							writeJson(mappingsArray, nullableArray, methodsForName, MAPPINGS_TO_USE, className, duplicateMappingCheck);
 							methodsForName.forEach(methods::remove);
 							end[0] = false;
 						}
@@ -203,7 +204,7 @@ public final class BuildTools {
 
 					if (resolveNoSignature[0]) {
 						additionalMethodGroupsNoSignature.forEach(additionalMethodsNoSignature -> {
-							writeJson(mappingsArray, nullableArray, additionalMethodsNoSignature, 0);
+							writeJson(mappingsArray, nullableArray, additionalMethodsNoSignature, 0, className, duplicateMappingCheck);
 							additionalMethodsNoSignature.forEach(methods::remove);
 						});
 						resolveNoSignature[0] = false;
@@ -212,7 +213,7 @@ public final class BuildTools {
 
 					if (end[0]) {
 						if (methods.size() == versionCount && Arrays.stream(names).noneMatch(Objects::isNull) && methods.stream().noneMatch(method -> blacklistNames.contains(method.name))) {
-							writeJson(mappingsArray, nullableArray, methods, MAPPINGS_TO_USE);
+							writeJson(mappingsArray, nullableArray, methods, MAPPINGS_TO_USE, className, duplicateMappingCheck);
 							methods.clear();
 						}
 						break;
@@ -261,18 +262,25 @@ public final class BuildTools {
 		needsSetup = false;
 	}
 
-	private static void writeJson(JsonArray mappingsArray, JsonArray nullableArray, List<MethodInfo> methods, int mappingToUseIndex) {
+	private static void writeJson(JsonArray mappingsArray, JsonArray nullableArray, List<MethodInfo> methods, int mappingToUseIndex, String className, Set<String> duplicateMappingCheck) {
 		if (methods.size() > mappingToUseIndex) {
 			methods.sort(Comparator.comparing(methodInfo -> methodInfo.version));
 			final String name = methods.get(mappingToUseIndex).name;
-			final List<String> otherNames = methods.stream().map(methodInfo -> methodInfo.name).filter(otherName -> !otherName.equals(name)).distinct().sorted().collect(Collectors.toList());
+			final List<String> otherNames = methods.stream().map(methodInfo -> methodInfo.name).distinct().sorted().collect(Collectors.toList());
+			final String signature = methods.get(0).signature;
 
+			if (duplicateMappingCheck.stream().anyMatch(otherNames::contains)) {
+				System.out.printf("Warning: Duplicate methods added for \"%s\" with signature \"%s\": %s%n", className, signature, String.join(",", otherNames));
+			}
+			duplicateMappingCheck.addAll(otherNames);
+
+			otherNames.remove(name);
 			final JsonArray namesArray = new JsonArray();
 			namesArray.add(name);
 			otherNames.forEach(namesArray::add);
 			final JsonObject mappingObject = new JsonObject();
 			mappingObject.add("names", namesArray);
-			mappingObject.addProperty("signature", methods.get(0).signature);
+			mappingObject.addProperty("signature", signature);
 			mappingsArray.add(mappingObject);
 
 			final int methodsCount = methods.get(0).parametersNullable.length;
@@ -286,7 +294,7 @@ public final class BuildTools {
 
 			final JsonObject nullableObject = new JsonObject();
 			nullableObject.add("names", namesArray);
-			nullableObject.addProperty("signature", methods.get(0).signature);
+			nullableObject.addProperty("signature", signature);
 			final JsonArray parametersNullableArray = new JsonArray();
 			for (final boolean parameterNullable : parametersNullable) {
 				parametersNullableArray.add(parameterNullable);
