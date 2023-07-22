@@ -1,6 +1,5 @@
 package org.mtr.mapping.mapper;
 
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -16,9 +15,9 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping {
 
 	@Deprecated
 	@Override
-	public final void writeNbt(NbtCompound nbt) {
-		super.writeNbt(nbt);
-		writeCompoundTag(new CompoundTag(nbt));
+	protected final void writeNbt2(CompoundTag nbt) {
+		super.writeNbt2(nbt);
+		writeCompoundTag(nbt);
 	}
 
 	@Deprecated

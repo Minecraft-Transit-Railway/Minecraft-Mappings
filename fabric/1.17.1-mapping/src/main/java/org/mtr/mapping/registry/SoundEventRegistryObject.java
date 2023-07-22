@@ -1,6 +1,7 @@
 package org.mtr.mapping.registry;
 
 import org.mtr.mapping.annotation.MappedMethod;
+import org.mtr.mapping.holder.Identifier;
 import org.mtr.mapping.holder.SoundEvent;
 import org.mtr.mapping.tool.RegistryObject;
 
@@ -30,5 +31,10 @@ public final class SoundEventRegistryObject extends RegistryObject<SoundEvent> {
 	@Override
 	public void ifPresent(Consumer<SoundEvent> consumer) {
 		consumer.accept(soundEvent);
+	}
+
+	@MappedMethod
+	public static SoundEvent createSoundEvent(Identifier identifier) {
+		return new SoundEvent(identifier);
 	}
 }

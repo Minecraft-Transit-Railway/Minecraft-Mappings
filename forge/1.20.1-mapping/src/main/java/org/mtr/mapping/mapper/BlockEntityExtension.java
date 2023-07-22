@@ -17,9 +17,9 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 
 	@Deprecated
 	@Override
-	protected final void saveAdditional(net.minecraft.nbt.CompoundTag compoundTag) {
-		super.saveAdditional(compoundTag);
-		writeCompoundTag(new CompoundTag(compoundTag));
+	protected final void saveAdditional2(CompoundTag compoundTag) {
+		super.saveAdditional2(compoundTag);
+		writeCompoundTag(compoundTag);
 	}
 
 	@Deprecated

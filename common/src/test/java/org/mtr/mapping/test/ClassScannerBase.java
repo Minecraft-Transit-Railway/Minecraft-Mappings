@@ -64,26 +64,32 @@ public abstract class ClassScannerBase {
 				getStringFromMethod(stringBuilder -> appendIfNotEmpty(stringBuilder, minecraftClassObject.getEnumConstants(), "", "", ",", enumConstant -> String.format("%1$s(%2$s.%1$s)", ((Enum<?>) enumConstant).name(), minecraftClassName)))
 		);
 
-		final boolean isClassParameterized = minecraftClassObject.getTypeParameters().length > 0;
-		iterateExecutables(minecraftClassName, isClassParameterized, Modifier.isAbstract(minecraftClassObject.getModifiers()) && !classInfo.isAbstractMapping ? new Executable[0] : minecraftClassObject.getConstructors(), classTree, classInfo);
-		iterateExecutables(minecraftClassName, isClassParameterized, minecraftClassObject.getMethods(), classTree, classInfo);
+		final Set<Executable> executables = new HashSet<>();
+		if (!Modifier.isAbstract(minecraftClassObject.getModifiers()) || classInfo.isAbstractMapping) {
+			executables.addAll(Arrays.asList(minecraftClassObject.getConstructors()));
+			executables.addAll(Arrays.asList(minecraftClassObject.getDeclaredConstructors()));
+		}
+		executables.addAll(Arrays.asList(minecraftClassObject.getMethods()));
+		executables.addAll(Arrays.asList(minecraftClassObject.getDeclaredMethods()));
+		iterateExecutables(minecraftClassName, minecraftClassObject.getTypeParameters().length > 0, executables, classTree, classInfo);
 		postIterateClass(classInfo);
 	}
 
-	private void iterateExecutables(String minecraftClassName, boolean isClassParameterized, Executable[] executables, Map<Class<?>, Map<Type, Type>> classTree, ClassInfo classInfo) {
-		for (final Executable executable : executables) {
+	private void iterateExecutables(String minecraftClassName, boolean isClassParameterized, Set<Executable> executables, Map<Class<?>, Map<Type, Type>> classTree, ClassInfo classInfo) {
+		executables.forEach(executable -> {
 			final Map<Type, Type> typeMap = classTree.get(executable.getDeclaringClass());
 			final String minecraftMethodName = formatClassName(executable.getName());
 			final boolean isMethod = executable instanceof Method;
 			final int modifiers = executable.getModifiers();
 
-			if (Modifier.isPublic(modifiers)
+			if (classInfo.allowedVisibility(modifiers)
 					&& !Modifier.isNative(modifiers)
 					&& !executable.isSynthetic()
 					&& !BLACKLISTED_SIGNATURES.contains(quickSerialize(executable))
 					&& !classInfo.blacklist.contains(minecraftMethodName)
-					&& (!isMethod || Modifier.isPublic(((Method) executable).getReturnType().getModifiers()))
-					&& Arrays.stream(executable.getParameters()).allMatch(parameter -> Modifier.isPublic(parameter.getType().getModifiers()))
+					&& (!classInfo.isInterface || !isMethod || !((Method) executable).isDefault())
+					&& (!isMethod || classInfo.allowedVisibility(((Method) executable).getReturnType().getModifiers()))
+					&& Arrays.stream(executable.getParameters()).allMatch(parameter -> classInfo.allowedVisibility(parameter.getType().getModifiers()))
 			) {
 				final String generics = getGenerics(executable, false, true, classMap);
 				final String exceptions = getStringFromMethod(stringBuilder -> appendIfNotEmpty(stringBuilder, executable.getGenericExceptionTypes(), "throws ", "", ",", Type::getTypeName));
@@ -134,7 +140,7 @@ public abstract class ClassScannerBase {
 						key
 				);
 			}
-		}
+		});
 	}
 
 	abstract void preScan();
@@ -312,6 +318,10 @@ public abstract class ClassScannerBase {
 
 		String getClassName() {
 			return String.format("%s%s", className, isAbstractMapping && !isInterface ? "AbstractMapping" : "");
+		}
+
+		private boolean allowedVisibility(int modifiers) {
+			return Modifier.isPublic(modifiers) || isAbstractMapping && Modifier.isProtected(modifiers);
 		}
 	}
 

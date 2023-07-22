@@ -33,7 +33,7 @@ public class BlockExtension extends BlockAbstractMapping implements BlockHelper 
 
 	@Deprecated
 	@Override
-	protected final void createBlockStateDefinition(StateContainer.Builder<net.minecraft.block.Block, net.minecraft.block.BlockState> builder) {
+	protected final void createBlockStateDefinition2(StateContainer.Builder<net.minecraft.block.Block, net.minecraft.block.BlockState> builder) {
 		createBlockStateDefinitionHelper(builder);
 	}
 

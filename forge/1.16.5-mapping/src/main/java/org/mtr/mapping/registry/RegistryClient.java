@@ -2,6 +2,7 @@ package org.mtr.mapping.registry;
 
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.util.InputMappings;
+import net.minecraft.item.ItemModelsProperties;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.mtr.mapping.annotation.MappedMethod;
@@ -10,6 +11,7 @@ import org.mtr.mapping.mapper.BlockEntityExtension;
 import org.mtr.mapping.mapper.BlockEntityRenderer;
 import org.mtr.mapping.tool.DummyClass;
 
+import javax.annotation.Nullable;
 import java.util.function.Function;
 
 public final class RegistryClient extends DummyClass {
@@ -55,6 +57,11 @@ public final class RegistryClient extends DummyClass {
 	}
 
 	@MappedMethod
+	public static void registerItemModelPredicate(ItemRegistryObject item, Identifier identifier, ModelPredicateProvider modelPredicateProvider) {
+		ItemModelsProperties.register(item.get().data, identifier.data, (itemStack, clientWorld, livingEntity) -> modelPredicateProvider.call(new ItemStack(itemStack), clientWorld == null ? null : new ClientWorld(clientWorld), livingEntity == null ? null : new LivingEntity(livingEntity)));
+	}
+
+	@MappedMethod
 	public static void setupPackets(Identifier identifier) {
 	}
 
@@ -63,5 +70,11 @@ public final class RegistryClient extends DummyClass {
 		if (Registry.simpleChannel != null) {
 			Registry.simpleChannel.sendToServer(data);
 		}
+	}
+
+	@FunctionalInterface
+	public interface ModelPredicateProvider {
+		@MappedMethod
+		float call(ItemStack itemStack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity livingEntity);
 	}
 }

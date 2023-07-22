@@ -16,7 +16,7 @@ public class SlabBlockExtension extends SlabBlockAbstractMapping implements Bloc
 
 	@Deprecated
 	@Override
-	protected final void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+	protected final void createBlockStateDefinition2(StateContainer.Builder<Block, BlockState> builder) {
 		createBlockStateDefinitionHelper(builder);
 	}
 }

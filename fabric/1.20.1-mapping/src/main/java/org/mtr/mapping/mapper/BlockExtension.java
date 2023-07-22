@@ -17,7 +17,7 @@ public class BlockExtension extends BlockAbstractMapping implements BlockHelper 
 
 	@Deprecated
 	@Override
-	protected final void appendProperties(StateManager.Builder<net.minecraft.block.Block, BlockState> builder) {
+	protected final void appendProperties2(StateManager.Builder<net.minecraft.block.Block, BlockState> builder) {
 		appendPropertiesHelper(builder);
 	}
 

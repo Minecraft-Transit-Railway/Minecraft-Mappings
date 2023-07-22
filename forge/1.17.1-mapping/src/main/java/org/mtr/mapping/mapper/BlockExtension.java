@@ -18,7 +18,7 @@ public class BlockExtension extends BlockAbstractMapping implements BlockHelper 
 
 	@Deprecated
 	@Override
-	protected final void createBlockStateDefinition(StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState> builder) {
+	protected final void createBlockStateDefinition2(StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState> builder) {
 		createBlockStateDefinitionHelper(builder);
 	}
 

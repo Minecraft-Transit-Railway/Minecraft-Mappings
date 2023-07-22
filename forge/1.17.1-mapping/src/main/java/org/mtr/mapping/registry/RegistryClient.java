@@ -3,6 +3,7 @@ package org.mtr.mapping.registry;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fmlclient.registry.ClientRegistry;
@@ -12,6 +13,7 @@ import org.mtr.mapping.mapper.BlockEntityExtension;
 import org.mtr.mapping.mapper.BlockEntityRenderer;
 import org.mtr.mapping.tool.DummyClass;
 
+import javax.annotation.Nullable;
 import java.util.function.Function;
 
 public final class RegistryClient extends DummyClass {
@@ -57,6 +59,11 @@ public final class RegistryClient extends DummyClass {
 	}
 
 	@MappedMethod
+	public static void registerItemModelPredicate(ItemRegistryObject item, Identifier identifier, ModelPredicateProvider modelPredicateProvider) {
+		ItemProperties.register(item.get().data, identifier.data, (itemStack, clientWorld, livingEntity, seed) -> modelPredicateProvider.call(new ItemStack(itemStack), clientWorld == null ? null : new ClientWorld(clientWorld), livingEntity == null ? null : new LivingEntity(livingEntity)));
+	}
+
+	@MappedMethod
 	public static void setupPackets(Identifier identifier) {
 	}
 
@@ -65,5 +72,11 @@ public final class RegistryClient extends DummyClass {
 		if (Registry.simpleChannel != null) {
 			Registry.simpleChannel.sendToServer(data);
 		}
+	}
+
+	@FunctionalInterface
+	public interface ModelPredicateProvider {
+		@MappedMethod
+		float call(ItemStack itemStack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity livingEntity);
 	}
 }

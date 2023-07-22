@@ -4,6 +4,10 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SlabBlock;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.ITickableSound;
+import net.minecraft.client.audio.LocatableSound;
+import net.minecraft.client.audio.TickableSound;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.client.renderer.color.IItemColor;
@@ -22,6 +26,7 @@ import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.scoreboard.*;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.state.*;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -86,6 +91,8 @@ public final class ClassScannerTest {
 		scanner.put("KeyBinding", KeyBinding.class);
 		scanner.put("LivingEntity", LivingEntity.class);
 		scanner.put("MathHelper", MathHelper.class);
+		scanner.put("MinecraftClient", Minecraft.class, "ask", "askEither");
+		scanner.put("MinecraftServer", MinecraftServer.class, "ask", "askEither");
 		scanner.put("Mirror", Mirror.class);
 		scanner.put("MutableText", IFormattableTextComponent.class);
 		scanner.put("OrderedText", IReorderingProcessor.class);
@@ -119,16 +126,19 @@ public final class ClassScannerTest {
 		scanner.put("World", World.class);
 		scanner.put("WorldAccess", IWorld.class);
 		scanner.put("WorldChunk", Chunk.class);
+		scanner.putAbstract("AbstractSoundInstance", LocatableSound.class);
 		scanner.putAbstract("Block", Block.class);
 		scanner.putAbstract("BlockEntity", TileEntity.class);
 		scanner.putAbstract("BlockItem", BlockItem.class);
 		scanner.putAbstract("Entity", Entity.class);
 		scanner.putAbstract("Item", Item.class);
+		scanner.putAbstract("MovingSoundInstance", TickableSound.class);
 		scanner.putAbstract("PlaceableOnWaterItem", LilyPadItem.class);
 		scanner.putAbstract("SlabBlock", SlabBlock.class);
 		scanner.putInterface("BlockColorProvider", IBlockColor.class);
 		scanner.putInterface("ItemColorProvider", IItemColor.class);
 		scanner.putInterface("StringIdentifiable", IStringSerializable.class);
+		scanner.putInterface("TickableSoundInstance", ITickableSound.class);
 		scanner.generate();
 	}
 }
