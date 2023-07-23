@@ -12,7 +12,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 public final class ClassScannerGenerateHolders extends ClassScannerBase {
 
@@ -47,8 +50,8 @@ public final class ClassScannerGenerateHolders extends ClassScannerBase {
 
 	@Override
 	void iterateExecutable(ClassInfo classInfo, String minecraftClassName, boolean isClassParameterized, String minecraftMethodName, boolean isMethod, boolean isStatic, boolean isFinal, boolean isAbstract, String modifiers, String generics, TypeInfo returnType, List<TypeInfo> parameters, String exceptions, String key) {
-		final JsonObject mappingsObject = findRecord(combinedObject.getAsJsonObject(classInfo.className).getAsJsonArray("mappings"), isMethod ? minecraftMethodName : classInfo.className, key);
-		final JsonObject nullableObject = findRecord(combinedObject.getAsJsonObject(classInfo.className).getAsJsonArray("nullable"), isMethod ? minecraftMethodName : classInfo.className, key);
+		final JsonObject mappingsObject = findRecord(classInfo, "mappings", isMethod ? minecraftMethodName : classInfo.className, key);
+		final JsonObject nullableObject = findRecord(classInfo, "nullable", isMethod ? minecraftMethodName : classInfo.className, key);
 		final boolean isVoid = returnType.resolvedTypeName.equals("void");
 		final boolean isReturnNullable = nullableObject != null && nullableObject.get("return").getAsBoolean() || returnType.isNullable;
 
@@ -140,6 +143,53 @@ public final class ClassScannerGenerateHolders extends ClassScannerBase {
 	}
 
 	@Override
+	void iterateField(ClassInfo classInfo, String minecraftClassName, TypeInfo fieldType, boolean isStatic, boolean isFinal, String key) {
+		final JsonObject mappingsObject = findRecord(classInfo, "mappings", fieldType.variableName, key);
+		final JsonObject nullableObject = findRecord(classInfo, "nullable", fieldType.variableName, key);
+		final boolean isNullable = nullableObject != null && nullableObject.get("return").getAsBoolean() || fieldType.isNullable;
+
+		if (mappingsObject != null) {
+			final String unformattedName = mappingsObject.getAsJsonArray("names").get(0).getAsString();
+			final String newName = formatMethodName(isStatic ? unformattedName.toLowerCase(Locale.ENGLISH) : unformattedName);
+			final String fieldAccess = String.format("%s%s", classInfo.isAbstractMapping ? "" : isStatic ? minecraftClassName + "." : "data.", fieldType.variableName);
+
+			if (!fieldType.isPrimitive) {
+				if (isNullable) {
+					classInfo.stringBuilder.append("@Nullable");
+				} else {
+					classInfo.stringBuilder.append("@Nonnull");
+				}
+			}
+
+			classInfo.stringBuilder.append(String.format("@MappedMethod public %s%s get%sMapped(){return ", isStatic ? "static " : "", fieldType.resolvedTypeName, newName));
+
+			if (fieldType.isResolved) {
+				if (fieldType.isEnum) {
+					classInfo.stringBuilder.append(String.format("%s.convert(%s)", fieldType.resolvedTypeNameImplied, fieldAccess));
+				} else {
+					classInfo.stringBuilder.append(String.format(String.format("%s%s", isNullable ? "%1$s==null?null:" : "", "new %2$s(%1$s)"), fieldAccess, fieldType.resolvedTypeNameImplied));
+				}
+			} else {
+				classInfo.stringBuilder.append(fieldAccess);
+			}
+
+			classInfo.stringBuilder.append(";}");
+
+			if (!isFinal) {
+				classInfo.stringBuilder.append(String.format("@MappedMethod public %svoid set%sMapped(%s%s newData){%s=", isStatic ? "static " : "", newName, !fieldType.isPrimitive && isNullable ? "@Nullable " : "", fieldType.resolvedTypeName, fieldAccess));
+
+				if (fieldType.isResolved) {
+					classInfo.stringBuilder.append(String.format("%s%s", isNullable ? "newData==null?null:" : "", "newData.data"));
+				} else {
+					classInfo.stringBuilder.append("newData");
+				}
+
+				classInfo.stringBuilder.append(";}");
+			}
+		}
+	}
+
+	@Override
 	void postIterateClass(ClassInfo classInfo) {
 		classInfo.stringBuilder.append("}");
 		try {
@@ -154,7 +204,8 @@ public final class ClassScannerGenerateHolders extends ClassScannerBase {
 	void postScan() {
 	}
 
-	private static JsonObject findRecord(JsonArray jsonArray, String minecraftMethodName, String signature) {
+	private JsonObject findRecord(ClassInfo classInfo, String key, String minecraftMethodName, String signature) {
+		final JsonArray jsonArray = combinedObject.getAsJsonObject(classInfo.className).getAsJsonArray(key);
 		for (final JsonElement jsonElement : jsonArray) {
 			final JsonObject jsonObject = jsonElement.getAsJsonObject();
 			if (jsonObject.get("signature").getAsString().equals(signature)) {
@@ -166,5 +217,13 @@ public final class ClassScannerGenerateHolders extends ClassScannerBase {
 			}
 		}
 		return null;
+	}
+
+	private static String formatMethodName(String text) {
+		return Arrays.stream(text.split("_")).map(ClassScannerGenerateHolders::capitalizeFirstLetter).collect(Collectors.joining());
+	}
+
+	private static String capitalizeFirstLetter(String text) {
+		return text.isEmpty() ? "" : text.substring(0, 1).toUpperCase(Locale.ENGLISH) + text.substring(1);
 	}
 }

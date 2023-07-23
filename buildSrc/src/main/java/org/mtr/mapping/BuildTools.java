@@ -357,9 +357,13 @@ public final class BuildTools {
 			name = jsonObject.get("name").getAsString();
 			signature = jsonObject.get("signature").getAsString();
 			final JsonArray jsonArray = jsonObject.getAsJsonArray("parametersNullable");
-			parametersNullable = new boolean[jsonArray.size()];
-			for (int i = 0; i < parametersNullable.length; i++) {
-				parametersNullable[i] = jsonArray.get(i).getAsBoolean();
+			if (jsonArray == null) {
+				parametersNullable = new boolean[0];
+			} else {
+				parametersNullable = new boolean[jsonArray.size()];
+				for (int i = 0; i < parametersNullable.length; i++) {
+					parametersNullable[i] = jsonArray.get(i).getAsBoolean();
+				}
 			}
 			returnNullable = jsonObject.get("returnNullable").getAsBoolean();
 			this.version = version;

@@ -12,7 +12,6 @@ import java.util.List;
 
 public final class ClassScannerCreateMaps extends ClassScannerBase {
 
-	private String currentClassName;
 	private final JsonObject classesObject = new JsonObject();
 
 	@Override
@@ -21,8 +20,7 @@ public final class ClassScannerCreateMaps extends ClassScannerBase {
 
 	@Override
 	void iterateClass(ClassInfo classInfo, String minecraftClassName, String genericsWithBounds, String generics, String genericsImplied, String enumValues) {
-		currentClassName = classInfo.className;
-		classesObject.add(currentClassName, new JsonArray());
+		classesObject.add(classInfo.className, new JsonArray());
 	}
 
 	@Override
@@ -34,7 +32,16 @@ public final class ClassScannerCreateMaps extends ClassScannerBase {
 		parameters.forEach(typeInfo -> parameterNullableArray.add(typeInfo.isNullable));
 		methodObject.add("parametersNullable", parameterNullableArray);
 		methodObject.addProperty("returnNullable", returnType.isNullable);
-		classesObject.getAsJsonArray(currentClassName).add(methodObject);
+		classesObject.getAsJsonArray(classInfo.className).add(methodObject);
+	}
+
+	@Override
+	void iterateField(ClassInfo classInfo, String minecraftClassName, TypeInfo fieldType, boolean isStatic, boolean isFinal, String key) {
+		final JsonObject fieldObject = new JsonObject();
+		fieldObject.addProperty("name", fieldType.variableName);
+		fieldObject.addProperty("signature", key);
+		fieldObject.addProperty("returnNullable", fieldType.isNullable);
+		classesObject.getAsJsonArray(classInfo.className).add(fieldObject);
 	}
 
 	@Override

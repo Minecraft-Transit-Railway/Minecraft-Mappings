@@ -72,6 +72,12 @@ public abstract class ClassScannerBase {
 		executables.addAll(Arrays.asList(minecraftClassObject.getMethods()));
 		executables.addAll(Arrays.asList(minecraftClassObject.getDeclaredMethods()));
 		iterateExecutables(minecraftClassName, minecraftClassObject.getTypeParameters().length > 0, executables, classTree, classInfo);
+
+		final Set<Field> fields = new HashSet<>();
+		fields.addAll(Arrays.asList(minecraftClassObject.getFields()));
+		fields.addAll(Arrays.asList(minecraftClassObject.getDeclaredFields()));
+		iterateFields(minecraftClassName, fields, classTree, classInfo);
+
 		postIterateClass(classInfo);
 	}
 
@@ -143,11 +149,34 @@ public abstract class ClassScannerBase {
 		});
 	}
 
+	private void iterateFields(String minecraftClassName, Set<Field> fields, Map<Class<?>, Map<Type, Type>> classTree, ClassInfo classInfo) {
+		fields.forEach(field -> {
+			final Map<Type, Type> typeMap = classTree.get(field.getDeclaringClass());
+			final int modifiers = field.getModifiers();
+
+			if (classInfo.allowedVisibility(modifiers)) {
+				final Type genericType = field.getGenericType();
+				final TypeInfo fieldType = new TypeInfo(
+						field.getName(),
+						genericType,
+						typeMap,
+						classMap,
+						genericType instanceof Class && ((Class<?>) genericType).isPrimitive(),
+						field.getType().isEnum(),
+						field.isAnnotationPresent(Nullable.class)
+				);
+				iterateField(classInfo, minecraftClassName, fieldType, Modifier.isStatic(modifiers), Modifier.isFinal(modifiers), mergeWithSpaces(Modifier.toString(modifiers), fieldType.resolvedTypeName));
+			}
+		});
+	}
+
 	abstract void preScan();
 
 	abstract void iterateClass(ClassInfo classInfo, String minecraftClassName, String genericsWithBounds, String generics, String genericsImplied, String enumValues);
 
 	abstract void iterateExecutable(ClassInfo classInfo, String minecraftClassName, boolean isClassParameterized, String minecraftMethodName, boolean isMethod, boolean isStatic, boolean isFinal, boolean isAbstract, String modifiers, String generics, TypeInfo returnType, List<TypeInfo> parameters, String exceptions, String key);
+
+	abstract void iterateField(ClassInfo classInfo, String minecraftClassName, TypeInfo fieldType, boolean isStatic, boolean isFinal, String key);
 
 	abstract void postIterateClass(ClassInfo classInfo);
 
@@ -181,9 +210,9 @@ public abstract class ClassScannerBase {
 		final boolean isResolved;
 
 		if (classMap != null && mappedType instanceof Class) {
-			final ClassInfo resolvedClassName = classMap.get(mappedType);
-			isResolved = resolvedClassName != null;
-			stringBuilder.append(isResolved ? resolvedClassName.className : formatClassName(mappedType.getTypeName()));
+			final ClassInfo resolvedClass = classMap.get(mappedType);
+			isResolved = resolvedClass != null && !resolvedClass.isInterface;
+			stringBuilder.append(isResolved ? resolvedClass.className : formatClassName(mappedType.getTypeName()));
 		} else {
 			isResolved = false;
 			if (type instanceof WildcardType) {

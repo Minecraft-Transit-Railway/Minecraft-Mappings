@@ -5,9 +5,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.ITickableSound;
-import net.minecraft.client.audio.LocatableSound;
-import net.minecraft.client.audio.TickableSound;
+import net.minecraft.client.audio.*;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.client.renderer.color.IItemColor;
@@ -71,6 +70,7 @@ public final class ClassScannerTest {
 		scanner.put("BooleanProperty", BooleanProperty.class);
 		scanner.put("Box", AxisAlignedBB.class);
 		scanner.put("ChunkManager", AbstractChunkProvider.class);
+		scanner.put("ClientPlayerEntity", ClientPlayerEntity.class);
 		scanner.put("ClientWorld", ClientWorld.class);
 		scanner.put("CompoundTag", CompoundNBT.class);
 		scanner.put("Direction", Direction.class);
@@ -114,6 +114,8 @@ public final class ClassScannerTest {
 		scanner.put("ShapeContext", ISelectionContext.class);
 		scanner.put("SoundCategory", SoundCategory.class);
 		scanner.put("SoundEvent", SoundEvent.class);
+		scanner.put("SoundInstance", ISound.class);
+		scanner.put("SoundManager", SoundHandler.class);
 		scanner.put("Team", ScorePlayerTeam.class);
 		scanner.put("Text", ITextComponent.class);
 		scanner.put("TextFormatting", TextFormatting.class);

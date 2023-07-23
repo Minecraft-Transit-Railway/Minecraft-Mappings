@@ -33,9 +33,4 @@ public final class SoundEventRegistryObject extends RegistryObject<SoundEvent> {
 	public void ifPresent(Consumer<SoundEvent> consumer) {
 		registryObject.ifPresent(soundEvent -> consumer.accept(new SoundEvent(soundEvent)));
 	}
-
-	@MappedMethod
-	public static SoundEvent createSoundEvent(Identifier identifier) {
-		return new SoundEvent(identifier);
-	}
 }
