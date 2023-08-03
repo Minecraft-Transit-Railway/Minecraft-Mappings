@@ -16,7 +16,6 @@ public interface MethodMaps {
 		addMethodMap1.add("Block|SlabBlock", "isTranslucent", "isTransparent", "propagatesSkylightDown");
 		addMethodMap1.add("Block|SlabBlock", "onPlace", "onBlockAdded");
 		addMethodMap1.add("Block|SlabBlock", "onRemove", "onStateReplaced");
-		addMethodMap1.add("BlockEntity", "markDirty", "setChanged");
 		addMethodMap1.add("BlockEntity", "markRemoved", "setRemoved");
 		addMethodMap1.add("BlockItem|Item", "hasGlint", "isFoil");
 		addMethodMap1.add("BlockItem|Item", "isFood", "isEdible");
@@ -143,6 +142,9 @@ public interface MethodMaps {
 		addMethodMap1.add("Scoreboard", "updateScoreboardTeam", "onTeamChanged");
 		addMethodMap1.add("Scoreboard", "updateScoreboardTeamAndPlayers", "onTeamAdded");
 		addMethodMap1.add("ScoreboardPlayerScore", "clearScore", "reset");
+		addMethodMap1.add("Screen", "close", "onClose");
+		addMethodMap1.add("Screen", "OPTIONS_BACKGROUND_TEXTURE", "BACKGROUND_LOCATION");
+		addMethodMap1.add("Screen", "shouldPause", "isPauseScreen");
 		addMethodMap1.add("ServerWorld|World", "containsFluid", "containsAnyLiquid");
 		addMethodMap1.add("ServerWorld|World", "getTime", "getGameTime");
 		addMethodMap1.add("ServerWorld|World", "isAir", "isEmptyBlock");
@@ -161,6 +163,7 @@ public interface MethodMaps {
 		addMethodMap1.add("Vector3i", "crossProduct", "cross");
 		addMethodMap1.add("Vector3i", "down", "above");
 		addMethodMap1.add("Vector3i", "up", "below");
+		addMethodMap2.add("BlockEntity", "markDirty", "public void ()", "setChanged");
 		addMethodMap2.add("BlockItem|Item", "hasRecipeRemainder", "public boolean ()", "hasCraftingRemainingItem");
 		addMethodMap2.add("BlockPos", "add", "public BlockPos (Vector3i)", "offset");
 		addMethodMap2.add("BlockState", "prepare", "public final void (WorldAccess,BlockPos,int)", "updateIndirectNeighbourShapes");

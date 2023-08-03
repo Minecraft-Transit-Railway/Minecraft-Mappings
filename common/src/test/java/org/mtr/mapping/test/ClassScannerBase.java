@@ -42,7 +42,7 @@ public abstract class ClassScannerBase {
 		preScan();
 		classMap.forEach((minecraftClassObject, classInfo) -> {
 			generate(minecraftClassObject, classInfo);
-			if (classInfo.isAbstractMapping && !classInfo.isInterface) {
+			if (this instanceof ClassScannerGenerateHolders && classInfo.isAbstractMapping && !classInfo.isInterface) {
 				generate(minecraftClassObject, new ClassInfo(classInfo));
 			}
 		});
