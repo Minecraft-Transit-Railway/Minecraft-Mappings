@@ -5,6 +5,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.client.color.item.ItemColor;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -138,6 +139,7 @@ public final class ClassScannerTest {
 		scanner.put("Team", PlayerTeam.class);
 		scanner.put("Text", Component.class);
 		scanner.put("TextFormatting", ChatFormatting.class);
+		scanner.put("TextRenderer", Font.class);
 		scanner.put("TooltipContext", TooltipFlag.class);
 		scanner.put("Vector3d", Vec3.class);
 		scanner.put("Vector3f", Vector3f.class);

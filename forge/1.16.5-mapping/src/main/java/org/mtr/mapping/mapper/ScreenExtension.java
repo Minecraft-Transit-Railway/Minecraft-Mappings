@@ -2,6 +2,7 @@ package org.mtr.mapping.mapper;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import org.mtr.mapping.annotation.MappedMethod;
+import org.mtr.mapping.holder.ClickableWidget;
 import org.mtr.mapping.holder.MutableText;
 import org.mtr.mapping.holder.ScreenAbstractMapping;
 import org.mtr.mapping.holder.Text;
@@ -41,5 +42,10 @@ public class ScreenExtension extends ScreenAbstractMapping {
 		if (graphicsHolder.matrixStack != null) {
 			renderBackground2(graphicsHolder.matrixStack);
 		}
+	}
+
+	@MappedMethod
+	public final void addChild(ClickableWidget child) {
+		addButton(child.data);
 	}
 }

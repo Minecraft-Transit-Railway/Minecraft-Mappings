@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.mtr.mapping.annotation.MappedMethod;
+import org.mtr.mapping.tool.EnumHelper;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 
@@ -47,7 +48,7 @@ public final class SearchForMappedMethodsTest {
 				signatures.add(method.toString());
 			} else {
 				final int modifiers = method.getModifiers();
-				Assertions.assertTrue(classObject.getPackage().getName().startsWith("org.mtr.mapping.holder") || Modifier.isPrivate(modifiers) || method.isBridge() || (Modifier.isFinal(classObject.getModifiers()) || Modifier.isFinal(modifiers) || method.isDefault()) && method.isAnnotationPresent(Deprecated.class), String.format("%s\n%s\n%s", NAMESPACE, classObject.getName(), method));
+				Assertions.assertTrue(classObject.getPackage().getName().startsWith("org.mtr.mapping.holder") || Modifier.isPrivate(modifiers) || method.isBridge() || (Modifier.isFinal(classObject.getModifiers()) || Modifier.isFinal(modifiers) || method.isDefault()) && method.isAnnotationPresent(Deprecated.class) || EnumHelper.containsSignature(method), String.format("%s\n%s\n%s", NAMESPACE, classObject.getName(), method));
 			}
 		}
 

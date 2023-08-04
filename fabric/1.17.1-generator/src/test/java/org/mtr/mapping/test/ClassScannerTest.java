@@ -6,6 +6,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.block.BlockColorProvider;
 import net.minecraft.client.color.item.ItemColorProvider;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.*;
 import net.minecraft.client.item.TooltipContext;
@@ -113,6 +114,7 @@ public final class ClassScannerTest {
 		scanner.put("Team", Team.class);
 		scanner.put("Text", Text.class);
 		scanner.put("TextFormatting", Formatting.class);
+		scanner.put("TextRenderer", TextRenderer.class);
 		scanner.put("TooltipContext", TooltipContext.class);
 		scanner.put("Vector3d", Vec3d.class);
 		scanner.put("Vector3f", Vec3f.class);

@@ -2,6 +2,7 @@ package org.mtr.mapping.mapper;
 
 import net.minecraft.client.gui.DrawContext;
 import org.mtr.mapping.annotation.MappedMethod;
+import org.mtr.mapping.holder.ClickableWidget;
 import org.mtr.mapping.holder.MutableText;
 import org.mtr.mapping.holder.ScreenAbstractMapping;
 import org.mtr.mapping.holder.Text;
@@ -41,5 +42,10 @@ public class ScreenExtension extends ScreenAbstractMapping {
 		if (graphicsHolder.guiGraphics != null) {
 			renderBackground2(graphicsHolder.guiGraphics);
 		}
+	}
+
+	@MappedMethod
+	public final void addChild(ClickableWidget child) {
+		addDrawableChild(child.data);
 	}
 }

@@ -1,6 +1,7 @@
 package org.mtr.mapping.test;
 
 import org.junit.jupiter.api.Assumptions;
+import org.mtr.mapping.tool.EnumHelper;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.*;
@@ -19,12 +20,6 @@ public abstract class ClassScannerBase {
 	static final Path PATH = Paths.get("@path@");
 	static final Path NAMESPACE = Paths.get("@namespace@");
 	private static final GenerationStatus GENERATION_STATUS = GenerationStatus.valueOf("@generation@");
-	private static final Set<String> BLACKLISTED_SIGNATURES = Arrays.stream(Enum.class.getMethods()).map(ClassScannerBase::quickSerialize).collect(Collectors.toSet());
-
-	static {
-		BLACKLISTED_SIGNATURES.add(quickSerialize(Modifier.PUBLIC | Modifier.STATIC, "values"));
-		BLACKLISTED_SIGNATURES.add(quickSerialize(Modifier.PUBLIC | Modifier.STATIC, "valueOf", "java.lang.String"));
-	}
 
 	final void put(String newClassName, Class<?> minecraftClassObject, String... blacklistMethods) {
 		classMap.put(minecraftClassObject, new ClassInfo(newClassName, false, false, minecraftClassObject.isEnum(), blacklistMethods));
@@ -91,7 +86,7 @@ public abstract class ClassScannerBase {
 			if (classInfo.allowedVisibility(modifiers)
 					&& !Modifier.isNative(modifiers)
 					&& !executable.isSynthetic()
-					&& !BLACKLISTED_SIGNATURES.contains(quickSerialize(executable))
+					&& !EnumHelper.containsSignature(executable)
 					&& !classInfo.blacklist.contains(minecraftMethodName)
 					&& (!classInfo.isInterface || !isMethod || !((Method) executable).isDefault())
 					&& (!isMethod || classInfo.allowedVisibility(((Method) executable).getReturnType().getModifiers()))
@@ -287,19 +282,6 @@ public abstract class ClassScannerBase {
 
 	private static String formatClassName(String className) {
 		return className.replace("$", ".");
-	}
-
-	private static String quickSerialize(Executable executable) {
-		final Type[] types = executable.getGenericParameterTypes();
-		final String[] typesString = new String[types.length];
-		for (int i = 0; i < types.length; i++) {
-			typesString[i] = types[i].getTypeName();
-		}
-		return quickSerialize(executable.getModifiers(), executable.getName(), typesString);
-	}
-
-	private static String quickSerialize(int modifiers, String name, String... parameters) {
-		return String.format("%s %s %s", modifiers, name, String.join(",", parameters));
 	}
 
 	private static String mergeWithSpaces(String... strings) {

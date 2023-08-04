@@ -7,6 +7,7 @@ import net.minecraft.block.SlabBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.*;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractSlider;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -128,6 +129,7 @@ public final class ClassScannerTest {
 		scanner.put("Team", ScorePlayerTeam.class);
 		scanner.put("Text", ITextComponent.class);
 		scanner.put("TextFormatting", TextFormatting.class);
+		scanner.put("TextRenderer", FontRenderer.class);
 		scanner.put("TooltipContext", ITooltipFlag.class);
 		scanner.put("Vector3d", Vector3d.class);
 		scanner.put("Vector3f", Vector3f.class);
