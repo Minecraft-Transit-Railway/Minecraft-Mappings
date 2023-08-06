@@ -55,7 +55,7 @@ public class TextFieldWidgetExtension extends TextFieldWidgetAbstractMapping {
 		render(new GraphicsHolder(guiGraphics), mouseX, mouseY, delta);
 	}
 
-	@Deprecated
+	@MappedMethod
 	@Override
 	public final void setChangedListener2(Consumer<String> changedListener) {
 		super.setChangedListener2(text -> {
@@ -102,12 +102,40 @@ public class TextFieldWidgetExtension extends TextFieldWidgetAbstractMapping {
 	}
 
 	@MappedMethod
+	@Override
 	public final int getX2() {
 		return super.getX2();
 	}
 
 	@MappedMethod
+	@Override
 	public final int getY2() {
 		return super.getY2();
+	}
+
+	@MappedMethod
+	@Override
+	public final void setX2(int x) {
+		super.setX2(x);
+	}
+
+	@MappedMethod
+	@Override
+	public final void setY2(int y) {
+		super.setY2(y);
+	}
+
+	@MappedMethod
+	public static void drawCenteredText(GraphicsHolder graphicsHolder, String text, int centerX, int y, int color) {
+		if (graphicsHolder.guiGraphics != null) {
+			graphicsHolder.guiGraphics.drawCenteredString(Minecraft.getInstance().font, text, centerX, y, color);
+		}
+	}
+
+	@MappedMethod
+	public static void drawCenteredText(GraphicsHolder graphicsHolder, MutableText text, int centerX, int y, int color) {
+		if (graphicsHolder.guiGraphics != null) {
+			graphicsHolder.guiGraphics.drawCenteredString(Minecraft.getInstance().font, text.data, centerX, y, color);
+		}
 	}
 }

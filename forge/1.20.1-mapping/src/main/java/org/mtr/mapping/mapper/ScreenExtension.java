@@ -1,5 +1,6 @@
 package org.mtr.mapping.mapper;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.ClickableWidget;
@@ -47,5 +48,19 @@ public class ScreenExtension extends ScreenAbstractMapping {
 	@MappedMethod
 	public final void addChild(ClickableWidget child) {
 		addRenderableWidget(child.data);
+	}
+
+	@MappedMethod
+	public static void drawCenteredText(GraphicsHolder graphicsHolder, String text, int centerX, int y, int color) {
+		if (graphicsHolder.guiGraphics != null) {
+			graphicsHolder.guiGraphics.drawCenteredString(Minecraft.getInstance().font, text, centerX, y, color);
+		}
+	}
+
+	@MappedMethod
+	public static void drawCenteredText(GraphicsHolder graphicsHolder, MutableText text, int centerX, int y, int color) {
+		if (graphicsHolder.guiGraphics != null) {
+			graphicsHolder.guiGraphics.drawCenteredString(Minecraft.getInstance().font, text.data, centerX, y, color);
+		}
 	}
 }

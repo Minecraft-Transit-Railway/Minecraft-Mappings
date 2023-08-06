@@ -1,5 +1,7 @@
 package org.mtr.mapping.test;
 
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -89,6 +91,7 @@ public final class ClassScannerTest {
 		scanner.put("BlockView", BlockGetter.class);
 		scanner.put("BooleanProperty", BooleanProperty.class);
 		scanner.put("Box", AABB.class);
+		scanner.put("BufferBuilder", BufferBuilder.class);
 		scanner.put("ChunkManager", ChunkSource.class);
 		scanner.put("ClientPlayerEntity", LocalPlayer.class);
 		scanner.put("ClientWorld", ClientLevel.class);
@@ -137,6 +140,7 @@ public final class ClassScannerTest {
 		scanner.put("SoundInstance", SoundInstance.class);
 		scanner.put("SoundManager", SoundManager.class);
 		scanner.put("Team", PlayerTeam.class);
+		scanner.put("Tessellator", Tesselator.class);
 		scanner.put("Text", Component.class);
 		scanner.put("TextFormatting", ChatFormatting.class);
 		scanner.put("TextRenderer", Font.class);

@@ -1,13 +1,17 @@
 package org.mtr.mapping.mapper;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.Matrix3f;
+import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 import org.mtr.mapping.annotation.MappedMethod;
-import org.mtr.mapping.holder.MutableText;
-import org.mtr.mapping.holder.OrderedText;
+import org.mtr.mapping.holder.*;
+import org.mtr.mapping.tool.ColorHelper;
 import org.mtr.mapping.tool.DummyClass;
 
 import javax.annotation.Nullable;
@@ -159,6 +163,55 @@ public final class GraphicsHolder extends DummyClass {
 	public void drawImmediate() {
 		if (immediate != null) {
 			immediate.draw();
+		}
+	}
+
+	@MappedMethod
+	public void drawLine(float x1, float y1, float z1, float x2, float y2, float z2, int color) {
+		if (matrixStack != null) {
+			ColorHelper.unpackColor(color, (a, r, g, b) -> {
+				final VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(net.minecraft.client.render.RenderLayer.LINES);
+
+				final MatrixStack.Entry entry = matrixStack.peek();
+				final Matrix4f matrix4f = entry.getPositionMatrix();
+				final Matrix3f matrix3f = entry.getNormalMatrix();
+
+				vertexConsumer.vertex(matrix4f, x1, y1, z1).color(r, g, b, a).normal(matrix3f, 0, 1, 0).next();
+				vertexConsumer.vertex(matrix4f, x2, y2, z2).color(r, g, b, a).normal(matrix3f, 0, 1, 0).next();
+			});
+		}
+	}
+
+	@MappedMethod
+	public static void drawRectangle(BufferBuilder bufferBuilder, double x1, double y1, double x2, double y2, int color) {
+		ColorHelper.unpackColor(color, (a, r, g, b) -> {
+			bufferBuilder.data.vertex(x1, y1, 0).color(r, g, b, a).next();
+			bufferBuilder.data.vertex(x1, y2, 0).color(r, g, b, a).next();
+			bufferBuilder.data.vertex(x2, y2, 0).color(r, g, b, a).next();
+			bufferBuilder.data.vertex(x2, y1, 0).color(r, g, b, a).next();
+		});
+	}
+
+	@MappedMethod
+	public void drawTexture(RenderLayer renderLayer, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, float u1, float v1, float u2, float v2, Direction facing, int color, int light) {
+		if (matrixStack != null) {
+			ColorHelper.unpackColor(color, (a, r, g, b) -> {
+				final VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer.data);
+
+				final Vector3i vector3i = facing.getVector();
+				final int x = vector3i.getX();
+				final int y = vector3i.getY();
+				final int z = vector3i.getZ();
+
+				final MatrixStack.Entry entry = matrixStack.peek();
+				final Matrix4f matrix4f = entry.getPositionMatrix();
+				final Matrix3f matrix3f = entry.getNormalMatrix();
+
+				vertexConsumer.vertex(matrix4f, x1, y1, z1).color(r, g, b, a).texture(u1, v2).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(matrix3f, x, y, z).next();
+				vertexConsumer.vertex(matrix4f, x2, y2, z2).color(r, g, b, a).texture(u2, v2).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(matrix3f, x, y, z).next();
+				vertexConsumer.vertex(matrix4f, x3, y3, z3).color(r, g, b, a).texture(u2, v1).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(matrix3f, x, y, z).next();
+				vertexConsumer.vertex(matrix4f, x4, y4, z4).color(r, g, b, a).texture(u1, v1).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(matrix3f, x, y, z).next();
+			});
 		}
 	}
 }

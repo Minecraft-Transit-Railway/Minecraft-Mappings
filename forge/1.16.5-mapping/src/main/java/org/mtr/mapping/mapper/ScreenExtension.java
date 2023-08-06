@@ -1,6 +1,7 @@
 package org.mtr.mapping.mapper;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import net.minecraft.client.Minecraft;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.ClickableWidget;
 import org.mtr.mapping.holder.MutableText;
@@ -47,5 +48,19 @@ public class ScreenExtension extends ScreenAbstractMapping {
 	@MappedMethod
 	public final void addChild(ClickableWidget child) {
 		addButton(child.data);
+	}
+
+	@MappedMethod
+	public static void drawCenteredText(GraphicsHolder graphicsHolder, String text, int centerX, int y, int color) {
+		if (graphicsHolder.matrixStack != null) {
+			drawCenteredString(graphicsHolder.matrixStack, Minecraft.getInstance().font, text, centerX, y, color);
+		}
+	}
+
+	@MappedMethod
+	public static void drawCenteredText(GraphicsHolder graphicsHolder, MutableText text, int centerX, int y, int color) {
+		if (graphicsHolder.matrixStack != null) {
+			drawCenteredString(graphicsHolder.matrixStack, Minecraft.getInstance().font, text.data, centerX, y, color);
+		}
 	}
 }

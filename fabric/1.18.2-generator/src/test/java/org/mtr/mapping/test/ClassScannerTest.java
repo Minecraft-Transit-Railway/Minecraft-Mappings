@@ -12,7 +12,9 @@ import net.minecraft.client.gui.widget.*;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.sound.*;
 import net.minecraft.client.world.ClientWorld;
@@ -64,6 +66,7 @@ public final class ClassScannerTest {
 		scanner.put("BlockView", BlockView.class);
 		scanner.put("BooleanProperty", BooleanProperty.class);
 		scanner.put("Box", Box.class);
+		scanner.put("BufferBuilder", BufferBuilder.class);
 		scanner.put("ChunkManager", ChunkManager.class);
 		scanner.put("ClientPlayerEntity", ClientPlayerEntity.class);
 		scanner.put("ClientWorld", ClientWorld.class);
@@ -112,6 +115,7 @@ public final class ClassScannerTest {
 		scanner.put("SoundInstance", SoundInstance.class);
 		scanner.put("SoundManager", SoundManager.class);
 		scanner.put("Team", Team.class);
+		scanner.put("Tessellator", Tessellator.class);
 		scanner.put("Text", Text.class);
 		scanner.put("TextFormatting", Formatting.class);
 		scanner.put("TextRenderer", TextRenderer.class);

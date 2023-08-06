@@ -17,7 +17,9 @@ import net.minecraft.client.gui.widget.button.AbstractButton;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.gui.widget.button.CheckboxButton;
 import net.minecraft.client.gui.widget.button.ImageButton;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -79,6 +81,7 @@ public final class ClassScannerTest {
 		scanner.put("BlockView", IBlockReader.class);
 		scanner.put("BooleanProperty", BooleanProperty.class);
 		scanner.put("Box", AxisAlignedBB.class);
+		scanner.put("BufferBuilder", BufferBuilder.class);
 		scanner.put("ChunkManager", AbstractChunkProvider.class);
 		scanner.put("ClientPlayerEntity", ClientPlayerEntity.class);
 		scanner.put("ClientWorld", ClientWorld.class);
@@ -127,6 +130,7 @@ public final class ClassScannerTest {
 		scanner.put("SoundInstance", ISound.class);
 		scanner.put("SoundManager", SoundHandler.class);
 		scanner.put("Team", ScorePlayerTeam.class);
+		scanner.put("Tessellator", Tessellator.class);
 		scanner.put("Text", ITextComponent.class);
 		scanner.put("TextFormatting", TextFormatting.class);
 		scanner.put("TextRenderer", FontRenderer.class);
