@@ -44,8 +44,8 @@ public class TextFieldWidgetExtension extends TextFieldWidgetAbstractMapping {
 
 	@MappedMethod
 	public void render(GraphicsHolder graphicsHolder, int mouseX, int mouseY, float delta) {
-		if (graphicsHolder.guiGraphics != null) {
-			super.render2(graphicsHolder.guiGraphics, mouseX, mouseY, delta);
+		if (graphicsHolder.drawContext != null) {
+			super.render2(graphicsHolder.drawContext, mouseX, mouseY, delta);
 		}
 	}
 
@@ -127,15 +127,15 @@ public class TextFieldWidgetExtension extends TextFieldWidgetAbstractMapping {
 
 	@MappedMethod
 	public static void drawCenteredText(GraphicsHolder graphicsHolder, String text, int centerX, int y, int color) {
-		if (graphicsHolder.guiGraphics != null) {
-			graphicsHolder.guiGraphics.drawCenteredTextWithShadow(MinecraftClient.getInstance().textRenderer, text, centerX, y, color);
+		if (graphicsHolder.drawContext != null) {
+			graphicsHolder.drawContext.drawCenteredTextWithShadow(MinecraftClient.getInstance().textRenderer, text, centerX, y, color);
 		}
 	}
 
 	@MappedMethod
 	public static void drawCenteredText(GraphicsHolder graphicsHolder, MutableText text, int centerX, int y, int color) {
-		if (graphicsHolder.guiGraphics != null) {
-			graphicsHolder.guiGraphics.drawCenteredTextWithShadow(MinecraftClient.getInstance().textRenderer, text.data, centerX, y, color);
+		if (graphicsHolder.drawContext != null) {
+			graphicsHolder.drawContext.drawCenteredTextWithShadow(MinecraftClient.getInstance().textRenderer, text.data, centerX, y, color);
 		}
 	}
 }

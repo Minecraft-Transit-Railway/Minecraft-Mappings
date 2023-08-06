@@ -169,7 +169,7 @@ public final class GraphicsHolder extends DummyClass {
 	}
 
 	@MappedMethod
-	public void drawLine(float x1, float y1, float z1, float x2, float y2, float z2, int color) {
+	public void drawLineInWorld(float x1, float y1, float z1, float x2, float y2, float z2, int color) {
 		if (matrixStack != null) {
 			ColorHelper.unpackColor(color, (a, r, g, b) -> {
 				final VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderType.LINES);
@@ -185,17 +185,7 @@ public final class GraphicsHolder extends DummyClass {
 	}
 
 	@MappedMethod
-	public static void drawRectangle(BufferBuilder bufferBuilder, double x1, double y1, double x2, double y2, int color) {
-		ColorHelper.unpackColor(color, (a, r, g, b) -> {
-			bufferBuilder.data.vertex(x1, y1, 0).color(r, g, b, a).endVertex();
-			bufferBuilder.data.vertex(x1, y2, 0).color(r, g, b, a).endVertex();
-			bufferBuilder.data.vertex(x2, y2, 0).color(r, g, b, a).endVertex();
-			bufferBuilder.data.vertex(x2, y1, 0).color(r, g, b, a).endVertex();
-		});
-	}
-
-	@MappedMethod
-	public void drawTexture(RenderLayer renderLayer, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, float u1, float v1, float u2, float v2, Direction facing, int color, int light) {
+	public void drawTextureInWorld(RenderLayer renderLayer, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, float u1, float v1, float u2, float v2, Direction facing, int color, int light) {
 		if (matrixStack != null) {
 			ColorHelper.unpackColor(color, (a, r, g, b) -> {
 				final VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer.data);
