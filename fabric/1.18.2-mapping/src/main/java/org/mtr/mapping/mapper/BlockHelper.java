@@ -26,7 +26,7 @@ public interface BlockHelper extends DummyInterface {
 		final List<HolderBase<?>> properties = new ArrayList<>();
 		addBlockProperties(properties);
 
-		if (properties.size() > 0) {
+		if (!properties.isEmpty()) {
 			final Property<?>[] newProperties = new Property[properties.size()];
 			for (int i = 0; i < properties.size(); i++) {
 				final Object data = properties.get(i).data;

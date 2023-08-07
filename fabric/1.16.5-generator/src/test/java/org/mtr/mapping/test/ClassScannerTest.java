@@ -15,6 +15,7 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.sound.*;
 import net.minecraft.client.world.ClientWorld;
@@ -89,6 +90,8 @@ public final class ClassScannerTest {
 		scanner.put("KeyBinding", KeyBinding.class);
 		scanner.put("LivingEntity", LivingEntity.class);
 		scanner.put("MathHelper", MathHelper.class);
+		scanner.put("Matrix3f", Matrix3f.class);
+		scanner.put("Matrix4f", Matrix4f.class);
 		scanner.put("MinecraftClient", MinecraftClient.class, "ask", "method_27918");
 		scanner.put("MinecraftServer", MinecraftServer.class, "ask", "method_27918");
 		scanner.put("Mirror", BlockMirror.class);
@@ -128,6 +131,8 @@ public final class ClassScannerTest {
 		scanner.put("World", World.class);
 		scanner.put("WorldAccess", WorldAccess.class);
 		scanner.put("WorldChunk", WorldChunk.class);
+		scanner.put("WorldRenderer", WorldRenderer.class);
+		scanner.put("WorldSavePath", WorldSavePath.class);
 		scanner.putAbstract("AbstractSoundInstance", AbstractSoundInstance.class);
 		scanner.putAbstract("Block", Block.class);
 		scanner.putAbstract("BlockEntity", BlockEntity.class);

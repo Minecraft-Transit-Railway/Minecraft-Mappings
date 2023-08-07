@@ -3,6 +3,7 @@ package org.mtr.mapping.registry;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemModelsProperties;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.mtr.mapping.annotation.MappedMethod;
@@ -18,6 +19,7 @@ public final class RegistryClient extends DummyClass {
 
 	@MappedMethod
 	public static void init() {
+		MinecraftForge.EVENT_BUS.register(MainEventBusClient.class);
 		FMLJavaModLoadingContext.get().getModEventBus().register(ModEventBusClient.class);
 	}
 

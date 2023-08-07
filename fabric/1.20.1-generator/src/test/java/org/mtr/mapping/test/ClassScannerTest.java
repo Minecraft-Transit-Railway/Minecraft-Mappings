@@ -15,6 +15,7 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.sound.*;
 import net.minecraft.client.world.ClientWorld;
@@ -46,6 +47,8 @@ import net.minecraft.world.*;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.explosion.Explosion;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.junit.jupiter.api.Test;
 
@@ -89,6 +92,8 @@ public final class ClassScannerTest {
 		scanner.put("KeyBinding", KeyBinding.class);
 		scanner.put("LivingEntity", LivingEntity.class);
 		scanner.put("MathHelper", MathHelper.class);
+		scanner.put("Matrix3f", Matrix3f.class);
+		scanner.put("Matrix4f", Matrix4f.class);
 		scanner.put("MinecraftClient", MinecraftClient.class, "ask", "askFallible");
 		scanner.put("MinecraftServer", MinecraftServer.class, "ask", "askFallible");
 		scanner.put("Mirror", BlockMirror.class);
@@ -128,6 +133,8 @@ public final class ClassScannerTest {
 		scanner.put("World", World.class);
 		scanner.put("WorldAccess", WorldAccess.class);
 		scanner.put("WorldChunk", WorldChunk.class);
+		scanner.put("WorldRenderer", WorldRenderer.class);
+		scanner.put("WorldSavePath", WorldSavePath.class);
 		scanner.putAbstract("AbstractSoundInstance", AbstractSoundInstance.class);
 		scanner.putAbstract("Block", Block.class);
 		scanner.putAbstract("BlockEntity", BlockEntity.class);

@@ -5,6 +5,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.world.level.block.Block;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fmlclient.registry.ClientRegistry;
 import org.mtr.mapping.annotation.MappedMethod;
@@ -20,6 +21,7 @@ public final class RegistryClient extends DummyClass {
 
 	@MappedMethod
 	public static void init() {
+		MinecraftForge.EVENT_BUS.register(MainEventBusClient.class);
 		FMLJavaModLoadingContext.get().getModEventBus().register(ModEventBusClient.class);
 	}
 
