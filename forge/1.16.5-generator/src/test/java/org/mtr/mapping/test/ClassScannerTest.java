@@ -60,6 +60,7 @@ import net.minecraft.world.chunk.AbstractChunkProvider;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.storage.WorldSavedData;
 import org.junit.jupiter.api.Test;
 
 import java.util.Random;
@@ -153,6 +154,7 @@ public final class ClassScannerTest {
 		scanner.putAbstract("Entity", Entity.class);
 		scanner.putAbstract("Item", Item.class);
 		scanner.putAbstract("MovingSoundInstance", TickableSound.class);
+		scanner.putAbstract("PersistentState", WorldSavedData.class);
 		scanner.putAbstract("PlaceableOnWaterItem", LilyPadItem.class);
 		scanner.putAbstract("PressableWidget", Widget.class);
 		scanner.putAbstract("Screen", Screen.class);

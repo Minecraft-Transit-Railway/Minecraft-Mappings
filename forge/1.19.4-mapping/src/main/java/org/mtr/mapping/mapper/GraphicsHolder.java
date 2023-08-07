@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -134,6 +135,20 @@ public final class GraphicsHolder extends DummyClass {
 	public void drawText(String text, int x, int y, int color, boolean shadow, int light) {
 		if (matrixStack != null && immediate != null) {
 			getInstance().font.drawInBatch(text, x, y, color, shadow, matrixStack.last().pose(), immediate, Font.DisplayMode.NORMAL, 0, light);
+		}
+	}
+
+	@MappedMethod
+	public void drawCenteredText(String text, int centerX, int y, int color) {
+		if (matrixStack != null) {
+			GuiComponent.drawCenteredString(matrixStack, getInstance().font, text, centerX, y, color);
+		}
+	}
+
+	@MappedMethod
+	public void drawCenteredText(MutableText text, int centerX, int y, int color) {
+		if (matrixStack != null) {
+			GuiComponent.drawCenteredString(matrixStack, getInstance().font, text.data, centerX, y, color);
 		}
 	}
 

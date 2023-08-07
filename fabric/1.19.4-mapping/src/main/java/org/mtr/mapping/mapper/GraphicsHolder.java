@@ -2,6 +2,7 @@ package org.mtr.mapping.mapper;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
@@ -133,6 +134,20 @@ public final class GraphicsHolder extends DummyClass {
 	public void drawText(String text, int x, int y, int color, boolean shadow, int light) {
 		if (matrixStack != null && immediate != null) {
 			getInstance().textRenderer.draw(text, x, y, color, shadow, matrixStack.peek().getPositionMatrix(), immediate, TextRenderer.TextLayerType.NORMAL, 0, light);
+		}
+	}
+
+	@MappedMethod
+	public void drawCenteredText(String text, int centerX, int y, int color) {
+		if (matrixStack != null) {
+			DrawableHelper.drawCenteredTextWithShadow(matrixStack, getInstance().textRenderer, text, centerX, y, color);
+		}
+	}
+
+	@MappedMethod
+	public void drawCenteredText(MutableText text, int centerX, int y, int color) {
+		if (matrixStack != null) {
+			DrawableHelper.drawCenteredTextWithShadow(matrixStack, getInstance().textRenderer, text.data, centerX, y, color);
 		}
 	}
 

@@ -1,6 +1,5 @@
 package org.mtr.mapping.mapper;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.ButtonWidgetAbstractMapping;
@@ -61,19 +60,5 @@ public class ButtonWidgetExtension extends ButtonWidgetAbstractMapping {
 	@Override
 	public final void setY2(int y) {
 		super.setY2(y);
-	}
-
-	@MappedMethod
-	public static void drawCenteredText(GraphicsHolder graphicsHolder, String text, int centerX, int y, int color) {
-		if (graphicsHolder.matrixStack != null) {
-			drawCenteredTextWithShadow(graphicsHolder.matrixStack, MinecraftClient.getInstance().textRenderer, text, centerX, y, color);
-		}
-	}
-
-	@MappedMethod
-	public static void drawCenteredText(GraphicsHolder graphicsHolder, MutableText text, int centerX, int y, int color) {
-		if (graphicsHolder.matrixStack != null) {
-			drawCenteredTextWithShadow(graphicsHolder.matrixStack, MinecraftClient.getInstance().textRenderer, text.data, centerX, y, color);
-		}
 	}
 }

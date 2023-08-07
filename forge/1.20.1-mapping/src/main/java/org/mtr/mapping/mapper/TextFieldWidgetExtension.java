@@ -124,18 +124,4 @@ public class TextFieldWidgetExtension extends TextFieldWidgetAbstractMapping {
 	public final void setY2(int y) {
 		super.setY2(y);
 	}
-
-	@MappedMethod
-	public static void drawCenteredText(GraphicsHolder graphicsHolder, String text, int centerX, int y, int color) {
-		if (graphicsHolder.drawContext != null) {
-			graphicsHolder.drawContext.drawCenteredString(Minecraft.getInstance().font, text, centerX, y, color);
-		}
-	}
-
-	@MappedMethod
-	public static void drawCenteredText(GraphicsHolder graphicsHolder, MutableText text, int centerX, int y, int color) {
-		if (graphicsHolder.drawContext != null) {
-			graphicsHolder.drawContext.drawCenteredString(Minecraft.getInstance().font, text.data, centerX, y, color);
-		}
-	}
 }

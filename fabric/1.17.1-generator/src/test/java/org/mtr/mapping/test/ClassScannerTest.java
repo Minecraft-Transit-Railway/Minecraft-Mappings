@@ -138,6 +138,7 @@ public final class ClassScannerTest {
 		scanner.putAbstract("Entity", Entity.class);
 		scanner.putAbstract("Item", Item.class);
 		scanner.putAbstract("MovingSoundInstance", MovingSoundInstance.class);
+		scanner.putAbstract("PersistentState", PersistentState.class);
 		scanner.putAbstract("PlaceableOnWaterItem", LilyPadItem.class);
 		scanner.putAbstract("PressableWidget", PressableWidget.class);
 		scanner.putAbstract("Screen", Screen.class);

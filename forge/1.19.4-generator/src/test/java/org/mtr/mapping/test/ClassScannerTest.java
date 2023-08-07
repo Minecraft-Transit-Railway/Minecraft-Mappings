@@ -60,6 +60,7 @@ import net.minecraft.world.level.chunk.ChunkSource;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -163,6 +164,7 @@ public final class ClassScannerTest {
 		scanner.putAbstract("Entity", Entity.class);
 		scanner.putAbstract("Item", Item.class);
 		scanner.putAbstract("MovingSoundInstance", AbstractTickableSoundInstance.class);
+		scanner.putAbstract("PersistentState", SavedData.class);
 		scanner.putAbstract("PlaceableOnWaterItem", PlaceOnWaterBlockItem.class);
 		scanner.putAbstract("PressableWidget", AbstractWidget.class);
 		scanner.putAbstract("Screen", Screen.class);

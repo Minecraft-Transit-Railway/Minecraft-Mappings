@@ -1,7 +1,6 @@
 package org.mtr.mapping.mapper;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.ButtonWidgetAbstractMapping;
 import org.mtr.mapping.holder.MutableText;
@@ -55,19 +54,5 @@ public class ButtonWidgetExtension extends ButtonWidgetAbstractMapping {
 	@MappedMethod
 	public final void setY2(int y) {
 		this.y = y;
-	}
-
-	@MappedMethod
-	public static void drawCenteredText(GraphicsHolder graphicsHolder, String text, int centerX, int y, int color) {
-		if (graphicsHolder.matrixStack != null) {
-			drawCenteredString(graphicsHolder.matrixStack, Minecraft.getInstance().font, text, centerX, y, color);
-		}
-	}
-
-	@MappedMethod
-	public static void drawCenteredText(GraphicsHolder graphicsHolder, MutableText text, int centerX, int y, int color) {
-		if (graphicsHolder.matrixStack != null) {
-			drawCenteredString(graphicsHolder.matrixStack, Minecraft.getInstance().font, text.data, centerX, y, color);
-		}
 	}
 }

@@ -3,6 +3,7 @@ package org.mtr.mapping.mapper;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Tessellator;
@@ -133,6 +134,20 @@ public final class GraphicsHolder extends DummyClass {
 	public void drawText(String text, int x, int y, int color, boolean shadow, int light) {
 		if (matrixStack != null && immediate != null) {
 			getInstance().font.drawInBatch(text, x, y, color, shadow, matrixStack.last().pose(), immediate, false, 0, light);
+		}
+	}
+
+	@MappedMethod
+	public void drawCenteredText(String text, int centerX, int y, int color) {
+		if (matrixStack != null) {
+			AbstractGui.drawCenteredString(matrixStack, getInstance().font, text, centerX, y, color);
+		}
+	}
+
+	@MappedMethod
+	public void drawCenteredText(MutableText text, int centerX, int y, int color) {
+		if (matrixStack != null) {
+			AbstractGui.drawCenteredString(matrixStack, getInstance().font, text.data, centerX, y, color);
 		}
 	}
 

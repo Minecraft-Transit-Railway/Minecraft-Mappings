@@ -1,6 +1,5 @@
 package org.mtr.mapping.mapper;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.CheckboxWidgetAbstractMapping;
@@ -74,19 +73,5 @@ public class CheckboxWidgetExtension extends CheckboxWidgetAbstractMapping {
 	@MappedMethod
 	public final void setY2(int y) {
 		this.y = y;
-	}
-
-	@MappedMethod
-	public static void drawCenteredText(GraphicsHolder graphicsHolder, String text, int centerX, int y, int color) {
-		if (graphicsHolder.matrixStack != null) {
-			drawCenteredText(graphicsHolder.matrixStack, MinecraftClient.getInstance().textRenderer, text, centerX, y, color);
-		}
-	}
-
-	@MappedMethod
-	public static void drawCenteredText(GraphicsHolder graphicsHolder, MutableText text, int centerX, int y, int color) {
-		if (graphicsHolder.matrixStack != null) {
-			drawCenteredText(graphicsHolder.matrixStack, MinecraftClient.getInstance().textRenderer, text.data, centerX, y, color);
-		}
 	}
 }

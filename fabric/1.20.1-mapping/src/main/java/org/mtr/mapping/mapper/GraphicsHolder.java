@@ -148,6 +148,20 @@ public final class GraphicsHolder extends DummyClass {
 	}
 
 	@MappedMethod
+	public void drawCenteredText(String text, int centerX, int y, int color) {
+		if (drawContext != null) {
+			drawContext.drawCenteredTextWithShadow(getInstance().textRenderer, text, centerX, y, color);
+		}
+	}
+
+	@MappedMethod
+	public void drawCenteredText(MutableText text, int centerX, int y, int color) {
+		if (drawContext != null) {
+			drawContext.drawCenteredTextWithShadow(getInstance().textRenderer, text.data, centerX, y, color);
+		}
+	}
+
+	@MappedMethod
 	public static int getTextWidth(MutableText mutableText) {
 		return getInstance().textRenderer.getWidth(mutableText.data);
 	}
