@@ -1,7 +1,10 @@
 package org.mtr.mapping.registry;
 
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fmlserverevents.FMLServerStartedEvent;
@@ -9,8 +12,10 @@ import net.minecraftforge.fmlserverevents.FMLServerStartingEvent;
 import net.minecraftforge.fmlserverevents.FMLServerStoppedEvent;
 import net.minecraftforge.fmlserverevents.FMLServerStoppingEvent;
 import org.mtr.mapping.holder.MinecraftServer;
+import org.mtr.mapping.holder.ServerPlayerEntity;
 import org.mtr.mapping.holder.ServerWorld;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public final class MainEventBus {
@@ -30,6 +35,10 @@ public final class MainEventBus {
 	static Consumer<ServerWorld> startWorldTickRunnable = world -> {
 	};
 	static Consumer<ServerWorld> endWorldTickRunnable = world -> {
+	};
+	static BiConsumer<MinecraftServer, ServerPlayerEntity> playerJoinRunnable = (minecraftServer, serverPlayerEntity) -> {
+	};
+	static BiConsumer<MinecraftServer, ServerPlayerEntity> playerDisconnectRunnable = (minecraftServer, serverPlayerEntity) -> {
 	};
 
 	@SubscribeEvent
@@ -55,12 +64,8 @@ public final class MainEventBus {
 	@SubscribeEvent
 	public static void serverTick(TickEvent.ServerTickEvent event) {
 		switch (event.phase) {
-			case START:
-				startServerTickRunnable.run();
-				break;
-			case END:
-				endServerTickRunnable.run();
-				break;
+			case START -> startServerTickRunnable.run();
+			case END -> endServerTickRunnable.run();
 		}
 	}
 
@@ -68,13 +73,25 @@ public final class MainEventBus {
 	public static void worldTick(TickEvent.WorldTickEvent event) {
 		if (event.side == LogicalSide.SERVER && event.world instanceof ServerLevel) {
 			switch (event.phase) {
-				case START:
-					startWorldTickRunnable.accept(new ServerWorld((ServerLevel) event.world));
-					break;
-				case END:
-					endWorldTickRunnable.accept(new ServerWorld((ServerLevel) event.world));
-					break;
+				case START -> startWorldTickRunnable.accept(new ServerWorld((ServerLevel) event.world));
+				case END -> endWorldTickRunnable.accept(new ServerWorld((ServerLevel) event.world));
 			}
+		}
+	}
+
+	@SubscribeEvent
+	public static void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {
+		final Player playerEntity = event.getPlayer();
+		if (playerEntity instanceof ServerPlayer serverPlayerEntity) {
+			playerJoinRunnable.accept(new MinecraftServer(serverPlayerEntity.server), new ServerPlayerEntity(serverPlayerEntity));
+		}
+	}
+
+	@SubscribeEvent
+	public static void playerDisconnect(PlayerEvent.PlayerLoggedOutEvent event) {
+		final Player playerEntity = event.getPlayer();
+		if (playerEntity instanceof ServerPlayer serverPlayerEntity) {
+			playerDisconnectRunnable.accept(new MinecraftServer(serverPlayerEntity.server), new ServerPlayerEntity(serverPlayerEntity));
 		}
 	}
 }

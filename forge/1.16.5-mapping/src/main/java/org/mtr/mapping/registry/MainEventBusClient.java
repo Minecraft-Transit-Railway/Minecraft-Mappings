@@ -1,8 +1,8 @@
 package org.mtr.mapping.registry;
 
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import org.mtr.mapping.holder.ClientWorld;
@@ -56,12 +56,12 @@ public final class MainEventBusClient {
 	}
 
 	@SubscribeEvent
-	public static void clientJoin(PlayerEvent.PlayerLoggedInEvent event) {
+	public static void clientJoin(ClientPlayerNetworkEvent.LoggedInEvent event) {
 		clientJoinRunnable.run();
 	}
 
 	@SubscribeEvent
-	public static void clientJoin(PlayerEvent.PlayerLoggedOutEvent event) {
+	public static void clientDisconnect(ClientPlayerNetworkEvent.LoggedOutEvent event) {
 		clientDisconnectRunnable.run();
 	}
 

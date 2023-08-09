@@ -1,6 +1,8 @@
 package org.mtr.mapping.registry;
 
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
@@ -8,8 +10,10 @@ import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppedEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import org.mtr.mapping.holder.MinecraftServer;
+import org.mtr.mapping.holder.ServerPlayerEntity;
 import org.mtr.mapping.holder.ServerWorld;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public final class MainEventBus {
@@ -29,6 +33,10 @@ public final class MainEventBus {
 	static Consumer<ServerWorld> startWorldTickRunnable = world -> {
 	};
 	static Consumer<ServerWorld> endWorldTickRunnable = world -> {
+	};
+	static BiConsumer<MinecraftServer, ServerPlayerEntity> playerJoinRunnable = (minecraftServer, serverPlayerEntity) -> {
+	};
+	static BiConsumer<MinecraftServer, ServerPlayerEntity> playerDisconnectRunnable = (minecraftServer, serverPlayerEntity) -> {
 	};
 
 	@SubscribeEvent
@@ -74,6 +82,24 @@ public final class MainEventBus {
 					endWorldTickRunnable.accept(new ServerWorld((net.minecraft.world.server.ServerWorld) event.world));
 					break;
 			}
+		}
+	}
+
+	@SubscribeEvent
+	public static void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {
+		final PlayerEntity playerEntity = event.getPlayer();
+		if (playerEntity instanceof net.minecraft.entity.player.ServerPlayerEntity) {
+			final net.minecraft.entity.player.ServerPlayerEntity serverPlayerEntity = (net.minecraft.entity.player.ServerPlayerEntity) playerEntity;
+			playerJoinRunnable.accept(new MinecraftServer(serverPlayerEntity.server), new ServerPlayerEntity(serverPlayerEntity));
+		}
+	}
+
+	@SubscribeEvent
+	public static void playerDisconnect(PlayerEvent.PlayerLoggedOutEvent event) {
+		final PlayerEntity playerEntity = event.getPlayer();
+		if (playerEntity instanceof net.minecraft.entity.player.ServerPlayerEntity) {
+			final net.minecraft.entity.player.ServerPlayerEntity serverPlayerEntity = (net.minecraft.entity.player.ServerPlayerEntity) playerEntity;
+			playerDisconnectRunnable.accept(new MinecraftServer(serverPlayerEntity.server), new ServerPlayerEntity(serverPlayerEntity));
 		}
 	}
 }

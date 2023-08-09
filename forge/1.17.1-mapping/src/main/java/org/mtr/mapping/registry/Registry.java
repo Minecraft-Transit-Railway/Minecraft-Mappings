@@ -1,8 +1,10 @@
 package org.mtr.mapping.registry;
 
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 import net.minecraftforge.fmllegacy.network.NetworkRegistry;
 import net.minecraftforge.fmllegacy.network.PacketDistributor;
 import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
@@ -80,7 +82,19 @@ public final class Registry extends DummyClass {
 			}, packetBuffer -> {
 				packetBuffer.readUtf();
 				return getInstance.apply(new PacketBuffer(packetBuffer));
-			}, (packetHandler, contextSupplier) -> contextSupplier.get().enqueueWork(packetHandler::run));
+			}, (packetHandler, contextSupplier) -> {
+				final NetworkEvent.Context context = contextSupplier.get();
+				if (context.getDirection().getReceptionSide().isClient()) {
+					packetHandler.runClient();
+					context.enqueueWork(packetHandler::runClientQueued);
+				} else {
+					packetHandler.runServer();
+					final ServerPlayer serverPlayerEntity = context.getSender();
+					if (serverPlayerEntity != null) {
+						context.enqueueWork(() -> packetHandler.runServerQueued(new MinecraftServer(serverPlayerEntity.server), new ServerPlayerEntity(serverPlayerEntity)));
+					}
+				}
+			});
 		}
 	}
 

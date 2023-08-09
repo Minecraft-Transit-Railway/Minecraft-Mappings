@@ -78,7 +78,8 @@ public final class Registry extends DummyClass {
 			final Function<PacketBuffer, ? extends PacketHandler> getInstance = PACKETS.get(buf.readString());
 			if (getInstance != null) {
 				final PacketHandler packetHandler = getInstance.apply(new PacketBuffer(buf));
-				server.execute(packetHandler::run);
+				packetHandler.runServer();
+				server.execute(() -> packetHandler.runServerQueued(new MinecraftServer(server), new ServerPlayerEntity(player)));
 			}
 		});
 	}

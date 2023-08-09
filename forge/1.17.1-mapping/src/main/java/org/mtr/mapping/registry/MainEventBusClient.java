@@ -1,9 +1,9 @@
 package org.mtr.mapping.registry;
 
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import org.mtr.mapping.holder.ClientWorld;
@@ -33,12 +33,8 @@ public final class MainEventBusClient {
 	@SubscribeEvent
 	public static void clientTick(TickEvent.ClientTickEvent event) {
 		switch (event.phase) {
-			case START:
-				startClientTickRunnable.run();
-				break;
-			case END:
-				endClientTickRunnable.run();
-				break;
+			case START -> startClientTickRunnable.run();
+			case END -> endClientTickRunnable.run();
 		}
 	}
 
@@ -46,23 +42,19 @@ public final class MainEventBusClient {
 	public static void worldTick(TickEvent.WorldTickEvent event) {
 		if (event.side == LogicalSide.CLIENT && event.world instanceof ClientLevel) {
 			switch (event.phase) {
-				case START:
-					startWorldTickRunnable.accept(new ClientWorld((ClientLevel) event.world));
-					break;
-				case END:
-					endWorldTickRunnable.accept(new ClientWorld((ClientLevel) event.world));
-					break;
+				case START -> startWorldTickRunnable.accept(new ClientWorld((ClientLevel) event.world));
+				case END -> endWorldTickRunnable.accept(new ClientWorld((ClientLevel) event.world));
 			}
 		}
 	}
 
 	@SubscribeEvent
-	public static void clientJoin(PlayerEvent.PlayerLoggedInEvent event) {
+	public static void clientJoin(ClientPlayerNetworkEvent.LoggedInEvent event) {
 		clientJoinRunnable.run();
 	}
 
 	@SubscribeEvent
-	public static void clientJoin(PlayerEvent.PlayerLoggedOutEvent event) {
+	public static void clientDisconnect(ClientPlayerNetworkEvent.LoggedOutEvent event) {
 		clientDisconnectRunnable.run();
 	}
 

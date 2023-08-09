@@ -73,7 +73,8 @@ public final class RegistryClient extends DummyClass {
 			final Function<PacketBuffer, ? extends PacketHandler> getInstance = Registry.PACKETS.get(buf.readString());
 			if (getInstance != null) {
 				final PacketHandler packetHandler = getInstance.apply(new PacketBuffer(buf));
-				client.execute(packetHandler::run);
+				packetHandler.runClient();
+				client.execute(packetHandler::runClientQueued);
 			}
 		});
 	}

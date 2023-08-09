@@ -2,9 +2,11 @@ package org.mtr.mapping.registry;
 
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.MinecraftServer;
+import org.mtr.mapping.holder.ServerPlayerEntity;
 import org.mtr.mapping.holder.ServerWorld;
 import org.mtr.mapping.tool.DummyClass;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class EventRegistry extends DummyClass {
@@ -47,5 +49,15 @@ public class EventRegistry extends DummyClass {
 	@MappedMethod
 	public static void registerEndWorldTick(Consumer<ServerWorld> consumer) {
 		MainEventBus.endWorldTickRunnable = consumer;
+	}
+
+	@MappedMethod
+	public static void registerPlayerJoin(BiConsumer<MinecraftServer, ServerPlayerEntity> consumer) {
+		MainEventBus.playerJoinRunnable = consumer;
+	}
+
+	@MappedMethod
+	public static void registerPlayerDisconnect(BiConsumer<MinecraftServer, ServerPlayerEntity> consumer) {
+		MainEventBus.playerDisconnectRunnable = consumer;
 	}
 }
