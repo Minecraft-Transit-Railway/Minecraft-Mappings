@@ -56,4 +56,9 @@ public class TexturedButtonWidgetExtension extends TexturedButtonWidgetAbstractM
 	public final void setY2(int y) {
 		this.y = y;
 	}
+
+	@MappedMethod
+	public final boolean isHovered2() {
+		return super.isHoveredOrFocused2();
+	}
 }

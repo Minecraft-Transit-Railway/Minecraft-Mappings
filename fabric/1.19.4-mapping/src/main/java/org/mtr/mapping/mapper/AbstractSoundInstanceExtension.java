@@ -3,6 +3,8 @@ package org.mtr.mapping.mapper;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
 
+import java.util.function.Consumer;
+
 public abstract class AbstractSoundInstanceExtension extends AbstractSoundInstanceAbstractMapping {
 
 	@MappedMethod
@@ -18,5 +20,10 @@ public abstract class AbstractSoundInstanceExtension extends AbstractSoundInstan
 	@MappedMethod
 	public static SoundEvent createSoundEvent(Identifier identifier) {
 		return SoundEvent.of(identifier);
+	}
+
+	@MappedMethod
+	public static void iterateSoundIds(Consumer<Identifier> consumer) {
+		MinecraftClient.getInstance().getSoundManager().getKeys().forEach(identifier -> consumer.accept(new Identifier(identifier)));
 	}
 }

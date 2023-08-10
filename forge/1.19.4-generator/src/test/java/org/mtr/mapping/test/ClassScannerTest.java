@@ -1,5 +1,6 @@
 package org.mtr.mapping.test;
 
+import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.ChatFormatting;
@@ -17,6 +18,9 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.sounds.AbstractSoundInstance;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
@@ -34,6 +38,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -92,6 +97,7 @@ public final class ClassScannerTest {
 	@Test
 	public void scan() {
 		final ClassScannerBase scanner = ClassScannerBase.getInstance();
+		scanner.put("AbstractTexture", AbstractTexture.class);
 		scanner.put("ActionResult", InteractionResult.class);
 		scanner.put("Axis", Direction.Axis.class);
 		scanner.put("Biome", Biome.class);
@@ -121,11 +127,13 @@ public final class ClassScannerTest {
 		scanner.put("EnumProperty", EnumProperty.class);
 		scanner.put("Explosion", Explosion.class);
 		scanner.put("FluidState", FluidState.class);
+		scanner.put("Format", NativeImage.Format.class);
 		scanner.put("GameMode", GameType.class);
 		scanner.put("Hand", InteractionHand.class);
 		scanner.put("HeightMapType", Heightmap.Types.class);
 		scanner.put("Identifier", ResourceLocation.class);
 		scanner.put("IntegerProperty", IntegerProperty.class);
+		scanner.put("InternalFormat", NativeImage.InternalGlFormat.class);
 		scanner.put("ItemConvertible", ItemLike.class);
 		scanner.put("ItemPlacementContext", BlockPlaceContext.class);
 		scanner.put("ItemSettings", Item.Properties.class);
@@ -140,6 +148,8 @@ public final class ClassScannerTest {
 		scanner.put("MinecraftServer", MinecraftServer.class, "ask", "askEither");
 		scanner.put("Mirror", Mirror.class);
 		scanner.put("MutableText", MutableComponent.class);
+		scanner.put("NativeImage", NativeImage.class);
+		scanner.put("NativeImageBackedTexture", DynamicTexture.class);
 		scanner.put("OrderedText", FormattedCharSequence.class);
 		scanner.put("PacketBuffer", FriendlyByteBuf.class);
 		scanner.put("PlayerEntity", Player.class);
@@ -149,6 +159,7 @@ public final class ClassScannerTest {
 		scanner.put("Property", Property.class);
 		scanner.put("Random", RandomSource.class);
 		scanner.put("RenderLayer", RenderType.class);
+		scanner.put("ResourceManager", ResourceManager.class);
 		scanner.put("Rotation", Rotation.class);
 		scanner.put("Scoreboard", Scoreboard.class);
 		scanner.put("ScoreboardCriterion", ObjectiveCriteria.class);
@@ -168,6 +179,7 @@ public final class ClassScannerTest {
 		scanner.put("Text", Component.class);
 		scanner.put("TextFormatting", ChatFormatting.class);
 		scanner.put("TextRenderer", Font.class);
+		scanner.put("TextureManager", TextureManager.class);
 		scanner.put("TooltipContext", TooltipFlag.class);
 		scanner.put("Vector3d", Vec3.class);
 		scanner.put("Vector3f", Vector3f.class);
@@ -185,13 +197,13 @@ public final class ClassScannerTest {
 		scanner.putAbstract("BlockItem", BlockItem.class);
 		scanner.putAbstract("ButtonWidget", Button.class);
 		scanner.putAbstract("CheckboxWidget", Checkbox.class);
-		scanner.putAbstract("ClickableWidget", AbstractButton.class);
+		scanner.putAbstract("ClickableWidget", AbstractWidget.class);
 		scanner.putAbstract("Entity", Entity.class);
 		scanner.putAbstract("Item", Item.class);
 		scanner.putAbstract("MovingSoundInstance", AbstractTickableSoundInstance.class);
 		scanner.putAbstract("PersistentState", SavedData.class);
 		scanner.putAbstract("PlaceableOnWaterItem", PlaceOnWaterBlockItem.class);
-		scanner.putAbstract("PressableWidget", AbstractWidget.class);
+		scanner.putAbstract("PressableWidget", AbstractButton.class);
 		scanner.putAbstract("Screen", Screen.class);
 		scanner.putAbstract("SlabBlock", SlabBlock.class);
 		scanner.putAbstract("SliderWidget", AbstractSliderButton.class);

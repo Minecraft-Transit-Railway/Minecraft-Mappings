@@ -36,6 +36,7 @@ public interface MethodMaps {
 		addMethodMap1.add("BlockSettings", "velocityMultiplier", "speedFactor");
 		addMethodMap1.add("BlockState", "with", "setValue");
 		addMethodMap1.add("CheckboxWidget", "isChecked", "selected");
+		addMethodMap1.add("ClickableWidget", "WIDGETS_TEXTURE", "WIDGETS_LOCATION");
 		addMethodMap1.add("ClientPlayerEntity|Entity|PlayerEntity|ServerPlayerEntity", "addScoreboardTag", "addCommandTag", "addTag");
 		addMethodMap1.add("ClientPlayerEntity|Entity|PlayerEntity|ServerPlayerEntity", "getBlockPos", "blockPosition");
 		addMethodMap1.add("ClientPlayerEntity|Entity|PlayerEntity|ServerPlayerEntity", "getEntityName", "getScoreboardName");
@@ -170,6 +171,8 @@ public interface MethodMaps {
 		addMethodMap1.add("TextFieldWidget", "setUneditableColor", "setTextColorUneditable");
 		addMethodMap1.add("TextFieldWidget", "WIDGETS_TEXTURE", "WIDGETS_LOCATION");
 		addMethodMap1.add("TextFieldWidget", "write", "setValue");
+		addMethodMap1.add("TextureManager", "bindTexture", "bind", "bindForSetup");
+		addMethodMap1.add("TextureManager", "destroyTexture", "release");
 		addMethodMap1.add("Vector3d", "crossProduct", "cross");
 		addMethodMap1.add("Vector3d", "dotProduct", "dot");
 		addMethodMap1.add("Vector3d", "lengthSquared", "lengthSqr");

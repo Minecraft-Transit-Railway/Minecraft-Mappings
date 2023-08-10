@@ -2,25 +2,25 @@ package org.mtr.mapping.mapper;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import org.mtr.mapping.annotation.MappedMethod;
-import org.mtr.mapping.holder.ButtonWidgetAbstractMapping;
 import org.mtr.mapping.holder.MutableText;
+import org.mtr.mapping.holder.SliderWidgetAbstractMapping;
 import org.mtr.mapping.holder.Text;
 
-public class ButtonWidgetExtension extends ButtonWidgetAbstractMapping {
+public abstract class SliderWidgetExtension extends SliderWidgetAbstractMapping {
 
 	@MappedMethod
-	public ButtonWidgetExtension(int x, int y, int width, int height, org.mtr.mapping.holder.PressAction onPress) {
-		this(x, y, width, height, "", onPress);
+	public SliderWidgetExtension(int x, int y, int width, int height) {
+		this(x, y, width, height, "");
 	}
 
 	@MappedMethod
-	public ButtonWidgetExtension(int x, int y, int width, int height, String message, org.mtr.mapping.holder.PressAction onPress) {
-		this(x, y, width, height, TextHelper.literal(message), onPress);
+	public SliderWidgetExtension(int x, int y, int width, int height, String message) {
+		this(x, y, width, height, TextHelper.literal(message));
 	}
 
 	@MappedMethod
-	public ButtonWidgetExtension(int x, int y, int width, int height, MutableText message, org.mtr.mapping.holder.PressAction onPress) {
-		super(x, y, width, height, new Text(message.data), onPress);
+	public SliderWidgetExtension(int x, int y, int width, int height, MutableText message) {
+		super(x, y, width, height, new Text(message.data), 0);
 	}
 
 	@MappedMethod
@@ -37,27 +37,32 @@ public class ButtonWidgetExtension extends ButtonWidgetAbstractMapping {
 	}
 
 	@MappedMethod
+	@Override
 	public final int getX2() {
-		return x;
+		return super.getX2();
 	}
 
 	@MappedMethod
+	@Override
 	public final int getY2() {
-		return y;
+		return super.getY2();
 	}
 
 	@MappedMethod
+	@Override
 	public final void setX2(int x) {
-		this.x = x;
+		super.setX2(x);
 	}
 
 	@MappedMethod
+	@Override
 	public final void setY2(int y) {
-		this.y = y;
+		super.setY2(y);
 	}
 
 	@MappedMethod
+	@Override
 	public final boolean isHovered2() {
-		return super.isHoveredOrFocused2();
+		return super.isHovered2();
 	}
 }

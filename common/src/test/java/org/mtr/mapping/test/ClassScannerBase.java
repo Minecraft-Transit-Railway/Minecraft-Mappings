@@ -21,16 +21,16 @@ public abstract class ClassScannerBase {
 	static final Path NAMESPACE = Paths.get("@namespace@");
 	private static final GenerationStatus GENERATION_STATUS = GenerationStatus.valueOf("@generation@");
 
-	final void put(String newClassName, Class<?> minecraftClassObject, String... blacklistMethods) {
-		classMap.put(minecraftClassObject, new ClassInfo(newClassName, false, false, minecraftClassObject.isEnum(), blacklistMethods));
+	final void put(String newClassName, Class<?> minecraftClassObject, String... options) {
+		classMap.put(minecraftClassObject, new ClassInfo(newClassName, false, false, minecraftClassObject.isEnum(), options));
 	}
 
-	final void putAbstract(String newClassName, Class<?> minecraftClassObject, String... blacklistMethods) {
-		classMap.put(minecraftClassObject, new ClassInfo(newClassName, true, false, minecraftClassObject.isEnum(), blacklistMethods));
+	final void putAbstract(String newClassName, Class<?> minecraftClassObject, String... options) {
+		classMap.put(minecraftClassObject, new ClassInfo(newClassName, true, false, minecraftClassObject.isEnum(), options));
 	}
 
-	final void putInterface(String newClassName, Class<?> minecraftClassObject, String... blacklistMethods) {
-		classMap.put(minecraftClassObject, new ClassInfo(newClassName, true, true, minecraftClassObject.isEnum(), blacklistMethods));
+	final void putInterface(String newClassName, Class<?> minecraftClassObject, String... options) {
+		classMap.put(minecraftClassObject, new ClassInfo(newClassName, true, true, minecraftClassObject.isEnum(), options));
 	}
 
 	final void generate() {
@@ -50,13 +50,23 @@ public abstract class ClassScannerBase {
 		walkClassTree(classTree, minecraftClassObject, classObject1 -> new Type[]{classObject1.getGenericSuperclass()}, classObject1 -> new Class<?>[]{classObject1.getSuperclass()});
 		walkClassTree(classTree, minecraftClassObject, Class::getGenericInterfaces, Class::getInterfaces);
 
+		final String enumValues;
+		if (!classInfo.isEnum || classInfo.options.isEmpty()) {
+			enumValues = getStringFromMethod(stringBuilder -> appendIfNotEmpty(stringBuilder, minecraftClassObject.getEnumConstants(), "", "", ",", enumConstant -> String.format("%1$s(%2$s.%1$s)", ((Enum<?>) enumConstant).name(), minecraftClassName)));
+		} else {
+			enumValues = classInfo.options.stream().map(enumConstant -> {
+				final String[] enumSplit = enumConstant.split("\\|");
+				return String.format("%s(%s.%s)", enumSplit[0], minecraftClassName, enumSplit[1]);
+			}).collect(Collectors.joining(","));
+		}
+
 		iterateClass(
 				classInfo,
 				minecraftClassName,
 				getGenerics(minecraftClassObject, false, true, null),
 				getGenerics(minecraftClassObject, false, false, null),
 				getGenerics(minecraftClassObject, true, false, null),
-				getStringFromMethod(stringBuilder -> appendIfNotEmpty(stringBuilder, minecraftClassObject.getEnumConstants(), "", "", ",", enumConstant -> String.format("%1$s(%2$s.%1$s)", ((Enum<?>) enumConstant).name(), minecraftClassName)))
+				enumValues
 		);
 
 		final Set<Executable> executables = new HashSet<>();
@@ -87,7 +97,7 @@ public abstract class ClassScannerBase {
 					&& !Modifier.isNative(modifiers)
 					&& !executable.isSynthetic()
 					&& !EnumHelper.containsSignature(executable)
-					&& !classInfo.blacklist.contains(minecraftMethodName)
+					&& (classInfo.isEnum || !classInfo.options.contains(minecraftMethodName))
 					&& (!classInfo.isInterface || !isMethod || !((Method) executable).isDefault())
 					&& (!isMethod || classInfo.allowedVisibility(((Method) executable).getReturnType().getModifiers()))
 					&& Arrays.stream(executable.getParameters()).allMatch(parameter -> classInfo.allowedVisibility(parameter.getType().getModifiers()))
@@ -123,7 +133,6 @@ public abstract class ClassScannerBase {
 					returnType = new TypeInfo();
 				}
 
-				final String key = mergeWithSpaces(Modifier.toString(modifiers), generics, returnType.resolvedTypeName, String.format("(%s)", parameters.stream().map(typeInfo -> typeInfo.resolvedTypeName).collect(Collectors.joining(","))), exceptions);
 				iterateExecutable(
 						classInfo,
 						minecraftClassName,
@@ -138,7 +147,7 @@ public abstract class ClassScannerBase {
 						returnType,
 						parameters,
 						exceptions,
-						key
+						mergeWithSpaces(Modifier.toString(modifiers), generics, returnType.resolvedTypeName, String.format("(%s)", parameters.stream().map(typeInfo -> typeInfo.resolvedTypeName).collect(Collectors.joining(","))), exceptions)
 				);
 			}
 		});
@@ -309,14 +318,14 @@ public abstract class ClassScannerBase {
 		final boolean isAbstractMapping;
 		final boolean isInterface;
 		final boolean isEnum;
-		private final List<String> blacklist;
+		private final List<String> options;
 
-		private ClassInfo(String className, boolean isAbstractMapping, boolean isInterface, boolean isEnum, String... blacklistMethods) {
+		private ClassInfo(String className, boolean isAbstractMapping, boolean isInterface, boolean isEnum, String... options) {
 			this.className = className;
 			this.isAbstractMapping = isAbstractMapping;
 			this.isInterface = isInterface;
 			this.isEnum = isEnum;
-			blacklist = Arrays.asList(blacklistMethods);
+			this.options = Arrays.asList(options);
 		}
 
 		private ClassInfo(ClassInfo classInfo) {
@@ -324,7 +333,7 @@ public abstract class ClassScannerBase {
 			isAbstractMapping = false;
 			isInterface = classInfo.isInterface;
 			isEnum = classInfo.isEnum;
-			blacklist = classInfo.blacklist;
+			options = classInfo.options;
 		}
 
 		String getClassName() {

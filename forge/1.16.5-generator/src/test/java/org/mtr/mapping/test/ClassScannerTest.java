@@ -25,6 +25,10 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.client.renderer.color.IItemColor;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.NativeImage;
+import net.minecraft.client.renderer.texture.Texture;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.ITooltipFlag;
@@ -39,6 +43,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.resources.IResourceManager;
 import net.minecraft.scoreboard.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerList;
@@ -76,6 +81,7 @@ public final class ClassScannerTest {
 	@Test
 	public void scan() {
 		final ClassScannerBase scanner = ClassScannerBase.getInstance();
+		scanner.put("AbstractTexture", Texture.class);
 		scanner.put("ActionResult", ActionResultType.class);
 		scanner.put("Axis", Direction.Axis.class);
 		scanner.put("Biome", Biome.class);
@@ -105,11 +111,13 @@ public final class ClassScannerTest {
 		scanner.put("EnumProperty", EnumProperty.class);
 		scanner.put("Explosion", Explosion.class);
 		scanner.put("FluidState", FluidState.class);
+		scanner.put("Format", NativeImage.PixelFormat.class);
 		scanner.put("GameMode", GameType.class);
 		scanner.put("Hand", Hand.class);
 		scanner.put("HeightMapType", Heightmap.Type.class);
 		scanner.put("Identifier", ResourceLocation.class);
 		scanner.put("IntegerProperty", IntegerProperty.class);
+		scanner.put("InternalFormat", NativeImage.PixelFormatGLCode.class);
 		scanner.put("ItemConvertible", IItemProvider.class);
 		scanner.put("ItemPlacementContext", BlockItemUseContext.class);
 		scanner.put("ItemSettings", Item.Properties.class);
@@ -124,6 +132,8 @@ public final class ClassScannerTest {
 		scanner.put("MinecraftServer", MinecraftServer.class, "ask", "askEither");
 		scanner.put("Mirror", Mirror.class);
 		scanner.put("MutableText", IFormattableTextComponent.class);
+		scanner.put("NativeImage", NativeImage.class);
+		scanner.put("NativeImageBackedTexture", DynamicTexture.class);
 		scanner.put("OrderedText", IReorderingProcessor.class);
 		scanner.put("PacketBuffer", PacketBuffer.class);
 		scanner.put("PlayerEntity", PlayerEntity.class);
@@ -133,6 +143,7 @@ public final class ClassScannerTest {
 		scanner.put("Property", Property.class);
 		scanner.put("Random", Random.class);
 		scanner.put("RenderLayer", RenderType.class);
+		scanner.put("ResourceManager", IResourceManager.class);
 		scanner.put("Rotation", Rotation.class);
 		scanner.put("Scoreboard", Scoreboard.class);
 		scanner.put("ScoreboardCriterion", ScoreCriteria.class);
@@ -152,6 +163,7 @@ public final class ClassScannerTest {
 		scanner.put("Text", ITextComponent.class);
 		scanner.put("TextFormatting", TextFormatting.class);
 		scanner.put("TextRenderer", FontRenderer.class);
+		scanner.put("TextureManager", TextureManager.class);
 		scanner.put("TooltipContext", ITooltipFlag.class);
 		scanner.put("Vector3d", Vector3d.class);
 		scanner.put("Vector3f", Vector3f.class);
@@ -169,13 +181,13 @@ public final class ClassScannerTest {
 		scanner.putAbstract("BlockItem", BlockItem.class);
 		scanner.putAbstract("ButtonWidget", Button.class);
 		scanner.putAbstract("CheckboxWidget", CheckboxButton.class);
-		scanner.putAbstract("ClickableWidget", AbstractButton.class);
+		scanner.putAbstract("ClickableWidget", Widget.class);
 		scanner.putAbstract("Entity", Entity.class);
 		scanner.putAbstract("Item", Item.class);
 		scanner.putAbstract("MovingSoundInstance", TickableSound.class);
 		scanner.putAbstract("PersistentState", WorldSavedData.class);
 		scanner.putAbstract("PlaceableOnWaterItem", LilyPadItem.class);
-		scanner.putAbstract("PressableWidget", Widget.class);
+		scanner.putAbstract("PressableWidget", AbstractButton.class);
 		scanner.putAbstract("Screen", Screen.class);
 		scanner.putAbstract("SlabBlock", SlabBlock.class);
 		scanner.putAbstract("SliderWidget", AbstractSlider.class);

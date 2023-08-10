@@ -20,6 +20,10 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.sound.*;
+import net.minecraft.client.texture.AbstractTexture;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -29,6 +33,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.resource.ResourceManager;
 import net.minecraft.scoreboard.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
@@ -63,6 +68,7 @@ public final class ClassScannerTest {
 	@Test
 	public void scan() {
 		final ClassScannerBase scanner = ClassScannerBase.getInstance();
+		scanner.put("AbstractTexture", AbstractTexture.class);
 		scanner.put("ActionResult", ActionResult.class);
 		scanner.put("Axis", Direction.Axis.class);
 		scanner.put("Biome", Biome.class);
@@ -92,11 +98,13 @@ public final class ClassScannerTest {
 		scanner.put("EnumProperty", EnumProperty.class);
 		scanner.put("Explosion", Explosion.class);
 		scanner.put("FluidState", FluidState.class);
+		scanner.put("Format", NativeImage.Format.class, "RGBA|ABGR", "RGB|BGR");
 		scanner.put("GameMode", GameMode.class);
 		scanner.put("Hand", Hand.class);
 		scanner.put("HeightMapType", Heightmap.Type.class);
 		scanner.put("Identifier", Identifier.class);
 		scanner.put("IntegerProperty", IntProperty.class);
+		scanner.put("InternalFormat", NativeImage.GLFormat.class, "RGBA|ABGR", "RGB|BGR");
 		scanner.put("ItemConvertible", ItemConvertible.class);
 		scanner.put("ItemPlacementContext", ItemPlacementContext.class);
 		scanner.put("ItemSettings", Item.Settings.class);
@@ -111,6 +119,8 @@ public final class ClassScannerTest {
 		scanner.put("MinecraftServer", MinecraftServer.class, "ask", "method_27918");
 		scanner.put("Mirror", BlockMirror.class);
 		scanner.put("MutableText", MutableText.class);
+		scanner.put("NativeImage", NativeImage.class);
+		scanner.put("NativeImageBackedTexture", NativeImageBackedTexture.class);
 		scanner.put("OrderedText", OrderedText.class);
 		scanner.put("PacketBuffer", PacketByteBuf.class);
 		scanner.put("PlayerEntity", PlayerEntity.class);
@@ -120,6 +130,7 @@ public final class ClassScannerTest {
 		scanner.put("Property", Property.class);
 		scanner.put("Random", Random.class);
 		scanner.put("RenderLayer", RenderLayer.class);
+		scanner.put("ResourceManager", ResourceManager.class);
 		scanner.put("Rotation", BlockRotation.class);
 		scanner.put("Scoreboard", Scoreboard.class);
 		scanner.put("ScoreboardCriterion", ScoreboardCriterion.class);
@@ -139,6 +150,7 @@ public final class ClassScannerTest {
 		scanner.put("Text", Text.class);
 		scanner.put("TextFormatting", Formatting.class);
 		scanner.put("TextRenderer", TextRenderer.class);
+		scanner.put("TextureManager", TextureManager.class);
 		scanner.put("TooltipContext", TooltipContext.class);
 		scanner.put("Vector3d", Vec3d.class);
 		scanner.put("Vector3f", Vec3f.class);

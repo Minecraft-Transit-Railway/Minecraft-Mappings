@@ -9,7 +9,7 @@ import org.mtr.mapping.tool.DummyClass;
 
 import java.util.function.Consumer;
 
-public class MinecraftServerHelper extends DummyClass {
+public final class MinecraftServerHelper extends DummyClass {
 
 	@MappedMethod
 	public static void iterateWorlds(MinecraftServer minecraftServer, Consumer<ServerWorld> consumer) {

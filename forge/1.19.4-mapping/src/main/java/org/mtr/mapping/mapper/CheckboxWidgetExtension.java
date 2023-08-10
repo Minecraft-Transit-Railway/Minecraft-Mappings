@@ -78,4 +78,10 @@ public class CheckboxWidgetExtension extends CheckboxWidgetAbstractMapping {
 	public final void setY2(int y) {
 		super.setY2(y);
 	}
+
+	@MappedMethod
+	@Override
+	public final boolean isHovered2() {
+		return super.isHovered2();
+	}
 }
