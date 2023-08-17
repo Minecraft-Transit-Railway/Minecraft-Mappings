@@ -13,11 +13,9 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.sound.*;
 import net.minecraft.client.texture.AbstractTexture;
@@ -86,6 +84,7 @@ public final class ClassScannerTest {
 		scanner.put("BooleanProperty", BooleanProperty.class);
 		scanner.put("Box", Box.class);
 		scanner.put("BufferBuilder", BufferBuilder.class);
+		scanner.put("BufferBuilderStorage", BufferBuilderStorage.class);
 		scanner.put("ChunkGenerator", ChunkGenerator.class);
 		scanner.put("ChunkManager", ChunkManager.class);
 		scanner.put("ClientPlayerEntity", ClientPlayerEntity.class, "damageArmor", "damageHelmet", "damageShield");
@@ -102,6 +101,8 @@ public final class ClassScannerTest {
 		scanner.put("FluidState", FluidState.class);
 		scanner.put("Format", NativeImage.Format.class);
 		scanner.put("GameMode", GameMode.class);
+		scanner.put("GameOptions", GameOptions.class);
+		scanner.put("GameRenderer", GameRenderer.class);
 		scanner.put("Hand", Hand.class);
 		scanner.put("HeightMapType", Heightmap.Type.class);
 		scanner.put("Identifier", Identifier.class);
@@ -113,6 +114,7 @@ public final class ClassScannerTest {
 		scanner.put("ItemStack", ItemStack.class);
 		scanner.put("ItemUsageContext", ItemUsageContext.class);
 		scanner.put("KeyBinding", KeyBinding.class);
+		scanner.put("LightmapTextureManager", LightmapTextureManager.class);
 		scanner.put("LivingEntity", LivingEntity.class);
 		scanner.put("MathHelper", MathHelper.class);
 		scanner.put("Matrix3f", Matrix3f.class);
