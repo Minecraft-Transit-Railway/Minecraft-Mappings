@@ -15,7 +15,7 @@ public abstract class BlockEntityRenderer<T extends BlockEntityExtension> extend
 	@Deprecated
 	@Override
 	public final void render(T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-		render(entity, tickDelta, new GraphicsHolder(matrices, vertexConsumers), light, overlay);
+		GraphicsHolder.createInstanceSafe(matrices, vertexConsumers, graphicsHolder -> render(entity, tickDelta, graphicsHolder, light, overlay));
 	}
 
 	@MappedMethod

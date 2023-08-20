@@ -9,7 +9,6 @@ import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
@@ -18,22 +17,41 @@ import org.mtr.mapping.tool.DummyClass;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public final class GraphicsHolder extends DummyClass {
 
 	private int matrixPushes;
+	private VertexConsumer vertexConsumer;
+	private MultiBufferSource.BufferSource immediate;
 
 	final PoseStack matrixStack;
-	final MultiBufferSource vertexConsumerProvider;
-	private final MultiBufferSource.BufferSource immediate;
+	private final MultiBufferSource vertexConsumerProvider;
 
 	public static final int DEFAULT_LIGHT = 0xF000F0;
 
-	public GraphicsHolder(@Nullable PoseStack matrixStack, @Nullable MultiBufferSource vertexConsumerProvider) {
+	@Deprecated
+	public static void createInstanceSafe(@Nullable PoseStack matrixStack, @Nullable MultiBufferSource vertexConsumerProvider, Consumer<GraphicsHolder> consumer) {
+		final GraphicsHolder graphicsHolder = new GraphicsHolder(matrixStack, vertexConsumerProvider);
+
+		try {
+			consumer.accept(graphicsHolder);
+		} catch (Exception ignored) {
+		}
+
+		if (graphicsHolder.immediate != null) {
+			graphicsHolder.immediate.endBatch();
+		}
+
+		while (graphicsHolder.matrixPushes > 0) {
+			graphicsHolder.pop();
+		}
+	}
+
+	private GraphicsHolder(@Nullable PoseStack matrixStack, @Nullable MultiBufferSource vertexConsumerProvider) {
 		this.matrixStack = matrixStack;
 		this.vertexConsumerProvider = vertexConsumerProvider;
-		immediate = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
 		push();
 	}
 
@@ -50,13 +68,6 @@ public final class GraphicsHolder extends DummyClass {
 		if (matrixStack != null && matrixPushes > 0) {
 			matrixStack.popPose();
 			matrixPushes--;
-		}
-	}
-
-	@MappedMethod
-	public void popAll() {
-		while (matrixPushes > 0) {
-			pop();
 		}
 	}
 
@@ -116,23 +127,32 @@ public final class GraphicsHolder extends DummyClass {
 		}
 	}
 
+	private void createImmediate() {
+		if (immediate == null) {
+			immediate = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+		}
+	}
+
 	@MappedMethod
 	public void drawText(MutableText mutableText, int x, int y, int color, boolean shadow, int light) {
-		if (matrixStack != null && immediate != null) {
+		if (matrixStack != null) {
+			createImmediate();
 			getInstance().font.drawInBatch(mutableText.data, x, y, color, shadow, matrixStack.last().pose(), immediate, false, 0, light);
 		}
 	}
 
 	@MappedMethod
 	public void drawText(OrderedText orderedText, int x, int y, int color, boolean shadow, int light) {
-		if (matrixStack != null && immediate != null) {
+		if (matrixStack != null) {
+			createImmediate();
 			getInstance().font.drawInBatch(orderedText.data, x, y, color, shadow, matrixStack.last().pose(), immediate, false, 0, light);
 		}
 	}
 
 	@MappedMethod
 	public void drawText(String text, int x, int y, int color, boolean shadow, int light) {
-		if (matrixStack != null && immediate != null) {
+		if (matrixStack != null) {
+			createImmediate();
 			getInstance().font.drawInBatch(text, x, y, color, shadow, matrixStack.last().pose(), immediate, false, 0, light);
 		}
 	}
@@ -175,19 +195,23 @@ public final class GraphicsHolder extends DummyClass {
 		return Minecraft.getInstance();
 	}
 
+	/**
+	 * Always call before drawing lines or textures in the world.
+	 */
 	@MappedMethod
-	public void drawImmediate() {
-		if (immediate != null) {
-			immediate.endBatch();
+	public void createVertexConsumer(RenderLayer renderLayer) {
+		if (vertexConsumerProvider != null) {
+			vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer.data);
 		}
 	}
 
+	/**
+	 * Always call {@link GraphicsHolder#createVertexConsumer(RenderLayer)} beforehand.
+	 */
 	@MappedMethod
 	public void drawLineInWorld(float x1, float y1, float z1, float x2, float y2, float z2, int color) {
-		if (matrixStack != null) {
+		if (matrixStack != null && vertexConsumer != null) {
 			ColorHelper.unpackColor(color, (a, r, g, b) -> {
-				final VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderType.LINES);
-
 				final PoseStack.Pose entry = matrixStack.last();
 				final Matrix4f matrix4f = entry.pose();
 				final Matrix3f matrix3f = entry.normal();
@@ -198,12 +222,13 @@ public final class GraphicsHolder extends DummyClass {
 		}
 	}
 
+	/**
+	 * Always call {@link GraphicsHolder#createVertexConsumer(RenderLayer)} beforehand.
+	 */
 	@MappedMethod
-	public void drawTextureInWorld(RenderLayer renderLayer, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, float u1, float v1, float u2, float v2, Direction facing, int color, int light) {
-		if (matrixStack != null) {
+	public void drawTextureInWorld(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, float u1, float v1, float u2, float v2, Direction facing, int color, int light) {
+		if (matrixStack != null && vertexConsumer != null) {
 			ColorHelper.unpackColor(color, (a, r, g, b) -> {
-				final VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer.data);
-
 				final Vector3i vector3i = facing.getVector();
 				final int x = vector3i.getX();
 				final int y = vector3i.getY();

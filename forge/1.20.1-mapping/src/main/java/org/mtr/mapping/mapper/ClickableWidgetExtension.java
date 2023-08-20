@@ -34,7 +34,7 @@ public class ClickableWidgetExtension extends ClickableWidgetAbstractMapping {
 	@Deprecated
 	@Override
 	public final void render2(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
-		render(new GraphicsHolder(guiGraphics), mouseX, mouseY, delta);
+		GraphicsHolder.createInstanceSafe(guiGraphics, graphicsHolder -> render(graphicsHolder, mouseX, mouseY, delta));
 	}
 
 	@MappedMethod

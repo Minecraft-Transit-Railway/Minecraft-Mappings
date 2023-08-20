@@ -33,7 +33,7 @@ public abstract class SliderWidgetExtension extends SliderWidgetAbstractMapping 
 	@Deprecated
 	@Override
 	public final void render2(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-		render(new GraphicsHolder(drawContext), mouseX, mouseY, delta);
+		GraphicsHolder.createInstanceSafe(drawContext, graphicsHolder -> render(graphicsHolder, mouseX, mouseY, delta));
 	}
 
 	@MappedMethod

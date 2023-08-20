@@ -61,7 +61,7 @@ public final class MainEventBusClient {
 	@SubscribeEvent
 	public static void renderWorldLast(RenderLevelStageEvent event) {
 		if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
-			renderWorldLastConsumer.accept(new GraphicsHolder(event.getPoseStack(), null), new Matrix4f(event.getProjectionMatrix()), new WorldRenderer(event.getLevelRenderer()), event.getPartialTick());
+			GraphicsHolder.createInstanceSafe(event.getPoseStack(), null, graphicsHolder -> renderWorldLastConsumer.accept(graphicsHolder, new Matrix4f(event.getProjectionMatrix()), new WorldRenderer(event.getLevelRenderer()), event.getPartialTick()));
 		}
 	}
 }

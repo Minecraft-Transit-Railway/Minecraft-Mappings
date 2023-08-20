@@ -1,5 +1,6 @@
 package org.mtr.mapping.test;
 
+import net.minecraft.advancements.FunctionManager;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -41,11 +42,14 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.resources.IResource;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.scoreboard.*;
+import net.minecraft.server.CustomServerBossInfoManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.state.*;
+import net.minecraft.state.properties.SlabType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.*;
@@ -68,7 +72,9 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.storage.CommandStorage;
 import net.minecraft.world.storage.FolderName;
+import net.minecraft.world.storage.IServerConfiguration;
 import net.minecraft.world.storage.WorldSavedData;
 import org.junit.jupiter.api.Test;
 
@@ -89,10 +95,12 @@ public final class ClassScannerTest {
 		scanner.put("BlockHitResult", BlockRayTraceResult.class);
 		scanner.put("BlockPos", BlockPos.class);
 		scanner.put("BlockRenderView", IBlockDisplayReader.class);
+		scanner.put("BlockRotation", Rotation.class);
 		scanner.put("BlockSettings", AbstractBlock.Properties.class);
 		scanner.put("BlockState", BlockState.class);
 		scanner.put("BlockView", IBlockReader.class);
 		scanner.put("BooleanProperty", BooleanProperty.class);
+		scanner.put("BossBarManager", CustomServerBossInfoManager.class);
 		scanner.put("Box", AxisAlignedBB.class);
 		scanner.put("BufferBuilder", BufferBuilder.class);
 		scanner.put("BufferBuilderStorage", RenderTypeBuffers.class);
@@ -101,7 +109,10 @@ public final class ClassScannerTest {
 		scanner.put("ClientPlayerEntity", ClientPlayerEntity.class);
 		scanner.put("ClientPlayNetworkHandler", ClientPlayNetHandler.class);
 		scanner.put("ClientWorld", ClientWorld.class);
+		scanner.put("CommandFunctionManager", FunctionManager.class);
 		scanner.put("CompoundTag", CompoundNBT.class);
+		scanner.put("DataCommandStorage", CommandStorage.class);
+		scanner.put("Difficulty", Difficulty.class);
 		scanner.put("DimensionOptions", Dimension.class);
 		scanner.put("DimensionType", DimensionType.class);
 		scanner.put("Direction", Direction.class);
@@ -136,6 +147,7 @@ public final class ClassScannerTest {
 		scanner.put("MutableText", IFormattableTextComponent.class);
 		scanner.put("NativeImage", NativeImage.class);
 		scanner.put("NativeImageBackedTexture", DynamicTexture.class);
+		scanner.put("OperatingSystem", Util.OS.class);
 		scanner.put("OrderedText", IReorderingProcessor.class);
 		scanner.put("PacketBuffer", PacketBuffer.class);
 		scanner.put("PlayerEntity", PlayerEntity.class);
@@ -145,8 +157,9 @@ public final class ClassScannerTest {
 		scanner.put("Property", Property.class);
 		scanner.put("Random", Random.class);
 		scanner.put("RenderLayer", RenderType.class);
+		scanner.put("Resource", IResource.class);
 		scanner.put("ResourceManager", IResourceManager.class);
-		scanner.put("Rotation", Rotation.class);
+		scanner.put("SaveProperties", IServerConfiguration.class);
 		scanner.put("Scoreboard", Scoreboard.class);
 		scanner.put("ScoreboardCriterion", ScoreCriteria.class);
 		scanner.put("ScoreboardCriterionRenderType", ScoreCriteria.RenderType.class);
@@ -156,6 +169,7 @@ public final class ClassScannerTest {
 		scanner.put("ServerWorld", ServerWorld.class);
 		scanner.put("ServerWorldAccess", IServerWorld.class);
 		scanner.put("ShapeContext", ISelectionContext.class);
+		scanner.put("SlabType", SlabType.class);
 		scanner.put("SoundCategory", SoundCategory.class);
 		scanner.put("SoundEvent", SoundEvent.class);
 		scanner.put("SoundInstance", ISound.class);
@@ -167,6 +181,7 @@ public final class ClassScannerTest {
 		scanner.put("TextRenderer", FontRenderer.class);
 		scanner.put("TextureManager", TextureManager.class);
 		scanner.put("TooltipContext", ITooltipFlag.class);
+		scanner.put("Util", Util.class);
 		scanner.put("Vector3d", Vector3d.class);
 		scanner.put("Vector3f", Vector3f.class);
 		scanner.put("Vector3i", Vector3i.class);

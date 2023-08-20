@@ -35,7 +35,7 @@ public class ButtonWidgetExtension extends ButtonWidgetAbstractMapping {
 	@Deprecated
 	@Override
 	public final void render2(PoseStack matrices, int mouseX, int mouseY, float delta) {
-		render(new GraphicsHolder(matrices, null), mouseX, mouseY, delta);
+		GraphicsHolder.createInstanceSafe(matrices, null, graphicsHolder -> render(graphicsHolder, mouseX, mouseY, delta));
 	}
 
 	@MappedMethod

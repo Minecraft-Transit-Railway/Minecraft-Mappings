@@ -60,6 +60,6 @@ public final class MainEventBusClient {
 
 	@SubscribeEvent
 	public static void renderWorldLast(RenderWorldLastEvent event) {
-		renderWorldLastConsumer.accept(new GraphicsHolder(event.getMatrixStack(), null), new Matrix4f(event.getProjectionMatrix()), new WorldRenderer(event.getContext()), event.getPartialTicks());
+		GraphicsHolder.createInstanceSafe(event.getMatrixStack(), null, graphicsHolder -> renderWorldLastConsumer.accept(graphicsHolder, new Matrix4f(event.getProjectionMatrix()), new WorldRenderer(event.getContext()), event.getPartialTicks()));
 	}
 }
