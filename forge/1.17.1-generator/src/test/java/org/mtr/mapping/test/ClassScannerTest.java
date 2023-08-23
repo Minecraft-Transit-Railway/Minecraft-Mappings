@@ -58,6 +58,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -171,6 +172,7 @@ public final class ClassScannerTest {
 		scanner.put("OrderedText", FormattedCharSequence.class);
 		scanner.put("PacketBuffer", FriendlyByteBuf.class, "readRegistryIdSafe");
 		scanner.put("PlayerEntity", Player.class);
+		scanner.put("PlayerInventory", Inventory.class);
 		scanner.put("PlayerListEntry", PlayerInfo.class);
 		scanner.put("PlayerManager", PlayerList.class);
 		scanner.put("Position", Position.class);

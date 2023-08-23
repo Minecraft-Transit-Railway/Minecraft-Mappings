@@ -3,6 +3,8 @@ package org.mtr.mapping;
 public interface MethodMaps {
 
 	static void setMethodMaps(BuildTools.AddMethodMap1 addMethodMap1, BuildTools.AddMethodMap2 addMethodMap2, BuildTools.Blacklist blacklist) {
+		addMethodMap1.add("AbstractTexture|NativeImageBackedTexture", "bindTexture", "bind");
+		addMethodMap1.add("AbstractTexture|NativeImageBackedTexture", "clearGlId", "releaseId");
 		addMethodMap1.add("Block|SlabBlock", "emitsRedstonePower", "isSignalSource");
 		addMethodMap1.add("Block|SlabBlock", "getCameraCollisionShape", "getVisualShape");
 		addMethodMap1.add("Block|SlabBlock", "getInteractionShape", "getRaycastShape");

@@ -7,7 +7,7 @@ import org.mtr.mapping.tool.DummyClass;
 public final class MinecraftClientHelper extends DummyClass {
 
 	@MappedMethod
-	public int getRenderDistance() {
+	public static int getRenderDistance() {
 		return Minecraft.getInstance().options.renderDistance;
 	}
 }

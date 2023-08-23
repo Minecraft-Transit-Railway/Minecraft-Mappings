@@ -326,7 +326,7 @@ public final class BuildTools {
 	private static List<List<MethodInfo>> getAdditionalMethodGroups(List<MethodInfo> methods, Map<String, Map<String, List<List<String>>>> map, String className, String signature) {
 		final List<List<String>> additionalMethodNameGroups = map.getOrDefault(className, new HashMap<>()).getOrDefault(signature, new ArrayList<>());
 		final List<List<MethodInfo>> additionalMethodGroups = new ArrayList<>();
-		additionalMethodNameGroups.forEach(additionalMethodNameGroup -> additionalMethodGroups.add(additionalMethodNameGroup.stream().map(a -> methods.stream().filter(b -> b.name.equals(a)).findFirst().orElse(null)).filter(Objects::nonNull).collect(Collectors.toList())));
+		additionalMethodNameGroups.forEach(additionalMethodNameGroup -> additionalMethodGroups.add(methods.stream().filter(method -> additionalMethodNameGroup.contains(method.name)).collect(Collectors.toList())));
 		return additionalMethodGroups;
 	}
 

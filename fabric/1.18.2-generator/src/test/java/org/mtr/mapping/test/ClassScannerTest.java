@@ -30,6 +30,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
@@ -137,6 +138,7 @@ public final class ClassScannerTest {
 		scanner.put("OrderedText", OrderedText.class);
 		scanner.put("PacketBuffer", PacketByteBuf.class);
 		scanner.put("PlayerEntity", PlayerEntity.class);
+		scanner.put("PlayerInventory", PlayerInventory.class);
 		scanner.put("PlayerListEntry", PlayerListEntry.class);
 		scanner.put("PlayerManager", PlayerManager.class);
 		scanner.put("Position", Position.class);
