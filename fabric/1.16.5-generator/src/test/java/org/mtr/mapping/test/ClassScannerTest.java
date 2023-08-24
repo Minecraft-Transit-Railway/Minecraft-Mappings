@@ -48,6 +48,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.property.*;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
@@ -125,6 +126,7 @@ public final class ClassScannerTest {
 		scanner.put("KeyBinding", KeyBinding.class);
 		scanner.put("LightmapTextureManager", LightmapTextureManager.class);
 		scanner.put("LivingEntity", LivingEntity.class);
+		scanner.put("MapColor", MapColor.class);
 		scanner.put("MathHelper", MathHelper.class);
 		scanner.put("Matrix3f", Matrix3f.class);
 		scanner.put("Matrix4f", Matrix4f.class);
@@ -162,6 +164,7 @@ public final class ClassScannerTest {
 		scanner.put("SoundEvent", SoundEvent.class);
 		scanner.put("SoundInstance", SoundInstance.class);
 		scanner.put("SoundManager", SoundManager.class);
+		scanner.put("Style", Style.class);
 		scanner.put("Team", Team.class);
 		scanner.put("Tessellator", Tessellator.class);
 		scanner.put("Text", Text.class);
