@@ -25,6 +25,7 @@ import net.minecraft.client.network.play.NetworkPlayerInfo;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.client.renderer.color.IItemColor;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.model.Model;
 import net.minecraft.client.renderer.model.ModelRenderer;
@@ -110,6 +111,7 @@ public final class ClassScannerTest {
 		scanner.put("Box", AxisAlignedBB.class);
 		scanner.put("BufferBuilder", BufferBuilder.class);
 		scanner.put("BufferBuilderStorage", RenderTypeBuffers.class);
+		scanner.put("Camera", ActiveRenderInfo.class);
 		scanner.put("ChunkGenerator", ChunkGenerator.class);
 		scanner.put("ChunkManager", AbstractChunkProvider.class);
 		scanner.put("ClientPlayerEntity", ClientPlayerEntity.class, "getType");
@@ -123,6 +125,7 @@ public final class ClassScannerTest {
 		scanner.put("DimensionType", DimensionType.class);
 		scanner.put("Direction", Direction.class);
 		scanner.put("DirectionProperty", DirectionProperty.class);
+		scanner.put("EntityRenderDispatcher", EntityRendererManager.class);
 		scanner.put("EntityType", EntityType.class);
 		scanner.put("EnumProperty", EnumProperty.class);
 		scanner.put("Explosion", Explosion.class);

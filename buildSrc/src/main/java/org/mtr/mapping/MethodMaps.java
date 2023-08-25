@@ -37,6 +37,10 @@ public interface MethodMaps {
 		addMethodMap1.add("BlockSettings", "ticksRandomly", "randomTicks");
 		addMethodMap1.add("BlockSettings", "velocityMultiplier", "speedFactor");
 		addMethodMap1.add("BlockState", "with", "setValue");
+		addMethodMap1.add("Camera", "getPitch", "getXRot");
+		addMethodMap1.add("Camera", "getYaw", "getYRot");
+		addMethodMap1.add("Camera", "isThirdPerson", "isDetached");
+		addMethodMap1.add("Camera", "isReady", "isInitialized");
 		addMethodMap1.add("CheckboxWidget", "isChecked", "selected");
 		addMethodMap1.add("ClickableWidget", "WIDGETS_TEXTURE", "WIDGETS_LOCATION");
 		addMethodMap1.add("ClientPlayerEntity|Entity|PlayerEntity|ServerPlayerEntity", "addScoreboardTag", "addCommandTag", "addTag");
@@ -122,9 +126,11 @@ public interface MethodMaps {
 		addMethodMap1.add("LightmapTextureManager", "enable", "turnOnLightLayer");
 		addMethodMap1.add("LightmapTextureManager", "getBlockLightCoordinates", "block");
 		addMethodMap1.add("LightmapTextureManager", "getSkyLightCoordinates", "sky");
+		addMethodMap1.add("MathHelper", "SQUARE_ROOT_OF_TWO", "SQRT_OF_TWO");
 		addMethodMap1.add("MinecraftClient", "getLastFrameDuration", "getDeltaFrameTime");
 		addMethodMap1.add("MinecraftClient", "getTickDelta", "getFrameTime");
 		addMethodMap1.add("MinecraftClient", "setScreen", "openScreen");
+		addMethodMap1.add("NativeImage", "setColor", "setPixelColor", "setPixelRGBA");
 		addMethodMap1.add("RenderLayer", "endDrawing", "clearRenderState");
 		addMethodMap1.add("RenderLayer", "getArmorCutoutNoCull", "armorCutoutNoCull");
 		addMethodMap1.add("RenderLayer", "getArmorEntityGlint", "armorEntityGlint");
@@ -224,6 +230,12 @@ public interface MethodMaps {
 		addMethodMap2.add("BlockPos", "add", "public BlockPos (Vector3i)", "offset");
 		addMethodMap2.add("BlockState", "prepare", "public final void (WorldAccess,BlockPos,int)", "updateIndirectNeighbourShapes");
 		addMethodMap2.add("BlockState", "updateNeighbors", "public final void (WorldAccess,BlockPos,int)", "updateNeighbourShapes");
+		addMethodMap2.add("ClientPlayerEntity|Entity|PlayerEntity", "getCameraPosVec", "public final Vector3d (float)", "getEyePosition");
+		addMethodMap2.add("ClientPlayerEntity|Entity|PlayerEntity", "getClientCameraPosVec", "public final Vector3d (float)", "getLightProbePosition");
+		addMethodMap2.add("ClientPlayerEntity|Entity|PlayerEntity", "getLeashPos", "public final Vector3d (float)", "getRopeHoldPosition", "method_30951");
+		addMethodMap2.add("ClientPlayerEntity|Entity|PlayerEntity", "getLerpedPos", "public final Vector3d (float)", "getPosition", "method_30950");
+		addMethodMap2.add("ClientPlayerEntity|Entity|PlayerEntity", "getOppositeRotationVector", "public final Vector3d (float)", "getUpVector");
+		addMethodMap2.add("ClientPlayerEntity|Entity|PlayerEntity", "getRotationVec", "public final Vector3d (float)", "getViewVector");
 		addMethodMap2.add("ClientPlayerEntity|Entity|PlayerEntity|ServerPlayerEntity", "addVelocity", "public void (double,double,double)", "push");
 		addMethodMap2.add("ClientPlayerEntity|Entity|PlayerEntity|ServerPlayerEntity", "getBodyY", "public double (double)", "getY");
 		addMethodMap2.add("ClientPlayerEntity|Entity|PlayerEntity|ServerPlayerEntity", "getPitch", "public float (float)", "getViewXRot");

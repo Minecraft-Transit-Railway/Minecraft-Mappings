@@ -244,4 +244,11 @@ public final class GraphicsHolder extends DummyClass {
 			});
 		}
 	}
+
+	@MappedMethod
+	public void renderEntity(Entity entity, double x, double y, double z, float yaw, float tickDelta, int light) {
+		if (matrixStack != null && vertexConsumerProvider != null) {
+			getInstance().getEntityRenderDispatcher().render(entity.data, x, y, z, yaw, tickDelta, matrixStack, vertexConsumerProvider, light);
+		}
+	}
 }

@@ -1,12 +1,13 @@
 package org.mtr.mapping.mapper;
 
+import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelPart;
 import org.mtr.mapping.annotation.MappedMethod;
 
 public final class ModelPartExtension extends ModelPart {
 
-	ModelPartExtension(ModelExtension modelExtension) {
-		super(modelExtension);
+	ModelPartExtension(Model model) {
+		super(model);
 	}
 
 	@MappedMethod
