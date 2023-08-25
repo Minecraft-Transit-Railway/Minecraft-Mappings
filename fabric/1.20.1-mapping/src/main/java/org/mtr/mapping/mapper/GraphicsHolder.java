@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 
 public final class GraphicsHolder extends DummyClass {
 
+	VertexConsumer vertexConsumer;
 	private int matrixPushes;
-	private VertexConsumer vertexConsumer;
 	private VertexConsumerProvider.Immediate immediate;
 
 	final MatrixStack matrixStack;

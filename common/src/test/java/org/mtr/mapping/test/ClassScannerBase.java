@@ -63,9 +63,9 @@ public abstract class ClassScannerBase {
 		iterateClass(
 				classInfo,
 				minecraftClassName,
-				getGenerics(minecraftClassObject, false, true, null),
-				getGenerics(minecraftClassObject, false, false, null),
-				getGenerics(minecraftClassObject, true, false, null),
+				getGenerics(minecraftClassObject, false, true, classMap),
+				getGenerics(minecraftClassObject, false, false, classMap),
+				getGenerics(minecraftClassObject, true, false, classMap),
 				enumValues
 		);
 

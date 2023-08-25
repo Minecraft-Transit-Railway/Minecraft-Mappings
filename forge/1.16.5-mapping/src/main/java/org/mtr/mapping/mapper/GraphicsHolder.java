@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
 
 public final class GraphicsHolder extends DummyClass {
 
+	IVertexBuilder vertexConsumer;
 	private int matrixPushes;
-	private IVertexBuilder vertexConsumer;
 	private IRenderTypeBuffer.Impl immediate;
 
 	final MatrixStack matrixStack;
