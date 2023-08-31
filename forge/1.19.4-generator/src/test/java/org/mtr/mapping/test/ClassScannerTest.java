@@ -1,6 +1,7 @@
 package org.mtr.mapping.test;
 
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.ChatFormatting;
@@ -51,11 +52,13 @@ import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.Container;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -71,10 +74,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeSource;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Mirror;
-import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -125,6 +125,7 @@ public final class ClassScannerTest {
 		scanner.put("BlockPos", BlockPos.class);
 		scanner.put("BlockRenderView", BlockAndTintGetter.class);
 		scanner.put("BlockRotation", Rotation.class);
+		scanner.put("Blocks", Blocks.class);
 		scanner.put("BlockSettings", BlockBehaviour.Properties.class);
 		scanner.put("BlockState", BlockState.class);
 		scanner.put("BlockView", BlockGetter.class);
@@ -153,7 +154,6 @@ public final class ClassScannerTest {
 		scanner.put("EnumProperty", EnumProperty.class);
 		scanner.put("Explosion", Explosion.class);
 		scanner.put("FluidState", FluidState.class);
-		scanner.put("Format", NativeImage.Format.class);
 		scanner.put("GameMode", GameType.class);
 		scanner.put("GameOptions", Options.class);
 		scanner.put("GameRenderer", GameRenderer.class);
@@ -164,8 +164,10 @@ public final class ClassScannerTest {
 		scanner.put("Identifier", ResourceLocation.class);
 		scanner.put("IntegerProperty", IntegerProperty.class);
 		scanner.put("InternalFormat", NativeImage.InternalGlFormat.class);
+		scanner.put("Inventory", Container.class);
 		scanner.put("ItemConvertible", ItemLike.class);
 		scanner.put("ItemPlacementContext", BlockPlaceContext.class);
+		scanner.put("Items", Items.class);
 		scanner.put("ItemSettings", Item.Properties.class);
 		scanner.put("ItemStack", ItemStack.class);
 		scanner.put("ItemUsageContext", UseOnContext.class);
@@ -184,6 +186,7 @@ public final class ClassScannerTest {
 		scanner.put("MutableText", MutableComponent.class);
 		scanner.put("NativeImage", NativeImage.class);
 		scanner.put("NativeImageBackedTexture", DynamicTexture.class);
+		scanner.put("NativeImageFormat", NativeImage.Format.class);
 		scanner.put("OperatingSystem", Util.OS.class);
 		scanner.put("OrderedText", FormattedCharSequence.class);
 		scanner.put("PacketBuffer", FriendlyByteBuf.class);
@@ -210,6 +213,7 @@ public final class ClassScannerTest {
 		scanner.put("SlabType", SlabType.class);
 		scanner.put("SoundCategory", SoundSource.class);
 		scanner.put("SoundEvent", SoundEvent.class);
+		scanner.put("SoundEvents", SoundEvents.class);
 		scanner.put("SoundInstance", SoundInstance.class);
 		scanner.put("SoundManager", SoundManager.class);
 		scanner.put("Style", Style.class);
@@ -226,6 +230,7 @@ public final class ClassScannerTest {
 		scanner.put("Vector3i", Vec3i.class);
 		scanner.put("VoxelShape", VoxelShape.class);
 		scanner.put("VoxelShapes", Shapes.class);
+		scanner.put("Window", Window.class);
 		scanner.put("World", Level.class);
 		scanner.put("WorldAccess", LevelAccessor.class);
 		scanner.put("WorldChunk", LevelChunk.class);

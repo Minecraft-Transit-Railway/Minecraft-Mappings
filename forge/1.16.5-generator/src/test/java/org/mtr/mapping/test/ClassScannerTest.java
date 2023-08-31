@@ -1,12 +1,10 @@
 package org.mtr.mapping.test;
 
 import net.minecraft.advancements.FunctionManager;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SlabBlock;
+import net.minecraft.block.*;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.client.GameSettings;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.*;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
@@ -46,6 +44,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
@@ -101,6 +100,7 @@ public final class ClassScannerTest {
 		scanner.put("BlockPos", BlockPos.class);
 		scanner.put("BlockRenderView", IBlockDisplayReader.class);
 		scanner.put("BlockRotation", Rotation.class);
+		scanner.put("Blocks", Blocks.class);
 		scanner.put("BlockSettings", AbstractBlock.Properties.class);
 		scanner.put("BlockState", BlockState.class);
 		scanner.put("BlockView", IBlockReader.class);
@@ -129,7 +129,6 @@ public final class ClassScannerTest {
 		scanner.put("EnumProperty", EnumProperty.class);
 		scanner.put("Explosion", Explosion.class);
 		scanner.put("FluidState", FluidState.class);
-		scanner.put("Format", NativeImage.PixelFormat.class);
 		scanner.put("GameMode", GameType.class);
 		scanner.put("GameOptions", GameSettings.class);
 		scanner.put("GameRenderer", GameRenderer.class);
@@ -140,8 +139,10 @@ public final class ClassScannerTest {
 		scanner.put("Identifier", ResourceLocation.class);
 		scanner.put("IntegerProperty", IntegerProperty.class);
 		scanner.put("InternalFormat", NativeImage.PixelFormatGLCode.class);
+		scanner.put("Inventory", IInventory.class);
 		scanner.put("ItemConvertible", IItemProvider.class);
 		scanner.put("ItemPlacementContext", BlockItemUseContext.class);
+		scanner.put("Items", Items.class);
 		scanner.put("ItemSettings", Item.Properties.class);
 		scanner.put("ItemStack", ItemStack.class);
 		scanner.put("ItemUsageContext", ItemUseContext.class);
@@ -160,6 +161,7 @@ public final class ClassScannerTest {
 		scanner.put("MutableText", IFormattableTextComponent.class);
 		scanner.put("NativeImage", NativeImage.class);
 		scanner.put("NativeImageBackedTexture", DynamicTexture.class);
+		scanner.put("NativeImageFormat", NativeImage.PixelFormat.class);
 		scanner.put("OperatingSystem", Util.OS.class);
 		scanner.put("OrderedText", IReorderingProcessor.class);
 		scanner.put("PacketBuffer", PacketBuffer.class);
@@ -186,6 +188,7 @@ public final class ClassScannerTest {
 		scanner.put("SlabType", SlabType.class);
 		scanner.put("SoundCategory", SoundCategory.class);
 		scanner.put("SoundEvent", SoundEvent.class);
+		scanner.put("SoundEvents", SoundEvents.class);
 		scanner.put("SoundInstance", ISound.class);
 		scanner.put("SoundManager", SoundHandler.class);
 		scanner.put("Style", Style.class);
@@ -202,6 +205,7 @@ public final class ClassScannerTest {
 		scanner.put("Vector3i", Vector3i.class);
 		scanner.put("VoxelShape", VoxelShape.class);
 		scanner.put("VoxelShapes", VoxelShapes.class);
+		scanner.put("Window", MainWindow.class);
 		scanner.put("World", World.class);
 		scanner.put("WorldAccess", IWorld.class);
 		scanner.put("WorldChunk", Chunk.class);
