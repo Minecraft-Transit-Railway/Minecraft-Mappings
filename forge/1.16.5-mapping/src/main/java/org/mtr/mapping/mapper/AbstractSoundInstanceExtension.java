@@ -8,6 +8,27 @@ import java.util.function.Consumer;
 public abstract class AbstractSoundInstanceExtension extends AbstractSoundInstanceAbstractMapping {
 
 	@MappedMethod
+	protected void setIsRelativeMapped(boolean isRelative) {
+		relative = isRelative;
+	}
+
+	@MappedMethod
+	protected void setIsRepeatableMapped(boolean isRepeatable) {
+		looping = isRepeatable;
+	}
+
+	@MappedMethod
+	@Override
+	public boolean isRelative2() {
+		return super.isRelative2();
+	}
+
+	@MappedMethod
+	public boolean isRepeatable2() {
+		return super.isLooping2();
+	}
+
+	@MappedMethod
 	protected AbstractSoundInstanceExtension(SoundEvent sound, SoundCategory category) {
 		super(sound, category);
 	}

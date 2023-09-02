@@ -37,13 +37,13 @@ public final class ClassScannerGenerateHolders extends ClassScannerBase {
 		classInfo.stringBuilder.append("package org.mtr.mapping.holder;import org.mtr.mapping.annotation.MappedMethod;import org.mtr.mapping.tool.HolderBase;import javax.annotation.Nonnull;import javax.annotation.Nullable;import javax.annotation.ParametersAreNonnullByDefault;@ParametersAreNonnullByDefault@SuppressWarnings({\"deprecation\",\"unchecked\",\"unused\"})public ");
 
 		if (classInfo.isEnum) {
-			classInfo.stringBuilder.append(String.format("enum %1$s{%3$s;public final %2$s data;%1$s(%2$s data){this.data=data;}public static %1$s convert(@Nullable %2$s data){return data==null?null:values()[data.ordinal()];}", classInfo.className, minecraftClassName, enumValues));
+			classInfo.stringBuilder.append(String.format("enum %1$s{%3$s;public final %2$s data;%1$s(%2$s data){this.data=data;}public static %1$s convert(@Nullable %2$s data){return data==null?null:values()[data.ordinal()];}@MappedMethod public final boolean equals(@Nullable %1$s data){return data!=null&&this.data==data.data;}", classInfo.className, minecraftClassName, enumValues));
 		} else {
 			classInfo.stringBuilder.append(String.format("%s %s %s %s extends ", classInfo.isAbstractMapping ? "abstract" : "final", classInfo.isInterface ? "interface" : "class", classInfo.getClassName(), genericsWithBounds));
 			if (classInfo.isAbstractMapping) {
 				classInfo.stringBuilder.append(String.format("%s%s{", minecraftClassName, generics));
 			} else {
-				classInfo.stringBuilder.append(String.format("HolderBase<%2$s%4$s>{public %1$s(%2$s%4$s data){super(data);}@MappedMethod public static %3$s%1$s%4$s cast(HolderBase<?> data){return new %1$s%5$s((%2$s%4$s)data.data);}@MappedMethod public static boolean isInstance(HolderBase<?> data){return data.data instanceof %2$s;}", classInfo.getClassName(), minecraftClassName, genericsWithBounds, generics, genericsImplied));
+				classInfo.stringBuilder.append(String.format("HolderBase<%2$s%4$s>{public %1$s(%2$s%4$s data){super(data);}@MappedMethod public static %3$s%1$s%4$s cast(HolderBase<?> data){return new %1$s%5$s((%2$s%4$s)data.data);}@MappedMethod public static boolean isInstance(@Nullable HolderBase<?> data){return data!=null&&data.data instanceof %2$s;}@MappedMethod public boolean equals(@Nullable Object data){return data instanceof HolderBase<?>&&this.data.equals(((HolderBase<?>)data).data);}", classInfo.getClassName(), minecraftClassName, genericsWithBounds, generics, genericsImplied));
 			}
 		}
 	}

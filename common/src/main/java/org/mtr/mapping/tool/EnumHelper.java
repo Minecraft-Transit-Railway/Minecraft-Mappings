@@ -15,6 +15,7 @@ public final class EnumHelper {
 
 	static {
 		SIGNATURES = Arrays.stream(Enum.class.getMethods()).map(EnumHelper::quickSerialize).collect(Collectors.toSet());
+		SIGNATURES.add(EnumHelper.quickSerialize(Modifier.PUBLIC, "equals", "java.lang.Object"));
 		SIGNATURES.add(EnumHelper.quickSerialize(Modifier.PUBLIC | Modifier.STATIC, "values"));
 		SIGNATURES.add(EnumHelper.quickSerialize(Modifier.PUBLIC | Modifier.STATIC, "valueOf", "java.lang.String"));
 	}

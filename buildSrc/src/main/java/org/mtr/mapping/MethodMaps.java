@@ -334,6 +334,7 @@ public interface MethodMaps {
 		addMethodMap2.add("MathHelper", "idealHash", "public static int (int)", "murmurHash3Mixer");
 		addMethodMap2.add("RenderLayer", "getOutline", "public static RenderLayer (Identifier)", "outline");
 		addMethodMap2.add("Scoreboard", "clearPlayerTeam", "public boolean (java.lang.String)", "removePlayerFromTeam");
+		addMethodMap2.add("ServerPlayerEntity", "sendMessage", "public void (Text,boolean)", "displayClientMessage");
 		addMethodMap2.add("ServerWorld|World", "isChunkLoaded", "public boolean (int,int)", "hasChunk");
 		addMethodMap2.add("ServerWorld|World", "isSavingDisabled", "public boolean ()", "noSave");
 		addMethodMap2.add("ServerWorld|World|WorldView", "isClient", "public boolean ()", "isClientSide");
