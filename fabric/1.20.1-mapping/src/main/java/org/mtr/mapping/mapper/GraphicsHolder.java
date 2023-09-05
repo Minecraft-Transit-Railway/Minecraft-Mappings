@@ -71,7 +71,7 @@ public final class GraphicsHolder extends DummyClass {
 
 	private GraphicsHolder(DrawContext drawContext) {
 		this.matrixStack = drawContext.getMatrices();
-		this.vertexConsumerProvider = null;
+		this.vertexConsumerProvider = drawContext.getVertexConsumers();
 		this.drawContext = drawContext;
 		push();
 	}

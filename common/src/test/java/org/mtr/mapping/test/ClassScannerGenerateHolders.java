@@ -138,7 +138,19 @@ public final class ClassScannerGenerateHolders extends ClassScannerBase {
 		}
 
 		if (generateExtraMethod) {
-			classInfo.stringBuilder.append(String.format("@Deprecated %s %s %s%s %s(%s){%s%s2(%s)%s;}", modifiers, classInfo.isInterface ? "default" : "final", generics, returnType.minecraftTypeName, minecraftMethodName, parametersJoined, isVoid ? "" : "return ", mappedMethodName, variablesJoined2, returnType.isResolved ? ".data" : ""));
+			classInfo.stringBuilder.append(String.format(
+					"@Deprecated %s %s %s%s %s(%s){%s%s2(%s)%s;}",
+					modifiers,
+					classInfo.isInterface ? "default" : "final",
+					generics,
+					returnType.minecraftTypeName,
+					minecraftMethodName,
+					parametersJoined,
+					isVoid ? "" : returnType.isResolved ? returnType.resolvedTypeName + " tempData=" : "return ",
+					mappedMethodName,
+					variablesJoined2,
+					isVoid ? "" : returnType.isResolved ? ";return tempData==null?null:tempData.data" : ""
+			));
 		}
 	}
 
