@@ -1,3 +1,5 @@
+### [中文](README_CN.md) English
+
 # Minecraft Mappings
 
 Mod loaders like Fabric and Forge provide mappings that translate Minecraft class, method, and field names to human-readable ones. Since the mappings are created independently, it is often the case where class, method, and field names are translated differently between mod loaders and even between Minecraft versions. Even the package of a certain class can change. The purpose of this project is to provide a stable map of classes, methods, and fields across different mod loaders and versions of Minecraft.
