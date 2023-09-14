@@ -17,7 +17,7 @@ jobs:
       - name: Make gradle wrapper executable
         run: chmod +x ./gradlew
       - name: Scan Minecraft classes
-        run: ./gradlew hideOfficialWarningUntilChanged test -x common:test --continue -Pgenerate=dryRun
+        run: ./gradlew test -x common:test --continue -Pgenerate=dryRun
         continue-on-error: true
       - name: Generate holders
         run: ./gradlew test -x common:test --continue -Pgenerate=normal
