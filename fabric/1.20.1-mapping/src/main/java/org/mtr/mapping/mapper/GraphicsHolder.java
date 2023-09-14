@@ -46,7 +46,8 @@ public final class GraphicsHolder extends DummyClass {
 	private static void createInstanceSafe(GraphicsHolder graphicsHolder, Consumer<GraphicsHolder> consumer) {
 		try {
 			consumer.accept(graphicsHolder);
-		} catch (Exception ignored) {
+		} catch (Exception e) {
+			logException(e);
 		}
 
 		if (graphicsHolder.immediate != null) {

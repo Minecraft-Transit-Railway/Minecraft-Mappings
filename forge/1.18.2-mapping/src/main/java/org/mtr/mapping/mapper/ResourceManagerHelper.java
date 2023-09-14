@@ -17,10 +17,10 @@ public final class ResourceManagerHelper extends DummyClass {
 			try (final InputStream inputStream = resource.getInputStream()) {
 				consumer.accept(inputStream);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logException(e);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logException(e);
 		}
 	}
 }

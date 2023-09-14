@@ -38,7 +38,8 @@ public final class GraphicsHolder extends DummyClass {
 
 		try {
 			consumer.accept(graphicsHolder);
-		} catch (Exception ignored) {
+		} catch (Exception e) {
+			logException(e);
 		}
 
 		if (graphicsHolder.immediate != null) {

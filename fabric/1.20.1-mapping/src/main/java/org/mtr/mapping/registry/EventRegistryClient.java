@@ -46,7 +46,7 @@ public class EventRegistryClient extends DummyClass {
 
 	@MappedMethod
 	public static void registerRenderWorldLast(RenderWorldCallback consumer) {
-		WorldRenderEvents.LAST.register(worldRenderContext -> GraphicsHolder.createInstanceSafe(worldRenderContext.matrixStack(), null, graphicsHolder -> consumer.accept(graphicsHolder, new Matrix4f(worldRenderContext.projectionMatrix()), new WorldRenderer(worldRenderContext.worldRenderer()), worldRenderContext.tickDelta())));
+		WorldRenderEvents.LAST.register(worldRenderContext -> GraphicsHolder.createInstanceSafe(worldRenderContext.matrixStack(), worldRenderContext.consumers(), graphicsHolder -> consumer.accept(graphicsHolder, new Matrix4f(worldRenderContext.projectionMatrix()), new WorldRenderer(worldRenderContext.worldRenderer()), worldRenderContext.tickDelta())));
 	}
 
 	@FunctionalInterface
