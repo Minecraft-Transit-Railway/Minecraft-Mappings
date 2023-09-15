@@ -51,8 +51,8 @@ public final class Registry extends DummyClass {
 	}
 
 	@MappedMethod
-	public static <T extends BlockEntityExtension> BlockEntityTypeRegistryObject<T> registerBlockEntityType(Identifier identifier, BiFunction<BlockPos, BlockState, T> function, Block... blocks) {
-		ModEventBus.BLOCK_ENTITY_TYPES.add(() -> TileEntityType.Builder.of(() -> function.apply(null, null), HolderBase.convertArray(blocks, net.minecraft.block.Block[]::new)).build(null));
+	public static <T extends BlockEntityExtension> BlockEntityTypeRegistryObject<T> registerBlockEntityType(Identifier identifier, BiFunction<BlockPos, BlockState, T> function, Supplier<Block>... blockSuppliers) {
+		ModEventBus.BLOCK_ENTITY_TYPES.add(() -> TileEntityType.Builder.of(() -> function.apply(null, null), HolderBase.convertArray(blockSuppliers, net.minecraft.block.Block[]::new)).build(null));
 		return new BlockEntityTypeRegistryObject<>(identifier);
 	}
 

@@ -196,6 +196,7 @@ public interface MethodMaps {
 		addMethodMap1.add("NativeImage", "setColor", "setPixelColor", "setPixelRGBA");
 		addMethodMap1.add("NativeImageFormat", "RGB", "ABGR");
 		addMethodMap1.add("NativeImageFormat", "RGBA", "BGR");
+		addMethodMap1.add("OverlayTexture", "DEFAULT_UV", "NO_OVERLAY");
 		addMethodMap1.add("RenderLayer", "endDrawing", "clearRenderState");
 		addMethodMap1.add("RenderLayer", "getArmorCutoutNoCull", "armorCutoutNoCull");
 		addMethodMap1.add("RenderLayer", "getArmorEntityGlint", "armorEntityGlint");

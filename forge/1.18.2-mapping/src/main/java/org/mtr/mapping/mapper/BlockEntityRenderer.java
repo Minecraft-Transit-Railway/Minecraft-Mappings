@@ -19,4 +19,15 @@ public abstract class BlockEntityRenderer<T extends BlockEntityExtension> implem
 
 	@MappedMethod
 	public abstract void render(T entity, float tickDelta, GraphicsHolder graphicsHolder, int light, int overlay);
+
+	@MappedMethod
+	public boolean rendersOutsideBoundingBox2(T blockEntity) {
+		return net.minecraft.client.renderer.blockentity.BlockEntityRenderer.super.shouldRenderOffScreen(blockEntity);
+	}
+
+	@Deprecated
+	@Override
+	public final boolean shouldRenderOffScreen(T blockEntity) {
+		return rendersOutsideBoundingBox2(blockEntity);
+	}
 }

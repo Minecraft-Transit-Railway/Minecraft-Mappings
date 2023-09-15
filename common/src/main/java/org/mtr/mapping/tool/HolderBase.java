@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.IntFunction;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public abstract class HolderBase<T> {
@@ -51,6 +52,15 @@ public abstract class HolderBase<T> {
 		final T[] newArray = supplier.apply(array.length);
 		for (int i = 0; i < array.length; i++) {
 			newArray[i] = array[i].data;
+		}
+		return newArray;
+	}
+
+	@MappedMethod
+	public static <T, U extends HolderBase<T>> T[] convertArray(Supplier<U>[] array, IntFunction<T[]> supplier) {
+		final T[] newArray = supplier.apply(array.length);
+		for (int i = 0; i < array.length; i++) {
+			newArray[i] = array[i].get().data;
 		}
 		return newArray;
 	}

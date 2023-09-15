@@ -20,4 +20,15 @@ public abstract class BlockEntityRenderer<T extends BlockEntityExtension> extend
 
 	@MappedMethod
 	public abstract void render(T entity, float tickDelta, GraphicsHolder graphicsHolder, int light, int overlay);
+
+	@MappedMethod
+	public boolean rendersOutsideBoundingBox2(T blockEntity) {
+		return super.rendersOutsideBoundingBox(blockEntity);
+	}
+
+	@Deprecated
+	@Override
+	public final boolean rendersOutsideBoundingBox(T blockEntity) {
+		return rendersOutsideBoundingBox2(blockEntity);
+	}
 }

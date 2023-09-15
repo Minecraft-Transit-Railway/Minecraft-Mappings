@@ -27,7 +27,7 @@ jobs:
       - name: Analyze test results
         run: ./gradlew common:test
       - name: Build
-        run: ./gradlew remapJar jar -x test
+        run: ./gradlew build -x test
       - name: Capture build artifacts
         uses: actions/upload-artifact@main
         with:

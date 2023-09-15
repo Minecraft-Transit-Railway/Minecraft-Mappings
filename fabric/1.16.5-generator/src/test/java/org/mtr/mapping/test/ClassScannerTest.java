@@ -157,6 +157,7 @@ public final class ClassScannerTest {
 		scanner.put("NativeImageFormat", NativeImage.Format.class, "RGBA|ABGR", "RGB|BGR");
 		scanner.put("OperatingSystem", Util.OperatingSystem.class);
 		scanner.put("OrderedText", OrderedText.class);
+		scanner.put("OverlayTexture", OverlayTexture.class);
 		scanner.put("PacketBuffer", PacketByteBuf.class);
 		scanner.put("PlayerEntity", PlayerEntity.class, "getType");
 		scanner.put("PlayerInventory", PlayerInventory.class);

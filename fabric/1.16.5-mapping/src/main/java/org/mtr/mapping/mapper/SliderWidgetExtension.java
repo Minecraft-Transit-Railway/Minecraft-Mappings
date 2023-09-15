@@ -57,6 +57,11 @@ public abstract class SliderWidgetExtension extends SliderWidgetAbstractMapping 
 	}
 
 	@MappedMethod
+	public final void setHeight2(int height) {
+		this.height = height;
+	}
+
+	@MappedMethod
 	@Override
 	public final boolean isHovered2() {
 		return super.isHovered2();

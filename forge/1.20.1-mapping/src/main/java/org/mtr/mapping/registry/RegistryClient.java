@@ -43,25 +43,29 @@ public final class RegistryClient extends DummyClass {
 
 	@MappedMethod
 	public static void registerBlockColors(BlockColorProvider blockColorProvider, BlockRegistryObject... blocks) {
-		final net.minecraft.world.level.block.Block[] newBlocks = new Block[blocks.length];
-		for (int i = 0; i < blocks.length; i++) {
-			newBlocks[i] = blocks[i].get().data;
-		}
-		ModEventBusClient.BLOCK_COLORS.add(event -> event.getBlockColors().register((blockState, blockRenderView, blockPos, tintIndex) -> blockColorProvider.getColor2(new BlockState(blockState), blockRenderView == null ? null : new BlockRenderView(blockRenderView), blockPos == null ? null : new BlockPos(blockPos), tintIndex), newBlocks));
+		ModEventBusClient.BLOCK_COLORS.add(event -> {
+			final net.minecraft.world.level.block.Block[] newBlocks = new Block[blocks.length];
+			for (int i = 0; i < blocks.length; i++) {
+				newBlocks[i] = blocks[i].get().data;
+			}
+			event.getBlockColors().register((blockState, blockRenderView, blockPos, tintIndex) -> blockColorProvider.getColor2(new BlockState(blockState), blockRenderView == null ? null : new BlockRenderView(blockRenderView), blockPos == null ? null : new BlockPos(blockPos), tintIndex), newBlocks);
+		});
 	}
 
 	@MappedMethod
 	public static void registerItemColors(ItemColorProvider itemColorProvider, ItemRegistryObject... items) {
-		final net.minecraft.world.item.Item[] newItems = new net.minecraft.world.item.Item[items.length];
-		for (int i = 0; i < items.length; i++) {
-			newItems[i] = items[i].get().data;
-		}
-		ModEventBusClient.ITEM_COLORS.add(event -> event.getItemColors().register(((itemStack, tintIndex) -> itemColorProvider.getColor2(new ItemStack(itemStack), tintIndex)), newItems));
+		ModEventBusClient.ITEM_COLORS.add(event -> {
+			final net.minecraft.world.item.Item[] newItems = new net.minecraft.world.item.Item[items.length];
+			for (int i = 0; i < items.length; i++) {
+				newItems[i] = items[i].get().data;
+			}
+			event.getItemColors().register(((itemStack, tintIndex) -> itemColorProvider.getColor2(new ItemStack(itemStack), tintIndex)), newItems);
+		});
 	}
 
 	@MappedMethod
 	public static void registerItemModelPredicate(ItemRegistryObject item, Identifier identifier, ModelPredicateProvider modelPredicateProvider) {
-		ItemProperties.register(item.get().data, identifier.data, (itemStack, clientWorld, livingEntity, seed) -> modelPredicateProvider.call(new ItemStack(itemStack), clientWorld == null ? null : new ClientWorld(clientWorld), livingEntity == null ? null : new LivingEntity(livingEntity)));
+		ModEventBusClient.CLIENT_OBJECTS_TO_REGISTER_QUEUED.add(() -> ItemProperties.register(item.get().data, identifier.data, (itemStack, clientWorld, livingEntity, seed) -> modelPredicateProvider.call(new ItemStack(itemStack), clientWorld == null ? null : new ClientWorld(clientWorld), livingEntity == null ? null : new LivingEntity(livingEntity))));
 	}
 
 	@MappedMethod

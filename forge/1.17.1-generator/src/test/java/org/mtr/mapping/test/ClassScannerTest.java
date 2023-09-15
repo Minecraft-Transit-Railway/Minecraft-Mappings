@@ -30,6 +30,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.sounds.AbstractSoundInstance;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
@@ -190,6 +191,7 @@ public final class ClassScannerTest {
 		scanner.put("NativeImageFormat", NativeImage.Format.class);
 		scanner.put("OperatingSystem", Util.OS.class);
 		scanner.put("OrderedText", FormattedCharSequence.class);
+		scanner.put("OverlayTexture", OverlayTexture.class);
 		scanner.put("PacketBuffer", FriendlyByteBuf.class, "readRegistryIdSafe");
 		scanner.put("PlayerEntity", Player.class, "getType");
 		scanner.put("PlayerInventory", Inventory.class);
