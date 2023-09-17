@@ -45,13 +45,13 @@ public class TextFieldWidgetExtension extends TextFieldWidgetAbstractMapping {
 	@MappedMethod
 	public void render(GraphicsHolder graphicsHolder, int mouseX, int mouseY, float delta) {
 		if (graphicsHolder.drawContext != null) {
-			super.render2(graphicsHolder.drawContext, mouseX, mouseY, delta);
+			super.renderWidget2(graphicsHolder.drawContext, mouseX, mouseY, delta);
 		}
 	}
 
 	@Deprecated
 	@Override
-	public final void render2(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
+	public final void renderWidget2(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
 		GraphicsHolder.createInstanceSafe(guiGraphics, graphicsHolder -> render(graphicsHolder, mouseX, mouseY, delta));
 	}
 
@@ -68,7 +68,7 @@ public class TextFieldWidgetExtension extends TextFieldWidgetAbstractMapping {
 					setText2(newText);
 				}
 			}
-			setSuggestion2(newText.isEmpty() && suggestion == null ? "" : suggestion);
+			setSuggestion2(newText.isEmpty() && suggestion != null ? suggestion : "");
 			changedListener.accept(newText);
 		});
 	}

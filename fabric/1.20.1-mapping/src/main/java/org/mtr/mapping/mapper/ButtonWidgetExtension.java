@@ -28,13 +28,13 @@ public class ButtonWidgetExtension extends ButtonWidgetAbstractMapping {
 	@MappedMethod
 	public void render(GraphicsHolder graphicsHolder, int mouseX, int mouseY, float delta) {
 		if (graphicsHolder.drawContext != null) {
-			super.render2(graphicsHolder.drawContext, mouseX, mouseY, delta);
+			super.renderButton(graphicsHolder.drawContext, mouseX, mouseY, delta);
 		}
 	}
 
 	@Deprecated
 	@Override
-	public final void render2(DrawContext context, int mouseX, int mouseY, float delta) {
+	public final void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
 		GraphicsHolder.createInstanceSafe(context, graphicsHolder -> render(graphicsHolder, mouseX, mouseY, delta));
 	}
 

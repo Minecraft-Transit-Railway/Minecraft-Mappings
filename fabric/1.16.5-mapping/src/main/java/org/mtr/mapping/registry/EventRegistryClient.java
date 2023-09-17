@@ -3,8 +3,13 @@ package org.mtr.mapping.registry;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceType;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.ClientWorld;
+import org.mtr.mapping.holder.Identifier;
 import org.mtr.mapping.holder.Matrix4f;
 import org.mtr.mapping.holder.WorldRenderer;
 import org.mtr.mapping.mapper.GraphicsHolder;
@@ -42,6 +47,23 @@ public class EventRegistryClient extends DummyClass {
 	@MappedMethod
 	public static void registerClientDisconnect(Runnable runnable) {
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> runnable.run());
+	}
+
+	@MappedMethod
+	public static void registerResourcesReload(Identifier identifier, Runnable runnable) {
+		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
+			@Deprecated
+			@Override
+			public final net.minecraft.util.Identifier getFabricId() {
+				return identifier.data;
+			}
+
+			@Deprecated
+			@Override
+			public final void reload(ResourceManager manager) {
+				runnable.run();
+			}
+		});
 	}
 
 	@MappedMethod

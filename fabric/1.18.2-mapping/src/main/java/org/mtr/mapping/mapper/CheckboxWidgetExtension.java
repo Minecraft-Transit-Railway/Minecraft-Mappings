@@ -31,13 +31,13 @@ public class CheckboxWidgetExtension extends CheckboxWidgetAbstractMapping {
 	@MappedMethod
 	public void render(GraphicsHolder graphicsHolder, int mouseX, int mouseY, float delta) {
 		if (graphicsHolder.matrixStack != null) {
-			super.render2(graphicsHolder.matrixStack, mouseX, mouseY, delta);
+			super.renderButton2(graphicsHolder.matrixStack, mouseX, mouseY, delta);
 		}
 	}
 
 	@Deprecated
 	@Override
-	public final void render2(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public final void renderButton2(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		GraphicsHolder.createInstanceSafe(matrices, null, graphicsHolder -> render(graphicsHolder, mouseX, mouseY, delta));
 	}
 

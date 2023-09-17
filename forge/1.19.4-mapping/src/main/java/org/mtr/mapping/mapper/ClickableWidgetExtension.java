@@ -26,14 +26,11 @@ public class ClickableWidgetExtension extends ClickableWidgetAbstractMapping {
 
 	@MappedMethod
 	public void render(GraphicsHolder graphicsHolder, int mouseX, int mouseY, float delta) {
-		if (graphicsHolder.matrixStack != null) {
-			super.render2(graphicsHolder.matrixStack, mouseX, mouseY, delta);
-		}
 	}
 
 	@Deprecated
 	@Override
-	public final void render2(PoseStack matrices, int mouseX, int mouseY, float delta) {
+	public final void renderWidget2(PoseStack matrices, int mouseX, int mouseY, float delta) {
 		GraphicsHolder.createInstanceSafe(matrices, null, graphicsHolder -> render(graphicsHolder, mouseX, mouseY, delta));
 	}
 
@@ -70,10 +67,5 @@ public class ClickableWidgetExtension extends ClickableWidgetAbstractMapping {
 	@Deprecated
 	@Override
 	protected final void updateWidgetNarration2(NarrationElementOutput arg0) {
-	}
-
-	@Deprecated
-	@Override
-	public final void renderWidget2(PoseStack arg0, int arg1, int arg2, float arg3) {
 	}
 }

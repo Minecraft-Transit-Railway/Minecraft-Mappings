@@ -2,6 +2,7 @@ package org.mtr.mapping.registry;
 
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.ClientWorld;
+import org.mtr.mapping.holder.Identifier;
 import org.mtr.mapping.holder.Matrix4f;
 import org.mtr.mapping.holder.WorldRenderer;
 import org.mtr.mapping.mapper.GraphicsHolder;
@@ -39,6 +40,11 @@ public class EventRegistryClient extends DummyClass {
 	@MappedMethod
 	public static void registerClientDisconnect(Runnable runnable) {
 		MainEventBusClient.clientDisconnectRunnable = runnable;
+	}
+
+	@MappedMethod
+	public static void registerResourcesReload(Identifier identifier, Runnable runnable) {
+		ModEventBusClient.TEXTURE_STITCHES.add(runnable);
 	}
 
 	@MappedMethod

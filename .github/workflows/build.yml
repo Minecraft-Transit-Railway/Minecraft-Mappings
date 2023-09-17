@@ -26,8 +26,12 @@ jobs:
         run: ./gradlew test -x common:test
       - name: Analyze test results
         run: ./gradlew common:test
-      - name: Build
-        run: ./gradlew build -x test
+      - name: Build common
+        run: ./gradlew common:build -x test
+      - name: Build Fabric
+        run: ./gradlew fabric:build -x test
+      - name: Build Forge
+        run: ./gradlew forge:build -x test
       - name: Capture build artifacts
         uses: actions/upload-artifact@main
         with:

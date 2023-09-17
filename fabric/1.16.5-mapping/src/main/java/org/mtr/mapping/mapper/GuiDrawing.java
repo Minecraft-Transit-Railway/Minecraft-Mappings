@@ -64,10 +64,10 @@ public final class GuiDrawing extends DummyClass {
 	public void drawTexture(double x1, double y1, double x2, double y2, float u1, float v1, float u2, float v2) {
 		if (bufferBuilder != null) {
 			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
-			bufferBuilder.vertex(x1, y1, 0).texture(u1, v2).next();
-			bufferBuilder.vertex(x1, y2, 0).texture(u2, v2).next();
-			bufferBuilder.vertex(x2, y2, 0).texture(u2, v1).next();
-			bufferBuilder.vertex(x2, y1, 0).texture(u1, v1).next();
+			bufferBuilder.vertex(x1, y1, 0).texture(u1, v1).next();
+			bufferBuilder.vertex(x1, y2, 0).texture(u1, v2).next();
+			bufferBuilder.vertex(x2, y2, 0).texture(u2, v2).next();
+			bufferBuilder.vertex(x2, y1, 0).texture(u2, v1).next();
 			bufferBuilder.end();
 		}
 	}
