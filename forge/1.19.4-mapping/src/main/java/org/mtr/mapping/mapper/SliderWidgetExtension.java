@@ -36,6 +36,17 @@ public abstract class SliderWidgetExtension extends SliderWidgetAbstractMapping 
 		GraphicsHolder.createInstanceSafe(matrices, null, graphicsHolder -> render(graphicsHolder, mouseX, mouseY, delta));
 	}
 
+	@Deprecated
+	@Override
+	public final boolean mouseScrolled2(double mouseX, double mouseY, double amount) {
+		return mouseScrolled3(mouseX, mouseY, amount);
+	}
+
+	@MappedMethod
+	public boolean mouseScrolled3(double mouseX, double mouseY, double amount) {
+		return super.mouseScrolled2(mouseX, mouseY, amount);
+	}
+
 	@MappedMethod
 	@Override
 	public final int getX2() {

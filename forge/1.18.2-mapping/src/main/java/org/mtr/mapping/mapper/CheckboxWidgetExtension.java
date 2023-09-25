@@ -43,6 +43,17 @@ public class CheckboxWidgetExtension extends CheckboxWidgetAbstractMapping {
 
 	@Deprecated
 	@Override
+	public final boolean mouseScrolled2(double mouseX, double mouseY, double amount) {
+		return mouseScrolled3(mouseX, mouseY, amount);
+	}
+
+	@MappedMethod
+	public boolean mouseScrolled3(double mouseX, double mouseY, double amount) {
+		return super.mouseScrolled2(mouseX, mouseY, amount);
+	}
+
+	@Deprecated
+	@Override
 	public final void onPress2() {
 		super.onPress2();
 		onPress.accept(isChecked2());

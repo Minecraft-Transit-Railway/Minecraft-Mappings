@@ -3,10 +3,7 @@ package org.mtr.mapping.mapper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import org.mtr.mapping.annotation.MappedMethod;
-import org.mtr.mapping.holder.MutableText;
-import org.mtr.mapping.holder.Text;
-import org.mtr.mapping.holder.TextFieldWidgetAbstractMapping;
-import org.mtr.mapping.holder.TextRenderer;
+import org.mtr.mapping.holder.*;
 import org.mtr.mapping.tool.TextCase;
 
 import javax.annotation.Nullable;
@@ -55,6 +52,17 @@ public class TextFieldWidgetExtension extends TextFieldWidgetAbstractMapping {
 		GraphicsHolder.createInstanceSafe(matrices, null, graphicsHolder -> render(graphicsHolder, mouseX, mouseY, delta));
 	}
 
+	@Deprecated
+	@Override
+	public final boolean mouseScrolled2(double mouseX, double mouseY, double amount) {
+		return mouseScrolled3(mouseX, mouseY, amount);
+	}
+
+	@MappedMethod
+	public boolean mouseScrolled3(double mouseX, double mouseY, double amount) {
+		return super.mouseScrolled2(mouseX, mouseY, amount);
+	}
+
 	@MappedMethod
 	@Override
 	public final void setChangedListener2(Consumer<String> changedListener) {
@@ -85,6 +93,17 @@ public class TextFieldWidgetExtension extends TextFieldWidgetAbstractMapping {
 			setTextFieldFocused2(false);
 			return false;
 		}
+	}
+
+	@Deprecated
+	@Override
+	public final void tick2() {
+		tick3();
+	}
+
+	@MappedMethod
+	public void tick3() {
+		super.tick2();
 	}
 
 	@Deprecated

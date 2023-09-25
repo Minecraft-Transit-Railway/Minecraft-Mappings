@@ -4,6 +4,7 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.util.math.MatrixStack;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.ClickableWidgetAbstractMapping;
+import org.mtr.mapping.holder.Identifier;
 import org.mtr.mapping.holder.MutableText;
 import org.mtr.mapping.holder.Text;
 
@@ -32,6 +33,17 @@ public class ClickableWidgetExtension extends ClickableWidgetAbstractMapping {
 	@Override
 	public final void renderButton2(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		GraphicsHolder.createInstanceSafe(matrices, null, graphicsHolder -> render(graphicsHolder, mouseX, mouseY, delta));
+	}
+
+	@Deprecated
+	@Override
+	public final boolean mouseScrolled2(double mouseX, double mouseY, double amount) {
+		return mouseScrolled3(mouseX, mouseY, amount);
+	}
+
+	@MappedMethod
+	public boolean mouseScrolled3(double mouseX, double mouseY, double amount) {
+		return super.mouseScrolled2(mouseX, mouseY, amount);
 	}
 
 	@MappedMethod

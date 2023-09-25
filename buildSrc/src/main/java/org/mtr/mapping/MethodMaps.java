@@ -42,15 +42,12 @@ public interface MethodMaps {
 		addMethodMap1.add("Camera", "isReady", "isInitialized");
 		addMethodMap1.add("Camera", "isThirdPerson", "isDetached");
 		addMethodMap1.add("CheckboxWidget", "isChecked", "selected");
-		addMethodMap1.add("ClickableWidget", "WIDGETS_TEXTURE", "WIDGETS_LOCATION");
 		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "addScoreboardTag", "addCommandTag", "addTag");
 		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "getBlockPos", "blockPosition");
 		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "getEntityName", "getScoreboardName");
 		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "getEntityWorld", "getCommandSenderWorld");
 		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "getHeight", "getBbHeight");
-		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "getHeightOffset", "getMyRidingOffset");
 		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "getHorizontalFacing", "getDirection");
-		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "getMountedHeightOffset", "getPassengersRidingOffset");
 		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "getMovementDirection", "getMotionDirection");
 		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "getParticleX", "getRandomX");
 		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "getParticleZ", "getRandomZ");
@@ -184,7 +181,7 @@ public interface MethodMaps {
 		addMethodMap1.add("MathHelper", "floorDiv", "intFloorDiv");
 		addMethodMap1.add("MathHelper", "floorMod", "positiveModulo");
 		addMethodMap1.add("MathHelper", "fractionalPart", "frac");
-		addMethodMap1.add("MathHelper", "lerpAngleDegrees", "rotLerp");
+		addMethodMap2.add("MathHelper", "lerpAngleDegrees", "public static float (float,float,float)", "rotLerp");
 		addMethodMap1.add("MathHelper", "perlinFade", "smoothstep");
 		addMethodMap1.add("MathHelper", "roundUpToMultiple", "roundToward", "roundUp");
 		addMethodMap1.add("MathHelper", "SQUARE_ROOT_OF_TWO", "SQRT_OF_TWO");
@@ -237,7 +234,6 @@ public interface MethodMaps {
 		addMethodMap1.add("RenderLayer", "hasCrumbling", "affectsCrumbling");
 		addMethodMap1.add("RenderLayer", "startDrawing", "setupRenderState");
 		addMethodMap1.add("Scoreboard", "addTeam", "addPlayerTeam");
-		addMethodMap1.add("Scoreboard", "containsObjective", "hasObjective");
 		addMethodMap1.add("Scoreboard", "getObjectives");
 		addMethodMap1.add("Scoreboard", "getTeam", "getPlayersTeam");
 		addMethodMap1.add("Scoreboard", "removeTeam", "removePlayerTeam");
@@ -264,9 +260,6 @@ public interface MethodMaps {
 		addMethodMap1.add("TextFieldWidget", "getSelectedText", "getHighlighted");
 		addMethodMap1.add("TextFieldWidget", "getText", "getValue");
 		addMethodMap1.add("TextFieldWidget", "getWordSkipPosition", "getWordPosition");
-		addMethodMap1.add("TextFieldWidget", "setCursor", "moveCursorTo");
-		addMethodMap1.add("TextFieldWidget", "setCursorToEnd", "moveCursorToEnd");
-		addMethodMap1.add("TextFieldWidget", "setCursorToStart", "moveCursorToStart");
 		addMethodMap1.add("TextFieldWidget", "setDrawsBackground", "setBordered");
 		addMethodMap1.add("TextFieldWidget", "setEditableColor", "setTextColor");
 		addMethodMap1.add("TextFieldWidget", "setFocused", "setFocus", "setTextFieldFocused");
@@ -275,7 +268,6 @@ public interface MethodMaps {
 		addMethodMap1.add("TextFieldWidget", "setSelectionStart", "setHighlightPos");
 		addMethodMap1.add("TextFieldWidget", "setText", "insertText");
 		addMethodMap1.add("TextFieldWidget", "setUneditableColor", "setTextColorUneditable");
-		addMethodMap1.add("TextFieldWidget", "WIDGETS_TEXTURE", "WIDGETS_LOCATION");
 		addMethodMap1.add("TextFieldWidget", "write", "setValue");
 		addMethodMap1.add("TextureManager", "bindTexture", "bind", "bindForSetup");
 		addMethodMap1.add("TextureManager", "destroyTexture", "release");
