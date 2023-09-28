@@ -40,8 +40,13 @@ public class ScreenExtension extends ScreenAbstractMapping {
 	@MappedMethod
 	public final void renderBackground(GraphicsHolder graphicsHolder) {
 		if (graphicsHolder.drawContext != null) {
-			renderBackground2(graphicsHolder.drawContext, 0, 0, 0);
+			super.renderBackground2(graphicsHolder.drawContext, 0, 0, 0);
 		}
+	}
+
+	@Deprecated
+	@Override
+	public final void renderBackground2(GuiGraphics context, int mouseX, int mouseY, float delta) {
 	}
 
 	@MappedMethod

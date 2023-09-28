@@ -11,18 +11,18 @@ import org.mtr.mapping.holder.TexturedButtonWidgetAbstractMapping;
 public class TexturedButtonWidgetExtension extends TexturedButtonWidgetAbstractMapping {
 
 	@MappedMethod
-	public TexturedButtonWidgetExtension(int x, int y, int width, int height, int u, int v, int hoveredVOffset, Identifier texture, int textureWidth, int textureHeight, org.mtr.mapping.holder.PressAction onPress) {
-		this(x, y, width, height, u, v, hoveredVOffset, texture, textureWidth, textureHeight, onPress, "");
+	public TexturedButtonWidgetExtension(int x, int y, int width, int height, Identifier normalTexture, Identifier highlightedTexture, org.mtr.mapping.holder.PressAction onPress) {
+		this(x, y, width, height, normalTexture, highlightedTexture, onPress, "");
 	}
 
 	@MappedMethod
-	public TexturedButtonWidgetExtension(int x, int y, int width, int height, int u, int v, int hoveredVOffset, Identifier texture, int textureWidth, int textureHeight, org.mtr.mapping.holder.PressAction onPress, String message) {
-		this(x, y, width, height, u, v, hoveredVOffset, texture, textureWidth, textureHeight, onPress, TextHelper.literal(message));
+	public TexturedButtonWidgetExtension(int x, int y, int width, int height, Identifier normalTexture, Identifier highlightedTexture, org.mtr.mapping.holder.PressAction onPress, String message) {
+		this(x, y, width, height, normalTexture, highlightedTexture, onPress, TextHelper.literal(message));
 	}
 
 	@MappedMethod
-	public TexturedButtonWidgetExtension(int x, int y, int width, int height, int u, int v, int hoveredVOffset, Identifier texture, int textureWidth, int textureHeight, org.mtr.mapping.holder.PressAction onPress, MutableText message) {
-		super(x, y, width, height, new ButtonTextures(texture.data, texture.data, texture.data, texture.data), onPress, new Text(message.data));
+	public TexturedButtonWidgetExtension(int x, int y, int width, int height, Identifier normalTexture, Identifier highlightedTexture, org.mtr.mapping.holder.PressAction onPress, MutableText message) {
+		super(x, y, width, height, new ButtonTextures(formatIdentifier(normalTexture), formatIdentifier(highlightedTexture)), onPress, new Text(message.data));
 	}
 
 	@MappedMethod
@@ -77,5 +77,12 @@ public class TexturedButtonWidgetExtension extends TexturedButtonWidgetAbstractM
 	@Override
 	public final boolean isHovered2() {
 		return super.isHovered2();
+	}
+
+	private static net.minecraft.util.Identifier formatIdentifier(Identifier identifier) {
+		final String beginning = "textures/gui/sprites/";
+		final String namespace = identifier.getNamespace();
+		final String path = identifier.getPath();
+		return new net.minecraft.util.Identifier(namespace, (path.startsWith(beginning) ? path.substring(beginning.length()) : path).replace(".png", ""));
 	}
 }

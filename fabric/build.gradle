@@ -2,7 +2,7 @@ import org.mtr.mapping.BuildTools
 
 plugins {
 	id "java"
-	id "fabric-loom" version "+" apply false
+	id "fabric-loom" version "1.3-SNAPSHOT" apply false // TODO Loom 1.4 requires Gradle 8.3
 }
 
 subprojects {
