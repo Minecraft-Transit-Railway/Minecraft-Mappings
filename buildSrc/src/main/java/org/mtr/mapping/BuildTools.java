@@ -88,11 +88,26 @@ public final class BuildTools {
 		if (!isGeneratorProject) {
 			final Path directory = rootPath.resolve("build/release");
 			Files.createDirectories(directory);
-			Files.copy(
-					path.resolve(isCommon ? String.format("build/libs/common-%s.jar", version) : String.format(loader.equals("fabric") ? "build/devlibs/%s-mapping-%s-dev.jar" : "build/libs/%s-mapping-%s.jar", minecraftVersion, version)),
-					directory.resolve(isCommon ? String.format("Minecraft-Mappings-common-%s.jar", version) : String.format("Minecraft-Mappings-%s-%s-%s.jar", loader, minecraftVersion, version)),
-					StandardCopyOption.REPLACE_EXISTING
-			);
+			if (isCommon) {
+				Files.copy(
+						path.resolve(String.format("build/libs/common-%s.jar", version)),
+						directory.resolve(String.format("Minecraft-Mappings-common-%s.jar", version)),
+						StandardCopyOption.REPLACE_EXISTING
+				);
+			} else {
+				if (loader.equals("fabric")) {
+					Files.copy(
+							path.resolve(String.format("build/devlibs/%s-mapping-%s-dev.jar", minecraftVersion, version)),
+							directory.resolve(String.format("Minecraft-Mappings-%s-%s-%s-dev.jar", loader, minecraftVersion, version)),
+							StandardCopyOption.REPLACE_EXISTING
+					);
+				}
+				Files.copy(
+						path.resolve(String.format("build/libs/%s-mapping-%s.jar", minecraftVersion, version)),
+						directory.resolve(String.format("Minecraft-Mappings-%s-%s-%s.jar", loader, minecraftVersion, version)),
+						StandardCopyOption.REPLACE_EXISTING
+				);
+			}
 		}
 	}
 
