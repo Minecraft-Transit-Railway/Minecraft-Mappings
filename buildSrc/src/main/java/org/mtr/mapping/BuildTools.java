@@ -84,7 +84,7 @@ public final class BuildTools {
 		return getJson("https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json").getAsJsonObject().getAsJsonObject("promos").get(minecraftVersion + "-latest").getAsString();
 	}
 
-	public void copyBuildFile() throws IOException {
+	public void copyBuildFile(boolean isDev) throws IOException {
 		if (!isGeneratorProject) {
 			final Path directory = rootPath.resolve("build/release");
 			Files.createDirectories(directory);
@@ -95,16 +95,9 @@ public final class BuildTools {
 						StandardCopyOption.REPLACE_EXISTING
 				);
 			} else {
-				if (loader.equals("fabric")) {
-					Files.copy(
-							path.resolve(String.format("build/devlibs/%s-mapping-%s-dev.jar", minecraftVersion, version)),
-							directory.resolve(String.format("Minecraft-Mappings-%s-%s-%s-dev.jar", loader, minecraftVersion, version)),
-							StandardCopyOption.REPLACE_EXISTING
-					);
-				}
 				Files.copy(
-						path.resolve(String.format("build/libs/%s-mapping-%s.jar", minecraftVersion, version)),
-						directory.resolve(String.format("Minecraft-Mappings-%s-%s-%s.jar", loader, minecraftVersion, version)),
+						path.resolve(String.format(loader.equals("fabric") && isDev ? "build/devlibs/%s-mapping-%s-dev.jar" : "build/libs/%s-mapping-%s.jar", minecraftVersion, version)),
+						directory.resolve(String.format("Minecraft-Mappings-%s-%s-%s%s.jar", loader, minecraftVersion, version, isDev ? "-dev" : "")),
 						StandardCopyOption.REPLACE_EXISTING
 				);
 			}

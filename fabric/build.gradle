@@ -32,9 +32,10 @@ subprojects {
 		withJavadocJar()
 	}
 
-	build {
+	remapJar {
 		doLast {
-			buildTools.copyBuildFile()
+			buildTools.copyBuildFile(true)
+			buildTools.copyBuildFile(false)
 		}
 	}
 
