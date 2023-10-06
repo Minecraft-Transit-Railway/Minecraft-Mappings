@@ -1,14 +1,14 @@
 package org.mtr.mapping.mapper;
 
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import org.mtr.mapping.annotation.MappedMethod;
-import org.mtr.mapping.holder.BlockEntityRendererArgument;
 
 public abstract class BlockEntityRenderer<T extends BlockEntityExtension> implements net.minecraft.client.render.block.entity.BlockEntityRenderer<T> {
 
 	@MappedMethod
-	public BlockEntityRenderer(BlockEntityRendererArgument argument) {
+	public BlockEntityRenderer(Argument argument) {
 	}
 
 	@Deprecated
@@ -29,5 +29,15 @@ public abstract class BlockEntityRenderer<T extends BlockEntityExtension> implem
 	@Override
 	public final boolean rendersOutsideBoundingBox(T blockEntity) {
 		return rendersOutsideBoundingBox2(blockEntity);
+	}
+
+	@Deprecated
+	public static final class Argument {
+
+		private final BlockEntityRendererFactory.Context data;
+
+		public Argument(BlockEntityRendererFactory.Context data) {
+			this.data = data;
+		}
 	}
 }

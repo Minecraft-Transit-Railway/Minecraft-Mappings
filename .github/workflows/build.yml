@@ -16,22 +16,30 @@ jobs:
           distribution: 'zulu'
       - name: Make gradle wrapper executable
         run: chmod +x ./gradlew
-      - name: Scan Minecraft classes
-        run: ./gradlew test -x common:test --continue -Pgenerate=dryRun
+      - name: Scan Fabric classes
+        run: ./gradlew -p fabric test --continue -Pgenerate=dryRun
         continue-on-error: true
-      - name: Generate holders
-        run: ./gradlew test -x common:test --continue -Pgenerate=normal
+      - name: Scan Forge classes
+        run: ./gradlew -p forge test --continue -Pgenerate=dryRun
         continue-on-error: true
-      - name: Search for mapped methods
-        run: ./gradlew test -x common:test
+      - name: Generate Fabric holders
+        run: ./gradlew -p fabric test --continue -Pgenerate=normal
+        continue-on-error: true
+      - name: Generate Forge holders
+        run: ./gradlew -p forge test --continue -Pgenerate=normal
+        continue-on-error: true
+      - name: Search for Fabric mapped methods
+        run: ./gradlew -p fabric test
+      - name: Search for Forge mapped methods
+        run: ./gradlew -p forge test
       - name: Analyze test results
         run: ./gradlew common:test
       - name: Build common
         run: ./gradlew common:build -x test
       - name: Build Fabric
-        run: ./gradlew fabric:build -x test
+        run: ./gradlew -p fabric build -x test
       - name: Build Forge
-        run: ./gradlew forge:build -x test
+        run: ./gradlew -p forge build -x test
       - name: Capture build artifacts
         uses: actions/upload-artifact@main
         with:

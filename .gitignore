@@ -31,6 +31,7 @@ bin/
 run/
 logs/
 holder/
+common/src/main/java/org/mtr/mapping/mixin
 fabric/*/src/test/java/org/mtr/mapping/test/SearchForMappedMethodsTest.java
 forge/*/src/test/java/org/mtr/mapping/test/SearchForMappedMethodsTest.java
 fabric/*/src/test/java/org/mtr/mapping/test/ClassScannerBase.java

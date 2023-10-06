@@ -2,7 +2,6 @@ package org.mtr.mapping.registry;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.resource.ResourceManager;
@@ -10,9 +9,6 @@ import net.minecraft.resource.ResourceType;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.ClientWorld;
 import org.mtr.mapping.holder.Identifier;
-import org.mtr.mapping.holder.Matrix4f;
-import org.mtr.mapping.holder.WorldRenderer;
-import org.mtr.mapping.mapper.GraphicsHolder;
 import org.mtr.mapping.tool.DummyClass;
 
 import java.util.function.Consumer;
@@ -64,16 +60,5 @@ public class EventRegistryClient extends DummyClass {
 				runnable.run();
 			}
 		});
-	}
-
-	@MappedMethod
-	public static void registerRenderWorldLast(RenderWorldCallback consumer) {
-		WorldRenderEvents.LAST.register(worldRenderContext -> GraphicsHolder.createInstanceSafe(worldRenderContext.matrixStack(), worldRenderContext.consumers(), graphicsHolder -> consumer.accept(graphicsHolder, new Matrix4f(worldRenderContext.projectionMatrix()), new WorldRenderer(worldRenderContext.worldRenderer()), worldRenderContext.tickDelta())));
-	}
-
-	@FunctionalInterface
-	public interface RenderWorldCallback {
-		@MappedMethod
-		void accept(GraphicsHolder graphicsHolder, Matrix4f projectionMatrix, WorldRenderer worldRenderer, float tickDelta);
 	}
 }

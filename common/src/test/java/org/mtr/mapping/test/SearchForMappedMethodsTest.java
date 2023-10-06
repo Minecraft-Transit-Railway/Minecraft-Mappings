@@ -59,7 +59,9 @@ public final class SearchForMappedMethodsTest {
 		}
 
 		for (final Class<?> subClass : classObject.getDeclaredClasses()) {
-			searchClass(subClass, signatures);
+			if (!subClass.isAnnotationPresent(Deprecated.class)) {
+				searchClass(subClass, signatures);
+			}
 		}
 	}
 }

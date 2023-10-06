@@ -2,13 +2,13 @@ package org.mtr.mapping.mapper;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import org.mtr.mapping.annotation.MappedMethod;
-import org.mtr.mapping.holder.BlockEntityRendererArgument;
 
 public abstract class BlockEntityRenderer<T extends BlockEntityExtension> implements net.minecraft.client.renderer.blockentity.BlockEntityRenderer<T> {
 
 	@MappedMethod
-	public BlockEntityRenderer(BlockEntityRendererArgument argument) {
+	public BlockEntityRenderer(Argument argument) {
 	}
 
 	@Deprecated
@@ -29,5 +29,15 @@ public abstract class BlockEntityRenderer<T extends BlockEntityExtension> implem
 	@Override
 	public final boolean shouldRenderOffScreen(T blockEntity) {
 		return rendersOutsideBoundingBox2(blockEntity);
+	}
+
+	@Deprecated
+	public static final class Argument {
+
+		private final BlockEntityRendererProvider.Context data;
+
+		public Argument(BlockEntityRendererProvider.Context data) {
+			this.data = data;
+		}
 	}
 }

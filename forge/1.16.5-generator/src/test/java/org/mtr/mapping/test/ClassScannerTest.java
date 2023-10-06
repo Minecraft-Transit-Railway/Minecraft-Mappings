@@ -28,7 +28,6 @@ import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.model.Model;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.client.renderer.texture.*;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.client.world.ClientWorld;
@@ -91,7 +90,6 @@ public final class ClassScannerTest {
 		scanner.put("Axis", Direction.Axis.class);
 		scanner.put("Biome", Biome.class);
 		scanner.put("BiomeSource", BiomeProvider.class);
-		scanner.put("BlockEntityRendererArgument", TileEntityRendererDispatcher.class);
 		scanner.put("BlockEntityType", TileEntityType.class);
 		scanner.put("BlockHitResult", BlockRayTraceResult.class);
 		scanner.put("BlockPos", BlockPos.class);

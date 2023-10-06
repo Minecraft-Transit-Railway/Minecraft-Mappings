@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class BuildTools {
 
@@ -64,6 +65,22 @@ public final class BuildTools {
 			copyFile(rootPath, generatorTestFolder, path, "ClassScannerCreateMaps", text -> text);
 			copyFile(rootPath, generatorTestFolder, path, "ClassScannerGenerateHolders", text -> text);
 			Files.deleteIfExists(generatorTestFolder.resolve("MethodMaps.java"));
+
+			try (final Stream<Path> stream = Files.list(path.resolve("src/main/java/org/mtr/mapping/mixin"))) {
+				stream.forEach(mixinPath -> {
+					try {
+						final Path directory = rootPath.resolve("build/mixins").resolve(loader).resolve(minecraftVersion);
+						Files.createDirectories(directory);
+						Files.write(
+								directory.resolve(mixinPath.getFileName().toString().split("\\.")[0]),
+								FileUtils.readFileToString(mixinPath.toFile(), StandardCharsets.UTF_8).replace("package org.mtr.mapping.mixin;", "package @package@;").getBytes(StandardCharsets.UTF_8),
+								StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING
+						);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				});
+			}
 		}
 	}
 

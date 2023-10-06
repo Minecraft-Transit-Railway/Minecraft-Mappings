@@ -19,7 +19,6 @@ import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.render.*;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.sound.*;
@@ -87,7 +86,6 @@ public final class ClassScannerTest {
 		scanner.put("Axis", Direction.Axis.class);
 		scanner.put("Biome", Biome.class);
 		scanner.put("BiomeSource", BiomeSource.class);
-		scanner.put("BlockEntityRendererArgument", BlockEntityRendererFactory.Context.class);
 		scanner.put("BlockEntityType", BlockEntityType.class);
 		scanner.put("BlockHitResult", BlockHitResult.class);
 		scanner.put("BlockPos", BlockPos.class);

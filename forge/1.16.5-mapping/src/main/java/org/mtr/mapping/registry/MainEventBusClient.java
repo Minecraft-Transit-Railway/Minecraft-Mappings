@@ -1,14 +1,10 @@
 package org.mtr.mapping.registry;
 
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import org.mtr.mapping.holder.ClientWorld;
-import org.mtr.mapping.holder.Matrix4f;
-import org.mtr.mapping.holder.WorldRenderer;
-import org.mtr.mapping.mapper.GraphicsHolder;
 
 import java.util.function.Consumer;
 
@@ -25,8 +21,6 @@ public final class MainEventBusClient {
 	static Consumer<ClientWorld> startWorldTickRunnable = world -> {
 	};
 	static Consumer<ClientWorld> endWorldTickRunnable = world -> {
-	};
-	static EventRegistryClient.RenderWorldCallback renderWorldLastConsumer = (graphicsHolder, projectionMatrix, worldRenderer, tickDelta) -> {
 	};
 
 	@SubscribeEvent
@@ -63,10 +57,5 @@ public final class MainEventBusClient {
 	@SubscribeEvent
 	public static void clientDisconnect(ClientPlayerNetworkEvent.LoggedOutEvent event) {
 		clientDisconnectRunnable.run();
-	}
-
-	@SubscribeEvent
-	public static void renderWorldLast(RenderWorldLastEvent event) {
-		GraphicsHolder.createInstanceSafe(event.getMatrixStack(), null, graphicsHolder -> renderWorldLastConsumer.accept(graphicsHolder, new Matrix4f(event.getProjectionMatrix()), new WorldRenderer(event.getContext()), event.getPartialTicks()));
 	}
 }

@@ -5,17 +5,22 @@ import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemModelsProperties;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
 import org.mtr.mapping.mapper.BlockEntityExtension;
 import org.mtr.mapping.mapper.BlockEntityRenderer;
+import org.mtr.mapping.mapper.EntityExtension;
+import org.mtr.mapping.mapper.EntityRenderer;
 import org.mtr.mapping.tool.DummyClass;
 
 import javax.annotation.Nullable;
 import java.util.function.Function;
 
 public final class RegistryClient extends DummyClass {
+
+	public static Function<World, ? extends EntityExtension> worldRenderingEntity;
 
 	@MappedMethod
 	public static void init() {
@@ -24,8 +29,13 @@ public final class RegistryClient extends DummyClass {
 	}
 
 	@MappedMethod
-	public static <T extends BlockEntityTypeRegistryObject<U>, U extends BlockEntityExtension> void registerBlockEntityRenderer(T blockEntityType, Function<BlockEntityRendererArgument, BlockEntityRenderer<U>> rendererInstance) {
-		ModEventBusClient.CLIENT_OBJECTS_TO_REGISTER.add(() -> ClientRegistry.bindTileEntityRenderer(blockEntityType.get().data, dispatcher -> rendererInstance.apply(new BlockEntityRendererArgument(dispatcher))));
+	public static <T extends BlockEntityTypeRegistryObject<U>, U extends BlockEntityExtension> void registerBlockEntityRenderer(T blockEntityType, Function<BlockEntityRenderer.Argument, BlockEntityRenderer<U>> rendererInstance) {
+		ModEventBusClient.CLIENT_OBJECTS_TO_REGISTER.add(() -> ClientRegistry.bindTileEntityRenderer(blockEntityType.get().data, dispatcher -> rendererInstance.apply(new BlockEntityRenderer.Argument(dispatcher))));
+	}
+
+	@MappedMethod
+	public static <T extends EntityTypeRegistryObject<U>, U extends EntityExtension> void registerEntityRenderer(T entityType, Function<EntityRenderer.Argument, EntityRenderer<U>> rendererInstance) {
+		ModEventBusClient.CLIENT_OBJECTS_TO_REGISTER.add(() -> RenderingRegistry.registerEntityRenderingHandler(entityType.get().data, dispatcher -> rendererInstance.apply(new EntityRenderer.Argument(dispatcher))));
 	}
 
 	@MappedMethod

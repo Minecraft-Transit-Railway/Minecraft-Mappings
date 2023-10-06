@@ -23,7 +23,6 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.*;
-import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -120,7 +119,6 @@ public final class ClassScannerTest {
 		scanner.put("Axis", Direction.Axis.class);
 		scanner.put("Biome", Biome.class);
 		scanner.put("BiomeSource", BiomeSource.class);
-		scanner.put("BlockEntityRendererArgument", BlockEntityRendererProvider.Context.class);
 		scanner.put("BlockEntityType", BlockEntityType.class);
 		scanner.put("BlockHitResult", BlockHitResult.class);
 		scanner.put("BlockPos", BlockPos.class);

@@ -3,13 +3,13 @@ package org.mtr.mapping.mapper;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import org.mtr.mapping.annotation.MappedMethod;
-import org.mtr.mapping.holder.BlockEntityRendererArgument;
 
 public abstract class BlockEntityRenderer<T extends BlockEntityExtension> extends TileEntityRenderer<T> {
 
 	@MappedMethod
-	public BlockEntityRenderer(BlockEntityRendererArgument argument) {
+	public BlockEntityRenderer(Argument argument) {
 		super(argument.data);
 	}
 
@@ -31,5 +31,15 @@ public abstract class BlockEntityRenderer<T extends BlockEntityExtension> extend
 	@Override
 	public final boolean shouldRenderOffScreen(T blockEntity) {
 		return rendersOutsideBoundingBox2(blockEntity);
+	}
+
+	@Deprecated
+	public static final class Argument {
+
+		private final TileEntityRendererDispatcher data;
+
+		public Argument(TileEntityRendererDispatcher data) {
+			this.data = data;
+		}
 	}
 }

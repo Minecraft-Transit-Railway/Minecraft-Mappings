@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.util.InputUtil;
@@ -13,6 +14,8 @@ import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
 import org.mtr.mapping.mapper.BlockEntityExtension;
 import org.mtr.mapping.mapper.BlockEntityRenderer;
+import org.mtr.mapping.mapper.EntityExtension;
+import org.mtr.mapping.mapper.EntityRenderer;
 import org.mtr.mapping.tool.DummyClass;
 
 import javax.annotation.Nullable;
@@ -22,6 +25,7 @@ import java.util.function.Function;
 
 public final class RegistryClient extends DummyClass {
 
+	public static Function<World, ? extends EntityExtension> worldRenderingEntity;
 	private static final List<Runnable> OBJECTS_TO_REGISTER = new ArrayList<>();
 
 	@MappedMethod
@@ -30,8 +34,13 @@ public final class RegistryClient extends DummyClass {
 	}
 
 	@MappedMethod
-	public static <T extends BlockEntityTypeRegistryObject<U>, U extends BlockEntityExtension> void registerBlockEntityRenderer(T blockEntityType, Function<BlockEntityRendererArgument, BlockEntityRenderer<U>> rendererInstance) {
-		OBJECTS_TO_REGISTER.add(() -> BlockEntityRendererRegistry.register(blockEntityType.get().data, context -> rendererInstance.apply(new BlockEntityRendererArgument(context))));
+	public static <T extends BlockEntityTypeRegistryObject<U>, U extends BlockEntityExtension> void registerBlockEntityRenderer(T blockEntityType, Function<BlockEntityRenderer.Argument, BlockEntityRenderer<U>> rendererInstance) {
+		OBJECTS_TO_REGISTER.add(() -> BlockEntityRendererRegistry.register(blockEntityType.get().data, context -> rendererInstance.apply(new BlockEntityRenderer.Argument(context))));
+	}
+
+	@MappedMethod
+	public static <T extends EntityTypeRegistryObject<U>, U extends EntityExtension> void registerEntityRenderer(T entityType, Function<EntityRenderer.Argument, EntityRenderer<U>> rendererInstance) {
+		OBJECTS_TO_REGISTER.add(() -> EntityRendererRegistry.register(entityType.get().data, dispatcher -> rendererInstance.apply(new EntityRenderer.Argument(dispatcher))));
 	}
 
 	@MappedMethod
