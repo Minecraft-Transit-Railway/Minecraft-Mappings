@@ -43,4 +43,8 @@ subprojects {
 		useJUnitPlatform()
 		testLogging { showStandardStreams = true }
 	}
+
+	tasks.withType(Javadoc).tap {
+		configureEach { javadoc.options.addStringOption("Xdoclint:none", "-quiet") }
+	}
 }

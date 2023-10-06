@@ -16,22 +16,14 @@ jobs:
           distribution: 'zulu'
       - name: Make gradle wrapper executable
         run: chmod +x ./gradlew
-      - name: Scan Fabric classes
-        run: ./gradlew -p fabric test --continue -Pgenerate=dryRun
+      - name: Scan Minecraft classes
+        run: ./gradlew test -x common:test --continue -Pgenerate=dryRun
         continue-on-error: true
-      - name: Scan Forge classes
-        run: ./gradlew -p forge test --continue -Pgenerate=dryRun
+      - name: Generate holders
+        run: ./gradlew test -x common:test --continue -Pgenerate=normal
         continue-on-error: true
-      - name: Generate Fabric holders
-        run: ./gradlew -p fabric test --continue -Pgenerate=normal
-        continue-on-error: true
-      - name: Generate Forge holders
-        run: ./gradlew -p forge test --continue -Pgenerate=normal
-        continue-on-error: true
-      - name: Search for Fabric mapped methods
-        run: ./gradlew -p fabric test
-      - name: Search for Forge mapped methods
-        run: ./gradlew -p forge test
+      - name: Search for mapped methods
+        run: ./gradlew test -x common:test
       - name: Analyze test results
         run: ./gradlew common:test
       - name: Build common
