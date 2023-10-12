@@ -2,6 +2,7 @@ package org.mtr.mapping.test;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.mtr.mapping.tool.DummyClass;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -55,7 +56,7 @@ public final class ClassScannerCreateMaps extends ClassScannerBase {
 			Files.createDirectories(methodsPath);
 			Files.write(methodsPath.resolve(NAMESPACE + ".json"), classesObject.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 		} catch (IOException e) {
-			e.printStackTrace();
+			DummyClass.logException(e);
 		}
 	}
 }

@@ -5,7 +5,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.apache.commons.io.FileUtils;
+import org.mtr.mapping.tool.DummyClass;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -28,7 +30,7 @@ public final class ClassScannerGenerateHolders extends ClassScannerBase {
 			combinedObject = JsonParser.parseString(FileUtils.readFileToString(PATH.getParent().getParent().resolve("build/existingMethods/combined.json").toFile(), StandardCharsets.UTF_8)).getAsJsonObject();
 			FileUtils.deleteDirectory(HOLDERS_PATH.toFile());
 		} catch (IOException e) {
-			e.printStackTrace();
+			DummyClass.logException(e);
 		}
 	}
 
@@ -208,7 +210,7 @@ public final class ClassScannerGenerateHolders extends ClassScannerBase {
 			Files.createDirectories(HOLDERS_PATH);
 			Files.write(HOLDERS_PATH.resolve(classInfo.getClassName() + ".java"), classInfo.stringBuilder.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 		} catch (IOException e) {
-			e.printStackTrace();
+			DummyClass.logException(e);
 		}
 	}
 
@@ -216,7 +218,7 @@ public final class ClassScannerGenerateHolders extends ClassScannerBase {
 	void postScan() {
 	}
 
-	private JsonObject findRecord(ClassInfo classInfo, String key, String minecraftMethodName, String signature) {
+	private JsonObject findRecord(ClassInfo classInfo, String key, @Nullable String minecraftMethodName, String signature) {
 		final JsonArray jsonArray = combinedObject.getAsJsonObject(classInfo.className).getAsJsonArray(key);
 		for (final JsonElement jsonElement : jsonArray) {
 			final JsonObject jsonObject = jsonElement.getAsJsonObject();

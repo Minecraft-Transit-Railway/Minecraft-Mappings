@@ -191,7 +191,7 @@ public abstract class ClassScannerBase {
 		return GENERATION_STATUS == GenerationStatus.GENERATE ? new ClassScannerGenerateHolders() : new ClassScannerCreateMaps();
 	}
 
-	static <T> void appendIfNotEmpty(StringBuilder stringBuilder, T[] array, String prefix, String suffix, String delimiter, Function<T, String> callback) {
+	static <T> void appendIfNotEmpty(StringBuilder stringBuilder, @Nullable T[] array, String prefix, String suffix, String delimiter, Function<T, String> callback) {
 		if (array != null && array.length > 0) {
 			stringBuilder.append(prefix);
 			final List<String> dataList = new ArrayList<>();
@@ -208,7 +208,7 @@ public abstract class ClassScannerBase {
 		return stringBuilder.toString();
 	}
 
-	private static boolean getMappedClassName(StringBuilder stringBuilder, Type type, Map<Type, Type> typeMap, Map<Class<?>, ClassInfo> classMap, boolean impliedType) {
+	private static boolean getMappedClassName(StringBuilder stringBuilder, Type type, Map<Type, Type> typeMap, @Nullable Map<Class<?>, ClassInfo> classMap, boolean impliedType) {
 		final boolean isParameterized = type instanceof ParameterizedType;
 		final Type mappedType = getOrReturn(typeMap, isParameterized ? ((ParameterizedType) type).getRawType() : type);
 		final boolean isResolved;
@@ -241,7 +241,7 @@ public abstract class ClassScannerBase {
 		return isResolved;
 	}
 
-	private static String getGenerics(GenericDeclaration genericDeclaration, boolean impliedType, boolean getBounds, Map<Class<?>, ClassInfo> classMap) {
+	private static String getGenerics(GenericDeclaration genericDeclaration, boolean impliedType, boolean getBounds, @Nullable Map<Class<?>, ClassInfo> classMap) {
 		return getStringFromMethod(stringBuilder -> appendIfNotEmpty(stringBuilder, genericDeclaration.getTypeParameters(), "<", ">", ",", typeVariable -> {
 			if (impliedType) {
 				return "";
@@ -303,7 +303,7 @@ public abstract class ClassScannerBase {
 		return String.join(" ", list);
 	}
 
-	private static <T> T getOrReturn(Map<T, T> map, T data) {
+	private static <T> T getOrReturn(@Nullable Map<T, T> map, T data) {
 		if (map == null) {
 			return data;
 		} else {
@@ -357,7 +357,7 @@ public abstract class ClassScannerBase {
 		final boolean isEnum;
 		final boolean isNullable;
 
-		private TypeInfo(String variableName, Type type, Map<Type, Type> typeMap, Map<Class<?>, ClassInfo> classMap, boolean isPrimitive, boolean isEnum, boolean isNullable) {
+		private TypeInfo(@Nullable String variableName, Type type, Map<Type, Type> typeMap, Map<Class<?>, ClassInfo> classMap, boolean isPrimitive, boolean isEnum, boolean isNullable) {
 			this.variableName = variableName;
 			this.minecraftTypeName = getStringFromMethod(stringBuilder -> getMappedClassName(stringBuilder, type, typeMap, null, false));
 			this.minecraftTypeNameImplied = getStringFromMethod(stringBuilder -> getMappedClassName(stringBuilder, type, typeMap, null, true));

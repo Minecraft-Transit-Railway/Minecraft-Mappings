@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Assumptions;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
@@ -268,11 +269,11 @@ public final class GenerateHolders {
 		}
 	}
 
-	private ResolveState appendGenerics(StringBuilder stringBuilder, Type type, Map<Type, Type> typeMap, boolean resolve, boolean impliedType) {
+	private ResolveState appendGenerics(StringBuilder stringBuilder, @Nullable Type type, Map<Type, Type> typeMap, boolean resolve, boolean impliedType) {
 		return appendGenerics(stringBuilder, type, typeMap, resolve, impliedType, true);
 	}
 
-	private ResolveState appendGenerics(StringBuilder stringBuilder, Type type, Map<Type, Type> typeMap, boolean resolve, boolean impliedType, boolean isFirst) {
+	private ResolveState appendGenerics(StringBuilder stringBuilder, @Nullable Type type, Map<Type, Type> typeMap, boolean resolve, boolean impliedType, boolean isFirst) {
 		final boolean isParameterized = type instanceof ParameterizedType;
 		final Type mappedType = getOrReturn(typeMap, isParameterized ? ((ParameterizedType) type).getRawType() : type);
 		final ResolveState resolveState;
@@ -374,7 +375,7 @@ public final class GenerateHolders {
 		}
 	}
 
-	private static <T> T getOrReturn(Map<T, T> map, T data) {
+	private static <T> T getOrReturn(@Nullable Map<T, T> map, @Nullable T data) {
 		if (map == null) {
 			return data;
 		} else {

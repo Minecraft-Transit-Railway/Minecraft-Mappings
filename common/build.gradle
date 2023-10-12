@@ -9,11 +9,13 @@ repositories {
 }
 
 dependencies {
+	compileOnly "com.google.code.findbugs:jsr305:+"
 	testImplementation "org.junit.jupiter:junit-jupiter-api:+"
-	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:+"
 	testImplementation "commons-io:commons-io:+"
 	testImplementation "com.google.code.gson:gson:+"
 	testImplementation "org.reflections:reflections:+"
+	testCompileOnly "com.google.code.findbugs:jsr305:+"
+	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:+"
 }
 
 java {
