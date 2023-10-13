@@ -25,7 +25,6 @@ public final class GraphicsHolder extends DummyClass {
 
 	VertexConsumer vertexConsumer;
 	private int matrixPushes;
-	private MultiBufferSource.BufferSource immediate;
 
 	final PoseStack matrixStack;
 	final MultiBufferSource vertexConsumerProvider;
@@ -48,14 +47,6 @@ public final class GraphicsHolder extends DummyClass {
 			consumer.accept(graphicsHolder);
 		} catch (Exception e) {
 			logException(e);
-		}
-
-		if (graphicsHolder.immediate != null) {
-			if (graphicsHolder.drawContext == null) {
-				graphicsHolder.immediate.endBatch();
-			} else {
-				graphicsHolder.drawContext.flush();
-			}
 		}
 
 		while (graphicsHolder.matrixPushes > 0) {
@@ -149,33 +140,42 @@ public final class GraphicsHolder extends DummyClass {
 		}
 	}
 
-	private void createImmediate() {
-		if (immediate == null) {
-			immediate = drawContext == null ? MultiBufferSource.immediate(Tesselator.getInstance().getBuilder()) : drawContext.bufferSource();
-		}
-	}
-
 	@MappedMethod
 	public void drawText(MutableText mutableText, int x, int y, int color, boolean shadow, int light) {
 		if (matrixStack != null) {
-			createImmediate();
+			final MultiBufferSource.BufferSource immediate = drawContext == null ? MultiBufferSource.immediate(Tesselator.getInstance().getBuilder()) : drawContext.bufferSource();
 			getInstance().font.drawInBatch(mutableText.data, x, y, color, shadow, matrixStack.last().pose(), immediate, Font.DisplayMode.NORMAL, 0, light);
+			if (drawContext == null) {
+				immediate.endBatch();
+			} else {
+				drawContext.flush();
+			}
 		}
 	}
 
 	@MappedMethod
 	public void drawText(OrderedText orderedText, int x, int y, int color, boolean shadow, int light) {
 		if (matrixStack != null) {
-			createImmediate();
+			final MultiBufferSource.BufferSource immediate = drawContext == null ? MultiBufferSource.immediate(Tesselator.getInstance().getBuilder()) : drawContext.bufferSource();
 			getInstance().font.drawInBatch(orderedText.data, x, y, color, shadow, matrixStack.last().pose(), immediate, Font.DisplayMode.NORMAL, 0, light);
+			if (drawContext == null) {
+				immediate.endBatch();
+			} else {
+				drawContext.flush();
+			}
 		}
 	}
 
 	@MappedMethod
 	public void drawText(String text, int x, int y, int color, boolean shadow, int light) {
 		if (matrixStack != null) {
-			createImmediate();
+			final MultiBufferSource.BufferSource immediate = drawContext == null ? MultiBufferSource.immediate(Tesselator.getInstance().getBuilder()) : drawContext.bufferSource();
 			getInstance().font.drawInBatch(text, x, y, color, shadow, matrixStack.last().pose(), immediate, Font.DisplayMode.NORMAL, 0, light);
+			if (drawContext == null) {
+				immediate.endBatch();
+			} else {
+				drawContext.flush();
+			}
 		}
 	}
 

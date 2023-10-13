@@ -25,7 +25,6 @@ public final class GraphicsHolder extends DummyClass {
 
 	VertexConsumer vertexConsumer;
 	private int matrixPushes;
-	private VertexConsumerProvider.Immediate immediate;
 
 	final MatrixStack matrixStack;
 	final VertexConsumerProvider vertexConsumerProvider;
@@ -48,14 +47,6 @@ public final class GraphicsHolder extends DummyClass {
 			consumer.accept(graphicsHolder);
 		} catch (Exception e) {
 			logException(e);
-		}
-
-		if (graphicsHolder.immediate != null) {
-			if (graphicsHolder.drawContext == null) {
-				graphicsHolder.immediate.draw();
-			} else {
-				graphicsHolder.drawContext.draw();
-			}
 		}
 
 		while (graphicsHolder.matrixPushes > 0) {
@@ -149,33 +140,42 @@ public final class GraphicsHolder extends DummyClass {
 		}
 	}
 
-	private void createImmediate() {
-		if (immediate == null) {
-			immediate = drawContext == null ? VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer()) : drawContext.getVertexConsumers();
-		}
-	}
-
 	@MappedMethod
 	public void drawText(MutableText mutableText, int x, int y, int color, boolean shadow, int light) {
 		if (matrixStack != null) {
-			createImmediate();
+			final VertexConsumerProvider.Immediate immediate = drawContext == null ? VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer()) : drawContext.getVertexConsumers();
 			getInstance().textRenderer.draw(mutableText.data, x, y, color, shadow, matrixStack.peek().getPositionMatrix(), immediate, TextRenderer.TextLayerType.NORMAL, 0, light);
+			if (drawContext == null) {
+				immediate.draw();
+			} else {
+				drawContext.draw();
+			}
 		}
 	}
 
 	@MappedMethod
 	public void drawText(OrderedText orderedText, int x, int y, int color, boolean shadow, int light) {
 		if (matrixStack != null) {
-			createImmediate();
+			final VertexConsumerProvider.Immediate immediate = drawContext == null ? VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer()) : drawContext.getVertexConsumers();
 			getInstance().textRenderer.draw(orderedText.data, x, y, color, shadow, matrixStack.peek().getPositionMatrix(), immediate, TextRenderer.TextLayerType.NORMAL, 0, light);
+			if (drawContext == null) {
+				immediate.draw();
+			} else {
+				drawContext.draw();
+			}
 		}
 	}
 
 	@MappedMethod
 	public void drawText(String text, int x, int y, int color, boolean shadow, int light) {
 		if (matrixStack != null) {
-			createImmediate();
+			final VertexConsumerProvider.Immediate immediate = drawContext == null ? VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer()) : drawContext.getVertexConsumers();
 			getInstance().textRenderer.draw(text, x, y, color, shadow, matrixStack.peek().getPositionMatrix(), immediate, TextRenderer.TextLayerType.NORMAL, 0, light);
+			if (drawContext == null) {
+				immediate.draw();
+			} else {
+				drawContext.draw();
+			}
 		}
 	}
 

@@ -1,12 +1,12 @@
 package org.mtr.mapping.registry;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
+import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.SoundEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import org.mtr.mapping.holder.Block;
-import org.mtr.mapping.holder.Item;
-import org.mtr.mapping.holder.SoundEvent;
 import org.mtr.mapping.mapper.BlockEntityExtension;
 import org.mtr.mapping.mapper.BlockItemExtension;
 import org.mtr.mapping.mapper.EntityExtension;
@@ -25,14 +25,14 @@ public final class ModEventBus {
 	static final List<Supplier<SoundEvent>> SOUND_EVENTS = new ArrayList<>();
 
 	@SubscribeEvent
-	public static void registerBlocks(RegistryEvent.Register<net.minecraft.block.Block> event) {
-		BLOCKS.forEach(supplier -> event.getRegistry().register(supplier.get().data));
+	public static void registerBlocks(RegistryEvent.Register<Block> event) {
+		BLOCKS.forEach(supplier -> event.getRegistry().register(supplier.get()));
 	}
 
 	@SubscribeEvent
-	public static void registerItems(RegistryEvent.Register<net.minecraft.item.Item> event) {
+	public static void registerItems(RegistryEvent.Register<Item> event) {
 		BLOCK_ITEMS.forEach(supplier -> event.getRegistry().register(supplier.get()));
-		ITEMS.forEach(supplier -> event.getRegistry().register(supplier.get().data));
+		ITEMS.forEach(supplier -> event.getRegistry().register(supplier.get()));
 	}
 
 	@SubscribeEvent
@@ -46,7 +46,7 @@ public final class ModEventBus {
 	}
 
 	@SubscribeEvent
-	public static void registerSoundEvents(RegistryEvent.Register<net.minecraft.util.SoundEvent> event) {
-		SOUND_EVENTS.forEach(supplier -> event.getRegistry().register(supplier.get().data));
+	public static void registerSoundEvents(RegistryEvent.Register<SoundEvent> event) {
+		SOUND_EVENTS.forEach(supplier -> event.getRegistry().register(supplier.get()));
 	}
 }

@@ -24,7 +24,6 @@ public final class GraphicsHolder extends DummyClass {
 
 	VertexConsumer vertexConsumer;
 	private int matrixPushes;
-	private VertexConsumerProvider.Immediate immediate;
 
 	final MatrixStack matrixStack;
 	private final VertexConsumerProvider vertexConsumerProvider;
@@ -39,10 +38,6 @@ public final class GraphicsHolder extends DummyClass {
 			consumer.accept(graphicsHolder);
 		} catch (Exception e) {
 			logException(e);
-		}
-
-		if (graphicsHolder.immediate != null) {
-			graphicsHolder.immediate.draw();
 		}
 
 		while (graphicsHolder.matrixPushes > 0) {
@@ -128,33 +123,30 @@ public final class GraphicsHolder extends DummyClass {
 		}
 	}
 
-	private void createImmediate() {
-		if (immediate == null) {
-			immediate = VertexConsumerProvider.immediate(net.minecraft.client.render.Tessellator.getInstance().getBuffer());
-		}
-	}
-
 	@MappedMethod
 	public void drawText(MutableText mutableText, int x, int y, int color, boolean shadow, int light) {
 		if (matrixStack != null) {
-			createImmediate();
+			final VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(net.minecraft.client.render.Tessellator.getInstance().getBuffer());
 			getInstance().textRenderer.draw(mutableText.data, x, y, color, shadow, matrixStack.peek().getPositionMatrix(), immediate, TextRenderer.TextLayerType.NORMAL, 0, light);
+			immediate.draw();
 		}
 	}
 
 	@MappedMethod
 	public void drawText(OrderedText orderedText, int x, int y, int color, boolean shadow, int light) {
 		if (matrixStack != null) {
-			createImmediate();
+			final VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(net.minecraft.client.render.Tessellator.getInstance().getBuffer());
 			getInstance().textRenderer.draw(orderedText.data, x, y, color, shadow, matrixStack.peek().getPositionMatrix(), immediate, TextRenderer.TextLayerType.NORMAL, 0, light);
+			immediate.draw();
 		}
 	}
 
 	@MappedMethod
 	public void drawText(String text, int x, int y, int color, boolean shadow, int light) {
 		if (matrixStack != null) {
-			createImmediate();
+			final VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(net.minecraft.client.render.Tessellator.getInstance().getBuffer());
 			getInstance().textRenderer.draw(text, x, y, color, shadow, matrixStack.peek().getPositionMatrix(), immediate, TextRenderer.TextLayerType.NORMAL, 0, light);
+			immediate.draw();
 		}
 	}
 

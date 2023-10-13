@@ -25,18 +25,17 @@ public final class GuiDrawing extends DummyClass {
 		RenderSystem.enableBlend();
 		RenderSystem.disableTexture();
 		RenderSystem.defaultBlendFunc();
+		bufferBuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
 	}
 
 	@MappedMethod
 	public void drawRectangle(double x1, double y1, double x2, double y2, int color) {
 		if (bufferBuilder != null) {
 			ColorHelper.unpackColor(color, (a, r, g, b) -> {
-				bufferBuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
 				bufferBuilder.vertex(x1, y1, 0).color(r, g, b, a).endVertex();
 				bufferBuilder.vertex(x1, y2, 0).color(r, g, b, a).endVertex();
 				bufferBuilder.vertex(x2, y2, 0).color(r, g, b, a).endVertex();
 				bufferBuilder.vertex(x2, y1, 0).color(r, g, b, a).endVertex();
-				bufferBuilder.end();
 			});
 		}
 	}
@@ -44,6 +43,7 @@ public final class GuiDrawing extends DummyClass {
 	@MappedMethod
 	public void finishDrawingRectangle() {
 		if (bufferBuilder != null) {
+			bufferBuilder.end();
 			WorldVertexBufferUploader.end(bufferBuilder);
 			RenderSystem.enableTexture();
 			RenderSystem.disableBlend();
@@ -58,24 +58,23 @@ public final class GuiDrawing extends DummyClass {
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.enableDepthTest();
-
+		bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
 	}
 
 	@MappedMethod
 	public void drawTexture(double x1, double y1, double x2, double y2, float u1, float v1, float u2, float v2) {
 		if (bufferBuilder != null) {
-			bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
 			bufferBuilder.vertex(x1, y1, 0).uv(u1, v1).endVertex();
 			bufferBuilder.vertex(x1, y2, 0).uv(u1, v2).endVertex();
 			bufferBuilder.vertex(x2, y2, 0).uv(u2, v2).endVertex();
 			bufferBuilder.vertex(x2, y1, 0).uv(u2, v1).endVertex();
-			bufferBuilder.end();
 		}
 	}
 
 	@MappedMethod
 	public void finishDrawingTexture() {
 		if (bufferBuilder != null) {
+			bufferBuilder.end();
 			RenderSystem.enableAlphaTest();
 			WorldVertexBufferUploader.end(bufferBuilder);
 		}

@@ -25,7 +25,6 @@ public final class GraphicsHolder extends DummyClass {
 
 	VertexConsumer vertexConsumer;
 	private int matrixPushes;
-	private MultiBufferSource.BufferSource immediate;
 
 	final PoseStack matrixStack;
 	private final MultiBufferSource vertexConsumerProvider;
@@ -40,10 +39,6 @@ public final class GraphicsHolder extends DummyClass {
 			consumer.accept(graphicsHolder);
 		} catch (Exception e) {
 			logException(e);
-		}
-
-		if (graphicsHolder.immediate != null) {
-			graphicsHolder.immediate.endBatch();
 		}
 
 		while (graphicsHolder.matrixPushes > 0) {
@@ -129,33 +124,30 @@ public final class GraphicsHolder extends DummyClass {
 		}
 	}
 
-	private void createImmediate() {
-		if (immediate == null) {
-			immediate = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-		}
-	}
-
 	@MappedMethod
 	public void drawText(MutableText mutableText, int x, int y, int color, boolean shadow, int light) {
 		if (matrixStack != null) {
-			createImmediate();
+			final MultiBufferSource.BufferSource immediate = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
 			getInstance().font.drawInBatch(mutableText.data, x, y, color, shadow, matrixStack.last().pose(), immediate, Font.DisplayMode.NORMAL, 0, light);
+			immediate.endBatch();
 		}
 	}
 
 	@MappedMethod
 	public void drawText(OrderedText orderedText, int x, int y, int color, boolean shadow, int light) {
 		if (matrixStack != null) {
-			createImmediate();
+			final MultiBufferSource.BufferSource immediate = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
 			getInstance().font.drawInBatch(orderedText.data, x, y, color, shadow, matrixStack.last().pose(), immediate, Font.DisplayMode.NORMAL, 0, light);
+			immediate.endBatch();
 		}
 	}
 
 	@MappedMethod
 	public void drawText(String text, int x, int y, int color, boolean shadow, int light) {
 		if (matrixStack != null) {
-			createImmediate();
+			final MultiBufferSource.BufferSource immediate = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
 			getInstance().font.drawInBatch(text, x, y, color, shadow, matrixStack.last().pose(), immediate, Font.DisplayMode.NORMAL, 0, light);
+			immediate.endBatch();
 		}
 	}
 

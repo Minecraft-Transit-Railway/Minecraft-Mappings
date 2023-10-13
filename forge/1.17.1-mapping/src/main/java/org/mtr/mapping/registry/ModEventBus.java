@@ -1,12 +1,12 @@
 package org.mtr.mapping.registry;
 
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import org.mtr.mapping.holder.Block;
-import org.mtr.mapping.holder.Item;
-import org.mtr.mapping.holder.SoundEvent;
 import org.mtr.mapping.mapper.BlockEntityExtension;
 import org.mtr.mapping.mapper.BlockItemExtension;
 import org.mtr.mapping.mapper.EntityExtension;
@@ -25,14 +25,14 @@ public final class ModEventBus {
 	static final List<Supplier<SoundEvent>> SOUND_EVENTS = new ArrayList<>();
 
 	@SubscribeEvent
-	public static void registerBlocks(RegistryEvent.Register<net.minecraft.world.level.block.Block> event) {
-		BLOCKS.forEach(supplier -> event.getRegistry().register(supplier.get().data));
+	public static void registerBlocks(RegistryEvent.Register<Block> event) {
+		BLOCKS.forEach(supplier -> event.getRegistry().register(supplier.get()));
 	}
 
 	@SubscribeEvent
-	public static void registerItems(RegistryEvent.Register<net.minecraft.world.item.Item> event) {
+	public static void registerItems(RegistryEvent.Register<Item> event) {
 		BLOCK_ITEMS.forEach(supplier -> event.getRegistry().register(supplier.get()));
-		ITEMS.forEach(supplier -> event.getRegistry().register(supplier.get().data));
+		ITEMS.forEach(supplier -> event.getRegistry().register(supplier.get()));
 	}
 
 	@SubscribeEvent
@@ -46,7 +46,7 @@ public final class ModEventBus {
 	}
 
 	@SubscribeEvent
-	public static void registerSoundEvents(RegistryEvent.Register<net.minecraft.sounds.SoundEvent> event) {
-		SOUND_EVENTS.forEach(supplier -> event.getRegistry().register(supplier.get().data));
+	public static void registerSoundEvents(RegistryEvent.Register<SoundEvent> event) {
+		SOUND_EVENTS.forEach(supplier -> event.getRegistry().register(supplier.get()));
 	}
 }

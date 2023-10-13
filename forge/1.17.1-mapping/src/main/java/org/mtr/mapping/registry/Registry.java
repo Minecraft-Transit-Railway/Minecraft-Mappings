@@ -1,6 +1,7 @@
 package org.mtr.mapping.registry;
 
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.common.MinecraftForge;
@@ -35,33 +36,57 @@ public final class Registry extends DummyClass {
 
 	@MappedMethod
 	public static BlockRegistryObject registerBlock(Identifier identifier, Supplier<Block> supplier) {
-		ModEventBus.BLOCKS.add(supplier);
+		ModEventBus.BLOCKS.add(() -> {
+			final net.minecraft.world.level.block.Block block = supplier.get().data;
+			block.setRegistryName(identifier.data);
+			return block;
+		});
 		return new BlockRegistryObject(identifier);
 	}
 
 	@MappedMethod
 	public static BlockRegistryObject registerBlockWithBlockItem(Identifier identifier, Supplier<Block> supplier, CreativeModeTabHolder creativeModeTabHolder) {
-		ModEventBus.BLOCKS.add(supplier);
+		ModEventBus.BLOCKS.add(() -> {
+			final net.minecraft.world.level.block.Block block = supplier.get().data;
+			block.setRegistryName(identifier.data);
+			return block;
+		});
 		final BlockRegistryObject blockRegistryObject = new BlockRegistryObject(identifier);
-		ModEventBus.BLOCK_ITEMS.add(() -> new BlockItemExtension(blockRegistryObject.get(), new ItemSettings().tab(creativeModeTabHolder.creativeModeTab)));
+		ModEventBus.BLOCK_ITEMS.add(() -> {
+			final BlockItemExtension blockItemExtension = new BlockItemExtension(blockRegistryObject.get(), new ItemSettings().tab(creativeModeTabHolder.creativeModeTab));
+			blockItemExtension.setRegistryName(identifier.data);
+			return blockItemExtension;
+		});
 		return blockRegistryObject;
 	}
 
 	@MappedMethod
 	public static ItemRegistryObject registerItem(Identifier identifier, Function<ItemSettings, Item> function, CreativeModeTabHolder creativeModeTabHolder) {
-		ModEventBus.ITEMS.add(() -> function.apply(new ItemSettings().tab(creativeModeTabHolder.creativeModeTab)));
+		ModEventBus.ITEMS.add(() -> {
+			final net.minecraft.world.item.Item item = function.apply(new ItemSettings().tab(creativeModeTabHolder.creativeModeTab)).data;
+			item.setRegistryName(identifier.data);
+			return item;
+		});
 		return new ItemRegistryObject(identifier);
 	}
 
 	@MappedMethod
 	public static <T extends BlockEntityExtension> BlockEntityTypeRegistryObject<T> registerBlockEntityType(Identifier identifier, BiFunction<BlockPos, BlockState, T> function, Supplier<Block>... blockSuppliers) {
-		ModEventBus.BLOCK_ENTITY_TYPES.add(() -> BlockEntityType.Builder.of((pos, state) -> function.apply(new BlockPos(pos), new BlockState(state)), HolderBase.convertArray(blockSuppliers, net.minecraft.world.level.block.Block[]::new)).build(null));
+		ModEventBus.BLOCK_ENTITY_TYPES.add(() -> {
+			final BlockEntityType<T> blockEntityType = BlockEntityType.Builder.of((pos, state) -> function.apply(new BlockPos(pos), new BlockState(state)), HolderBase.convertArray(blockSuppliers, net.minecraft.world.level.block.Block[]::new)).build(null);
+			blockEntityType.setRegistryName(identifier.data);
+			return blockEntityType;
+		});
 		return new BlockEntityTypeRegistryObject<>(identifier);
 	}
 
 	@MappedMethod
 	public static <T extends EntityExtension> EntityTypeRegistryObject<T> registerEntityType(Identifier identifier, BiFunction<EntityType<?>, World, T> function, float width, float height) {
-		ModEventBus.ENTITY_TYPES.add(() -> net.minecraft.world.entity.EntityType.Builder.of(getEntityFactory(function), MobCategory.MISC).sized(width, height).build(identifier.toString()));
+		ModEventBus.ENTITY_TYPES.add(() -> {
+			final net.minecraft.world.entity.EntityType<T> entityType = net.minecraft.world.entity.EntityType.Builder.of(getEntityFactory(function), MobCategory.MISC).sized(width, height).build(identifier.toString());
+			entityType.setRegistryName(identifier.data);
+			return entityType;
+		});
 		return new EntityTypeRegistryObject<>(identifier);
 	}
 
@@ -76,7 +101,11 @@ public final class Registry extends DummyClass {
 
 	@MappedMethod
 	public static SoundEventRegistryObject registerSoundEvent(Identifier identifier) {
-		ModEventBus.SOUND_EVENTS.add(() -> new SoundEvent(identifier));
+		ModEventBus.SOUND_EVENTS.add(() -> {
+			final SoundEvent soundEvent = new SoundEvent(identifier.data);
+			soundEvent.setRegistryName(identifier.data);
+			return soundEvent;
+		});
 		return new SoundEventRegistryObject(identifier);
 	}
 

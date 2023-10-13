@@ -20,24 +20,24 @@ public final class GuiDrawing extends DummyClass {
 		bufferBuilder = Tessellator.getInstance().getBuffer();
 		RenderSystem.enableBlend();
 		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 	}
 
 	@MappedMethod
 	public void drawRectangle(double x1, double y1, double x2, double y2, int color) {
 		if (bufferBuilder != null) {
 			ColorHelper.unpackColor(color, (a, r, g, b) -> {
-				bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 				bufferBuilder.vertex(x1, y1, 0).color(r, g, b, a).next();
 				bufferBuilder.vertex(x1, y2, 0).color(r, g, b, a).next();
 				bufferBuilder.vertex(x2, y2, 0).color(r, g, b, a).next();
 				bufferBuilder.vertex(x2, y1, 0).color(r, g, b, a).next();
-				BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 			});
 		}
 	}
 
 	@MappedMethod
 	public void finishDrawingRectangle() {
+		BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 		RenderSystem.disableBlend();
 	}
 
