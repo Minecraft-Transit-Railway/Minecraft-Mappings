@@ -3,7 +3,6 @@ package org.mtr.mapping.registry;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
-import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
@@ -19,7 +18,6 @@ public final class ModEventBusClient {
 	static final List<Consumer<RegisterKeyMappingsEvent>> KEY_MAPPINGS = new ArrayList<>();
 	static final List<Consumer<RegisterColorHandlersEvent.Block>> BLOCK_COLORS = new ArrayList<>();
 	static final List<Consumer<RegisterColorHandlersEvent.Item>> ITEM_COLORS = new ArrayList<>();
-	static final List<Runnable> TEXTURE_STITCHES = new ArrayList<>();
 
 	@SubscribeEvent
 	public static void registerClient(FMLClientSetupEvent event) {
@@ -45,12 +43,5 @@ public final class ModEventBusClient {
 	@SubscribeEvent
 	public void registerItemColors(RegisterColorHandlersEvent.Item event) {
 		ITEM_COLORS.forEach(consumer -> consumer.accept(event));
-	}
-
-	@SubscribeEvent
-	public void registerTextureStitchEvent(TextureStitchEvent event) {
-		if (event.getAtlas().location().getPath().equals("textures/atlas/blocks.png")) {
-			TEXTURE_STITCHES.forEach(Runnable::run);
-		}
 	}
 }

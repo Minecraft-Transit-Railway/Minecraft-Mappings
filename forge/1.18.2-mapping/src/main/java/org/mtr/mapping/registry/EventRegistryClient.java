@@ -2,7 +2,6 @@ package org.mtr.mapping.registry;
 
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.ClientWorld;
-import org.mtr.mapping.holder.Identifier;
 import org.mtr.mapping.tool.DummyClass;
 
 import java.util.function.Consumer;
@@ -37,10 +36,5 @@ public class EventRegistryClient extends DummyClass {
 	@MappedMethod
 	public static void registerClientDisconnect(Runnable runnable) {
 		MainEventBusClient.clientDisconnectRunnable = runnable;
-	}
-
-	@MappedMethod
-	public static void registerResourcesReload(Identifier identifier, Runnable runnable) {
-		ModEventBusClient.TEXTURE_STITCHES.add(runnable);
 	}
 }
