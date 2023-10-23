@@ -13,8 +13,25 @@ public final class ResourceManagerHelper extends DummyClass {
 
 	@MappedMethod
 	public static void readResource(Identifier identifier, Consumer<InputStream> consumer) {
-		try (final Resource resource = MinecraftClient.getInstance().getResourceManager().getResource(identifier.data)) {
-			try (final InputStream inputStream = resource.getInputStream()) {
+		try {
+			readResource(MinecraftClient.getInstance().getResourceManager().getResource(identifier.data), consumer);
+		} catch (Exception e) {
+			logException(e);
+		}
+	}
+
+	@MappedMethod
+	public static void readAllResources(Identifier identifier, Consumer<InputStream> consumer) {
+		try {
+			MinecraftClient.getInstance().getResourceManager().getAllResources(identifier.data).forEach(resource -> readResource(resource, consumer));
+		} catch (Exception e) {
+			logException(e);
+		}
+	}
+
+	private static void readResource(Resource resource, Consumer<InputStream> consumer) {
+		try (final Resource newResource = resource) {
+			try (final InputStream inputStream = newResource.getInputStream()) {
 				consumer.accept(inputStream);
 			} catch (Exception e) {
 				logException(e);
