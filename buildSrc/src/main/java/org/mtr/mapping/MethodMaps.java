@@ -70,6 +70,13 @@ public interface MethodMaps {
 		addMethodMap1.add("ClientPlayerEntity|LivingEntity|PlayerEntity|ServerPlayerEntity", "upwardSpeed", "yya");
 		addMethodMap1.add("ClientPlayerEntity|PlayerEntity|ServerPlayerEntity", "getMainHandStack", "getMainHandItem");
 		addMethodMap1.add("ClientPlayerEntity|PlayerEntity|ServerPlayerEntity", "getWidth", "getBbWidth");
+		addMethodMap1.add("ClientWorld|ServerWorld|World", "containsFluid", "containsAnyLiquid");
+		addMethodMap1.add("ClientWorld|ServerWorld|World", "getLunarTime", "dayTime");
+		addMethodMap1.add("ClientWorld|ServerWorld|World", "getTime", "getGameTime");
+		addMethodMap1.add("ClientWorld|ServerWorld|World", "isAir", "isEmptyBlock");
+		addMethodMap1.add("ClientWorld|ServerWorld|World", "isWater", "isWaterAt");
+		addMethodMap1.add("ClientWorld|ServerWorld|World", "spawnEntity", "addFreshEntity");
+		addMethodMap1.add("ClientWorld|ServerWorld|World", "updateNeighbors", "updateNeighborsAt");
 		addMethodMap1.add("CompoundTag", "getSize", "size");
 		addMethodMap1.add("Direction", "byId", "from2DDataValue");
 		addMethodMap1.add("Direction", "fromHorizontal", "from3DDataValue");
@@ -247,12 +254,6 @@ public interface MethodMaps {
 		addMethodMap1.add("Screen", "close", "onClose");
 		addMethodMap1.add("Screen", "OPTIONS_BACKGROUND_TEXTURE", "BACKGROUND_LOCATION");
 		addMethodMap1.add("Screen", "shouldPause", "isPauseScreen");
-		addMethodMap1.add("ServerWorld|World", "containsFluid", "containsAnyLiquid");
-		addMethodMap1.add("ServerWorld|World", "getTime", "getGameTime");
-		addMethodMap1.add("ServerWorld|World", "isAir", "isEmptyBlock");
-		addMethodMap1.add("ServerWorld|World", "isWater", "isWaterAt");
-		addMethodMap1.add("ServerWorld|World", "spawnEntity", "addFreshEntity");
-		addMethodMap1.add("ServerWorld|World", "updateNeighbors", "updateNeighborsAt");
 		addMethodMap1.add("TextFieldWidget", "eraseCharacters", "deleteChars");
 		addMethodMap1.add("TextFieldWidget", "eraseWords", "deleteWords");
 		addMethodMap1.add("TextFieldWidget", "getCharacterX", "getScreenX");

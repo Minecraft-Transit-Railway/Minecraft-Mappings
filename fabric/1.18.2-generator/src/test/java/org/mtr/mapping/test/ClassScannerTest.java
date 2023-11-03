@@ -89,6 +89,7 @@ public final class ClassScannerTest {
 		scanner.put("BlockEntityType", BlockEntityType.class);
 		scanner.put("BlockHitResult", BlockHitResult.class);
 		scanner.put("BlockPos", BlockPos.class);
+		scanner.put("BlockRenderType", BlockRenderType.class);
 		scanner.put("BlockRenderView", BlockRenderView.class);
 		scanner.put("BlockRotation", BlockRotation.class);
 		scanner.put("Blocks", Blocks.class);
