@@ -2,8 +2,7 @@ package org.mtr.mapping.test;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
@@ -230,6 +229,9 @@ public final class ClassScannerTest {
 		scanner.put("Vector3d", Vec3.class);
 		scanner.put("Vector3f", Vector3f.class);
 		scanner.put("Vector3i", Vec3i.class);
+		scanner.put("VertexFormat", VertexFormat.class);
+		scanner.put("VertexFormatElement", VertexFormatElement.class);
+		scanner.put("VertexFormats", DefaultVertexFormat.class);
 		scanner.put("VoxelShape", VoxelShape.class);
 		scanner.put("VoxelShapes", Shapes.class);
 		scanner.put("Window", Window.class);
