@@ -32,20 +32,30 @@ public final class GenerateMixinCreatorsTest {
 		})));
 
 		files.forEach((mixinName, contents) -> {
-			if (!mixinName.equals("package-info")) {
-				final StringBuilder stringBuilder = new StringBuilder("package org.mtr.mapping.mixin;import java.io.IOException;import java.nio.charset.StandardCharsets;import java.nio.file.Files;import java.nio.file.Path;import java.nio.file.StandardOpenOption;public final class Create");
-				stringBuilder.append(mixinName).append("{public static void create(String minecraftVersion,String loader,Path path,String packageName)throws IOException{final String content;switch(String.format(\"%s-%s\",minecraftVersion,loader)){");
-				contents.forEach((key, mixinContent) -> stringBuilder.append("case\"").append(key).append("\":content=\"").append(mixinContent.replace("\n", "\\n").replace("\r", "").replace("\"", "\\\"")).append("\";break;"));
-				stringBuilder.append("default:content=null;}if(content!=null){Files.write(path.resolve(\"").append(mixinName);
-				stringBuilder.append(".java\"),content.replace(\"@package@\",packageName).getBytes(StandardCharsets.UTF_8),StandardOpenOption.CREATE,StandardOpenOption.TRUNCATE_EXISTING);}}}");
+			final boolean isAccessWidener = mixinName.equals("access-widener");
+			final StringBuilder stringBuilder = new StringBuilder("package org.mtr.mapping.mixin;import java.io.IOException;import java.nio.charset.StandardCharsets;import java.nio.file.Files;import java.nio.file.Path;import java.nio.file.StandardOpenOption;public final class Create");
+			stringBuilder.append(isAccessWidener ? "AccessWidener" : mixinName).append("{public static void create(String minecraftVersion,String loader,Path path");
+			if (!isAccessWidener) {
+				stringBuilder.append(",String packageName");
+			}
+			stringBuilder.append(")throws IOException{final String content;switch(String.format(\"%s-%s\",minecraftVersion,loader)){");
+			contents.forEach((key, mixinContent) -> stringBuilder.append("case\"").append(key).append("\":content=\"").append(mixinContent.replace("\n", "\\n").replace("\r", "").replace("\"", "\\\"")).append("\";break;"));
+			stringBuilder.append("default:content=null;}if(content!=null){Files.write(path");
+			if (!isAccessWidener) {
+				stringBuilder.append(".resolve(\"").append(mixinName).append(".java\")");
+			}
+			stringBuilder.append(",content");
+			if (!isAccessWidener) {
+				stringBuilder.append(".replace(\"@package@\",packageName)");
+			}
+			stringBuilder.append(".getBytes(StandardCharsets.UTF_8),StandardOpenOption.CREATE,StandardOpenOption.TRUNCATE_EXISTING);}}}");
 
-				try {
-					final Path directory = rootDirectory.resolve("src/main/java/org/mtr/mapping/mixin");
-					Files.createDirectories(directory);
-					Files.write(directory.resolve(String.format("Create%s.java", mixinName)), stringBuilder.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-				} catch (Exception e) {
-					DummyClass.logException(e);
-				}
+			try {
+				final Path directory = rootDirectory.resolve("src/main/java/org/mtr/mapping/mixin");
+				Files.createDirectories(directory);
+				Files.write(directory.resolve(String.format("Create%s.java", isAccessWidener ? "AccessWidener" : mixinName)), stringBuilder.toString().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+			} catch (Exception e) {
+				DummyClass.logException(e);
 			}
 		});
 	}

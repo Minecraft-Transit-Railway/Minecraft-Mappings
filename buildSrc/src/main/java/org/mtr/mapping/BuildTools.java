@@ -66,18 +66,31 @@ public final class BuildTools {
 			copyFile(rootPath, generatorTestFolder, path, "ClassScannerGenerateHolders", text -> text);
 			Files.deleteIfExists(generatorTestFolder.resolve("MethodMaps.java"));
 
+			final Path directory = rootPath.resolve("build/mixins").resolve(loader).resolve(minecraftVersion);
+			try {
+				Files.createDirectories(directory);
+				Files.write(
+						directory.resolve("access-widener"),
+						FileUtils.readFileToString(path.resolve("src/main/resources").resolve(loader.equals("fabric") ? "minecraft-mappings.accesswidener" : "accesstransformer.cfg").toFile(), StandardCharsets.UTF_8).getBytes(StandardCharsets.UTF_8),
+						StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING
+				);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
 			try (final Stream<Path> stream = Files.list(path.resolve("src/main/java/org/mtr/mapping/mixin"))) {
 				stream.forEach(mixinPath -> {
-					try {
-						final Path directory = rootPath.resolve("build/mixins").resolve(loader).resolve(minecraftVersion);
-						Files.createDirectories(directory);
-						Files.write(
-								directory.resolve(mixinPath.getFileName().toString().split("\\.")[0]),
-								FileUtils.readFileToString(mixinPath.toFile(), StandardCharsets.UTF_8).replace("package org.mtr.mapping.mixin;", "package @package@;").getBytes(StandardCharsets.UTF_8),
-								StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING
-						);
-					} catch (Exception e) {
-						e.printStackTrace();
+					final String mixinFileName = mixinPath.getFileName().toString().split("\\.")[0];
+					if (!mixinFileName.equals("package-info")) {
+						try {
+							Files.write(
+									directory.resolve(mixinFileName),
+									FileUtils.readFileToString(mixinPath.toFile(), StandardCharsets.UTF_8).replace("package org.mtr.mapping.mixin;", "package @package@;").getBytes(StandardCharsets.UTF_8),
+									StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING
+							);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
 				});
 			}

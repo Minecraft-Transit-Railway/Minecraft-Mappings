@@ -14,6 +14,7 @@ subprojects {
 
 	minecraft {
 		mappings channel: "official", version: minecraftVersion
+		accessTransformer = file("src/main/resources/accesstransformer.cfg")
 	}
 
 	sourceSets.main.resources { srcDir "src/generated/resources" }

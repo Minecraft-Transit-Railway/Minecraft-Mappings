@@ -11,6 +11,10 @@ subprojects {
 
 	final BuildTools buildTools = new BuildTools(project, rootProject.getProperties().getOrDefault("generate", "").toString())
 
+	loom {
+		accessWidenerPath = file("src/main/resources/minecraft-mappings.accesswidener")
+	}
+
 	dependencies {
 		implementation project(":common")
 		minecraft "com.mojang:minecraft:${buildTools.minecraftVersion}"
