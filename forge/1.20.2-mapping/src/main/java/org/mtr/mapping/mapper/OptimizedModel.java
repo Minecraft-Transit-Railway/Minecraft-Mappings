@@ -20,6 +20,7 @@ import java.util.function.Consumer;
 public final class OptimizedModel {
 
 	final List<VertexArray> uploadedOpaqueParts;
+	final List<VertexArray> uploadedTranslucentParts;
 
 	private final RawModel opaqueParts = new RawModel();
 	private final RawModel translucentParts = new RawModel();
@@ -47,6 +48,7 @@ public final class OptimizedModel {
 		capturingVertexConsumer.rawModel.iterateRawMeshList(rawMesh -> (rawMesh.materialProperties.translucent ? translucentParts : opaqueParts).append(rawMesh));
 		translucentParts.distinct();
 		uploadedOpaqueParts = opaqueParts.upload(DEFAULT_MAPPING);
+		uploadedTranslucentParts = translucentParts.upload(DEFAULT_MAPPING);
 	}
 
 	public static final class MaterialGroup {

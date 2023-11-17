@@ -15,7 +15,8 @@ public final class OptimizedRenderer {
 
 	private final BatchManager batchManager = new BatchManager();
 	private final ShaderManager shaderManager = new ShaderManager();
-	private final List<Runnable> queue = new ArrayList<>();
+	private final List<Runnable> opaqueQueue = new ArrayList<>();
+	private final List<Runnable> translucentQueue = new ArrayList<>();
 
 	@MappedMethod
 	public void beginReload() {
@@ -32,18 +33,21 @@ public final class OptimizedRenderer {
 	public void queue(OptimizedModel optimizedModel, GraphicsHolder graphicsHolder, int light) {
 		if (graphicsHolder.matrixStack != null) {
 			final Matrix4f matrix4f = Utilities.copy(new Matrix4f(graphicsHolder.matrixStack.last().pose()));
-			queue.add(() -> batchManager.queue(optimizedModel.uploadedOpaqueParts, new VertexAttributeState(light, matrix4f)));
+			opaqueQueue.add(() -> batchManager.queue(optimizedModel.uploadedOpaqueParts, new VertexAttributeState(light, matrix4f)));
+			translucentQueue.add(() -> batchManager.queue(optimizedModel.uploadedTranslucentParts, new VertexAttributeState(light, matrix4f)));
 		}
 	}
 
 	@MappedMethod
 	public void render() {
-		if (!queue.isEmpty() && shaderManager.isReady()) {
-			queue.forEach(Runnable::run);
+		if ((!opaqueQueue.isEmpty() || !translucentQueue.isEmpty()) && shaderManager.isReady()) {
+			opaqueQueue.forEach(Runnable::run);
+			translucentQueue.forEach(Runnable::run);
 			GlStateTracker.capture();
 			batchManager.drawAll(shaderManager);
 			GlStateTracker.restore();
+			opaqueQueue.clear();
+			translucentQueue.clear();
 		}
-		queue.clear();
 	}
 }
