@@ -81,7 +81,7 @@ public final class VertexAttributeState {
 					if (overlayUV == null) {
 						continue;
 					}
-					if (GlStateTracker.isNotGl4ES()) {
+					if (!GlStateTracker.isGl4ES()) {
 						GL33.glVertexAttribI2i(vertexAttributeType.location, (short) (overlayUV >>> 16), (short) (int) overlayUV);
 					} else {
 						// GL4ES doesn't have binding for Attrib*i
@@ -92,7 +92,7 @@ public final class VertexAttributeState {
 					if (lightmapUV == null) {
 						continue;
 					}
-					if (GlStateTracker.isNotGl4ES()) {
+					if (!GlStateTracker.isGl4ES()) {
 						GL33.glVertexAttribI2i(vertexAttributeType.location, (short) (lightmapUV >>> 16), (short) (int) lightmapUV);
 					} else {
 						// GL4ES doesn't have binding for Attrib*i
@@ -120,11 +120,7 @@ public final class VertexAttributeState {
 						final ShaderInstance shaderProgram = RenderSystem.getShader();
 						if (shaderProgram != null && shaderProgram.MODEL_VIEW_MATRIX != null) {
 							shaderProgram.MODEL_VIEW_MATRIX.set(matrix4f.data);
-							if (Utilities.canUseCustomShader()) {
-								shaderProgram.MODEL_VIEW_MATRIX.upload();
-							} else {
-								shaderProgram.apply();
-							}
+							shaderProgram.apply();
 						}
 					}
 					break;

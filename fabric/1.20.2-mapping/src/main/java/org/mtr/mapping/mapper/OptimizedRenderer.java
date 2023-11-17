@@ -38,7 +38,7 @@ public final class OptimizedRenderer {
 
 	@MappedMethod
 	public void render() {
-		if (!queue.isEmpty()) {
+		if (!queue.isEmpty() && shaderManager.isReady()) {
 			queue.forEach(Runnable::run);
 			GlStateTracker.capture();
 			batchManager.drawAll(shaderManager);

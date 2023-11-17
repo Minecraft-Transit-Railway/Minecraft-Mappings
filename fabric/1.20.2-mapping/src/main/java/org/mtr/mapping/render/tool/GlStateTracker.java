@@ -10,7 +10,7 @@ import java.util.Locale;
 public final class GlStateTracker {
 
 	private static boolean supportVertexAttributeDivisor;
-	private static boolean isNotGl4ES = true;
+	private static boolean isGl4ES = false;
 
 	private static int vertArrayBinding;
 	private static int arrayBufBinding;
@@ -22,7 +22,7 @@ public final class GlStateTracker {
 		final int contextVersion = GL33.glGetInteger(GL33.GL_MAJOR_VERSION) * 10 + GL33.glGetInteger(GL33.GL_MINOR_VERSION);
 		supportVertexAttributeDivisor = contextVersion >= 33;
 		final String glVersion = GL33.glGetString(GL33.GL_VERSION);
-		isNotGl4ES = glVersion == null || !glVersion.toLowerCase(Locale.ENGLISH).contains("gl4es");
+		isGl4ES = glVersion != null && glVersion.toLowerCase(Locale.ENGLISH).contains("gl4es");
 
 		if (isStateProtected) {
 			return;
@@ -66,7 +66,7 @@ public final class GlStateTracker {
 		return supportVertexAttributeDivisor;
 	}
 
-	public static boolean isNotGl4ES() {
-		return isNotGl4ES;
+	public static boolean isGl4ES() {
+		return isGl4ES;
 	}
 }

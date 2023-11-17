@@ -1,12 +1,18 @@
 package org.mtr.mapping.render.shader;
 
+import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormatElement;
 import net.minecraft.client.renderer.ShaderInstance;
 import org.mtr.mapping.holder.Matrix4f;
 import org.mtr.mapping.holder.MinecraftClient;
 import org.mtr.mapping.holder.Window;
+import org.mtr.mapping.mapper.OptimizedModel;
 import org.mtr.mapping.render.batch.MaterialProperties;
 import org.mtr.mapping.render.tool.Utilities;
+import org.mtr.mapping.tool.DummyClass;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +21,18 @@ public final class ShaderManager {
 
 	private final Map<String, ShaderInstance> shaders = new HashMap<>();
 
+	private static final VertexFormatElement MINECRAFT_ELEMENT_MATRIX = new VertexFormatElement(0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 16);
+	private static final VertexFormat MINECRAFT_VERTEX_FORMAT_BLOCK = new VertexFormat(ImmutableMap.<String, VertexFormatElement>builder()
+			.put("Position", DefaultVertexFormat.ELEMENT_POSITION)
+			.put("Color", DefaultVertexFormat.ELEMENT_COLOR)
+			.put("UV0", DefaultVertexFormat.ELEMENT_UV0)
+			.put("UV1", DefaultVertexFormat.ELEMENT_UV1)
+			.put("UV2", DefaultVertexFormat.ELEMENT_UV2)
+			.put("Normal", DefaultVertexFormat.ELEMENT_NORMAL)
+			.put("ModelMat", MINECRAFT_ELEMENT_MATRIX)
+			.put("Padding", DefaultVertexFormat.ELEMENT_PADDING)
+			.build());
+
 	public boolean isReady() {
 		return !this.shaders.isEmpty();
 	}
@@ -22,12 +40,29 @@ public final class ShaderManager {
 	public void reloadShaders() {
 		shaders.values().forEach(ShaderInstance::close);
 		shaders.clear();
-		// TODO
+		final PatchingResourceProvider patchingResourceProvider = new PatchingResourceProvider(MinecraftClient.getInstance().getResourceManager());
+		loadShader(patchingResourceProvider, getShaderName(OptimizedModel.ShaderType.CUTOUT));
+		loadShader(patchingResourceProvider, getShaderName(OptimizedModel.ShaderType.TRANSLUCENT));
+		loadShader(patchingResourceProvider, getShaderName(OptimizedModel.ShaderType.CUTOUT_GLOWING));
+	}
+
+	private void loadShader(PatchingResourceProvider resourceManager, String shaderName) {
+		try {
+			shaders.put(shaderName, new ShaderInstance(resourceManager, shaderName, MINECRAFT_VERTEX_FORMAT_BLOCK));
+		} catch (Exception e) {
+			DummyClass.logException(e);
+		}
 	}
 
 	public void setupShaderBatchState(MaterialProperties materialProperties) {
-		materialProperties.getBlazeRenderType().startDrawing();
-		final ShaderInstance shaderProgram = RenderSystem.getShader();
+		final ShaderInstance shaderProgram;
+		if (Utilities.canUseCustomShader()) {
+			shaderProgram = shaders.get(getShaderName(materialProperties.shaderType));
+			materialProperties.setupCompositeState();
+		} else {
+			materialProperties.getBlazeRenderType().startDrawing();
+			shaderProgram = RenderSystem.getShader();
+		}
 
 		if (shaderProgram == null) {
 			throw new IllegalArgumentException("Cannot get shader: " + materialProperties.shaderType);
@@ -87,6 +122,19 @@ public final class ShaderManager {
 				shaderProgram.MODEL_VIEW_MATRIX.set(RenderSystem.getModelViewMatrix());
 				shaderProgram.apply();
 			}
+		}
+	}
+
+	private static String getShaderName(OptimizedModel.ShaderType shaderType) {
+		switch (shaderType) {
+			default:
+				return "rendertype_entity_cutout";
+			case TRANSLUCENT:
+			case TRANSLUCENT_BRIGHT:
+				return "rendertype_entity_translucent_cull";
+			case CUTOUT_GLOWING:
+			case TRANSLUCENT_GLOWING:
+				return "rendertype_beacon_beam";
 		}
 	}
 }

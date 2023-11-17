@@ -86,7 +86,7 @@ public enum VertexAttributeType {
 		for (int i = 0; i < span; i++) {
 			final int attributePointer = pointer + (i * byteSize / span);
 			if (iPointer) {
-				if (GlStateTracker.isNotGl4ES()) {
+				if (!GlStateTracker.isGl4ES()) {
 					GL33.glVertexAttribIPointer(location + i, size, type, stride, attributePointer);
 				} else {
 					// GL4ES doesn't have binding for Attrib*i, so make the shader use float

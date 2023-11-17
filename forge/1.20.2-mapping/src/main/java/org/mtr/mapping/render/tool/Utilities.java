@@ -54,6 +54,6 @@ public final class Utilities {
 	}
 
 	public static boolean canUseCustomShader() {
-		return false; // TODO
+		return !GlStateTracker.isGl4ES(); // TODO and if shader pack is not in use
 	}
 }

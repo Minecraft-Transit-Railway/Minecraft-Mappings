@@ -1,7 +1,11 @@
 package org.mtr.mapping.render.batch;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.util.Util;
+import org.lwjgl.opengl.GL33;
 import org.mtr.mapping.holder.Identifier;
+import org.mtr.mapping.holder.MinecraftClient;
 import org.mtr.mapping.holder.RenderLayer;
 import org.mtr.mapping.holder.VertexFormats;
 import org.mtr.mapping.mapper.OptimizedModel;
@@ -105,6 +109,28 @@ public final class MaterialProperties {
 				vertexAttributeState = new VertexAttributeState();
 				break;
 		}
+	}
+
+	public void setupCompositeState() {
+//#if MC_VERSION <= "11903"
+//		RenderSystem.enableTexture();
+//#endif
+		RenderSystem.setShaderTexture(0, texture.data);
+
+		// HACK: To make cutout transparency on beacon_beam work
+		if (translucent || cutoutHack) {
+			RenderSystem.enableBlend(); // TransparentState
+			RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
+		} else {
+			RenderSystem.disableBlend();
+		}
+
+		RenderSystem.enableDepthTest(); // DepthTestState
+		RenderSystem.depthFunc(GL33.GL_LEQUAL);
+		RenderSystem.enableCull();
+		MinecraftClient.getInstance().getGameRendererMapped().getLightmapTextureManager().enable(); // LightmapState
+		MinecraftClient.getInstance().getGameRendererMapped().getOverlayTexture().setupOverlayColor(); // OverlayState
+		RenderSystem.depthMask(writeDepthBuf); // WriteMaskState
 	}
 
 	public RenderLayer getBlazeRenderType() {
