@@ -17,6 +17,6 @@ public final class OptimizedRenderer {
 	}
 
 	@MappedMethod
-	public void render() {
+	public void render(boolean renderTranslucent) {
 	}
 }

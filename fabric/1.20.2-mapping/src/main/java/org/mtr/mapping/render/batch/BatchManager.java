@@ -8,41 +8,34 @@ import java.util.*;
 
 public final class BatchManager {
 
-	private final Map<MaterialProperties, Queue<RenderCall>> batches = new HashMap<>();
+	private final Map<MaterialProperties, Set<RenderCall>> opaqueBatches = new HashMap<>();
+	private final Map<MaterialProperties, Set<RenderCall>> cutoutBatches = new HashMap<>();
+	private final Map<MaterialProperties, Set<RenderCall>> translucentBatches = new HashMap<>();
 
 	public void queue(List<VertexArray> vertexArrays, VertexAttributeState vertexAttributeState) {
 		vertexArrays.forEach(vertexArray -> queue(vertexArray, vertexAttributeState));
 	}
 
 	public void queue(VertexArray vertexArray, VertexAttributeState vertexAttributeState) {
-		batches.computeIfAbsent(vertexArray.materialProperties, key -> new LinkedList<>()).add(new RenderCall(vertexArray, vertexAttributeState));
+		final MaterialProperties materialProperties = vertexArray.materialProperties;
+		(materialProperties.translucent ? translucentBatches : materialProperties.cutoutHack ? cutoutBatches : opaqueBatches).computeIfAbsent(materialProperties, key -> new HashSet<>()).add(new RenderCall(vertexArray, vertexAttributeState));
 	}
 
-	public void drawAll(ShaderManager shaderManager) {
+	public void drawAll(ShaderManager shaderManager, boolean renderTranslucent) {
+		drawBatch(opaqueBatches, shaderManager);
+		drawBatch(cutoutBatches, shaderManager);
+		if (renderTranslucent) {
+			drawBatch(translucentBatches, shaderManager);
+		}
+	}
+
+	private static void drawBatch(Map<MaterialProperties, Set<RenderCall>> batches, ShaderManager shaderManager) {
 		batches.forEach((materialProperties, renderCalls) -> {
-			if (!materialProperties.translucent && !materialProperties.cutoutHack) {
-				drawBatch(shaderManager, materialProperties, renderCalls);
-			}
-		});
-		batches.forEach((materialProperties, renderCalls) -> {
-			if (materialProperties.cutoutHack) {
-				drawBatch(shaderManager, materialProperties, renderCalls);
-			}
-		});
-		batches.forEach((materialProperties, renderCalls) -> {
-			if (materialProperties.translucent) {
-				drawBatch(shaderManager, materialProperties, renderCalls);
-			}
+			shaderManager.setupShaderBatchState(materialProperties);
+			renderCalls.forEach(RenderCall::draw);
+			shaderManager.cleanupShaderBatchState();
 		});
 		batches.clear();
-	}
-
-	private void drawBatch(ShaderManager shaderManager, MaterialProperties materialProperties, Queue<RenderCall> renderCalls) {
-		shaderManager.setupShaderBatchState(materialProperties);
-		while (!renderCalls.isEmpty()) {
-			renderCalls.poll().draw();
-		}
-		shaderManager.cleanupShaderBatchState();
 	}
 
 	private static class RenderCall {

@@ -8,15 +8,10 @@ import org.mtr.mapping.render.tool.GlStateTracker;
 import org.mtr.mapping.render.tool.Utilities;
 import org.mtr.mapping.render.vertex.VertexAttributeState;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public final class OptimizedRenderer {
 
 	private final BatchManager batchManager = new BatchManager();
 	private final ShaderManager shaderManager = new ShaderManager();
-	private final List<Runnable> opaqueQueue = new ArrayList<>();
-	private final List<Runnable> translucentQueue = new ArrayList<>();
 
 	@MappedMethod
 	public void beginReload() {
@@ -32,22 +27,16 @@ public final class OptimizedRenderer {
 	@MappedMethod
 	public void queue(OptimizedModel optimizedModel, GraphicsHolder graphicsHolder, int light) {
 		if (graphicsHolder.matrixStack != null) {
-			final Matrix4f matrix4f = Utilities.copy(new Matrix4f(graphicsHolder.matrixStack.last().pose()));
-			opaqueQueue.add(() -> batchManager.queue(optimizedModel.uploadedOpaqueParts, new VertexAttributeState(light, matrix4f)));
-			translucentQueue.add(() -> batchManager.queue(optimizedModel.uploadedTranslucentParts, new VertexAttributeState(light, matrix4f)));
+			batchManager.queue(optimizedModel.uploadedParts, new VertexAttributeState(light, Utilities.copy(new Matrix4f(graphicsHolder.matrixStack.last().pose()))));
 		}
 	}
 
 	@MappedMethod
-	public void render() {
-		if ((!opaqueQueue.isEmpty() || !translucentQueue.isEmpty()) && shaderManager.isReady()) {
-			opaqueQueue.forEach(Runnable::run);
-			translucentQueue.forEach(Runnable::run);
+	public void render(boolean renderTranslucent) {
+		if (shaderManager.isReady()) {
 			GlStateTracker.capture();
-			batchManager.drawAll(shaderManager);
+			batchManager.drawAll(shaderManager, renderTranslucent);
 			GlStateTracker.restore();
-			opaqueQueue.clear();
-			translucentQueue.clear();
 		}
 	}
 }
