@@ -95,6 +95,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -128,6 +129,7 @@ public final class ClassScannerTest {
 		scanner.put("BlockSettings", BlockBehaviour.Properties.class);
 		scanner.put("BlockState", BlockState.class);
 		scanner.put("BlockView", BlockGetter.class);
+		scanner.put("BooleanBiFunction", BooleanOp.class);
 		scanner.put("BooleanProperty", BooleanProperty.class);
 		scanner.put("BossBarManager", CustomBossEvents.class);
 		scanner.put("Box", AABB.class);

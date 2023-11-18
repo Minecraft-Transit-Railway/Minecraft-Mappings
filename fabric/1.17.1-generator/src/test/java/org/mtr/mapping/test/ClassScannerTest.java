@@ -58,6 +58,7 @@ import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
+import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.*;
@@ -96,6 +97,7 @@ public final class ClassScannerTest {
 		scanner.put("BlockSettings", AbstractBlock.Settings.class);
 		scanner.put("BlockState", BlockState.class);
 		scanner.put("BlockView", BlockView.class);
+		scanner.put("BooleanBiFunction", BooleanBiFunction.class);
 		scanner.put("BooleanProperty", BooleanProperty.class);
 		scanner.put("BossBarManager", BossBarManager.class);
 		scanner.put("Box", Box.class);

@@ -59,6 +59,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
@@ -103,6 +104,7 @@ public final class ClassScannerTest {
 		scanner.put("BlockSettings", AbstractBlock.Properties.class);
 		scanner.put("BlockState", BlockState.class);
 		scanner.put("BlockView", IBlockReader.class);
+		scanner.put("BooleanBiFunction", IBooleanFunction.class);
 		scanner.put("BooleanProperty", BooleanProperty.class);
 		scanner.put("BossBarManager", CustomServerBossInfoManager.class);
 		scanner.put("Box", AxisAlignedBB.class);

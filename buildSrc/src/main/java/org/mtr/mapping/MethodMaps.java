@@ -355,6 +355,11 @@ public interface MethodMaps {
 		addMethodMap2.add("Vector3f", "getX", "public float ()", "x");
 		addMethodMap2.add("Vector3f", "getY", "public float ()", "y");
 		addMethodMap2.add("Vector3f", "getZ", "public float ()", "z");
+		addMethodMap2.add("VoxelShapes", "adjacentSidesCoverSquare", "public static boolean (VoxelShape,VoxelShape,Direction)", "mergedFaceOccludes");
+		addMethodMap2.add("VoxelShapes", "combine", "public static VoxelShape (VoxelShape,VoxelShape,BooleanBiFunction)", "joinUnoptimized");
+		addMethodMap2.add("VoxelShapes", "combineAndSimplify", "public static VoxelShape (VoxelShape,VoxelShape,BooleanBiFunction)", "join");
+		addMethodMap2.add("VoxelShapes", "cuboid", "public static VoxelShape (double,double,double,double,double,double)", "box");
+		addMethodMap2.add("VoxelShapes", "isSideCovered", "public static boolean (VoxelShape,VoxelShape,Direction)", "blockOccudes");
 		blacklist.add("BlockEntityType", "get", "public T (BlockView,BlockPos)");
 		blacklist.add("CompoundTag", "getType", "public byte ()");
 		blacklist.add("EntityType", "create", "public T (World)");
