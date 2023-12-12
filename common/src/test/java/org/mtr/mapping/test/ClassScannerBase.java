@@ -97,7 +97,7 @@ public abstract class ClassScannerBase {
 					&& !Modifier.isNative(modifiers)
 					&& !executable.isSynthetic()
 					&& !EnumHelper.containsSignature(executable)
-					&& (classInfo.isEnum || !classInfo.options.contains(minecraftMethodName))
+					&& (classInfo.isEnum || (isMethod ? !classInfo.options.contains(minecraftMethodName) : !classInfo.options.contains(classInfo.className)))
 					&& (!classInfo.isInterface || !isMethod || !((Method) executable).isDefault())
 					&& (!isMethod || classInfo.allowedVisibility(((Method) executable).getReturnType().getModifiers(), false))
 					&& Arrays.stream(executable.getParameters()).allMatch(parameter -> classInfo.allowedVisibility(parameter.getType().getModifiers(), false))

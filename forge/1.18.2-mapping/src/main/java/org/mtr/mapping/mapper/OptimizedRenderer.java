@@ -44,7 +44,7 @@ public final class OptimizedRenderer {
 	 * @return {@code true} for 1.17+, {@code false} otherwise
 	 */
 	@MappedMethod
-	public boolean hasOptimizedRendering() {
+	public static boolean hasOptimizedRendering() {
 		return true;
 	}
 }

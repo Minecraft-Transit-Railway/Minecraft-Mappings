@@ -178,7 +178,7 @@ public final class ClassScannerTest {
 		scanner.put("LightType", LightLayer.class);
 		scanner.put("LivingEntity", LivingEntity.class, "getType");
 		scanner.put("MapColor", MaterialColor.class);
-		scanner.put("MathHelper", Mth.class);
+		scanner.put("MathHelper", Mth.class, "MathHelper");
 		scanner.put("Matrix3f", Matrix3f.class);
 		scanner.put("Matrix4f", Matrix4f.class);
 		scanner.put("MinecraftClient", Minecraft.class, "ask", "askEither");
@@ -233,9 +233,9 @@ public final class ClassScannerTest {
 		scanner.put("Vector3i", Vec3i.class);
 		scanner.put("VertexFormat", VertexFormat.class);
 		scanner.put("VertexFormatElement", VertexFormatElement.class);
-		scanner.put("VertexFormats", DefaultVertexFormat.class);
+		scanner.put("VertexFormats", DefaultVertexFormat.class, "VertexFormats");
 		scanner.put("VoxelShape", VoxelShape.class);
-		scanner.put("VoxelShapes", Shapes.class);
+		scanner.put("VoxelShapes", Shapes.class, "VoxelShapes");
 		scanner.put("Window", Window.class);
 		scanner.put("World", Level.class);
 		scanner.put("WorldAccess", LevelAccessor.class);
