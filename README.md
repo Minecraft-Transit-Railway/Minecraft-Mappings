@@ -35,11 +35,13 @@ scanner.putInterface("MappedClassName", MinecraftClass.class);
 As an example:
 
 `ClassScannerTest` in `fabric/1.16.5-generator`
+
 ```java
 scanner.put("Identifier", Identifier.class);
 ```
 
 `ClassScannerTest` in `forge/1.16.5-generator`
+
 ```java
 scanner.put("Identifier", ResourceLocation.class);
 ```

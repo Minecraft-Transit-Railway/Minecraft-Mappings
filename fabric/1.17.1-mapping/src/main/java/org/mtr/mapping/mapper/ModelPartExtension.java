@@ -10,10 +10,10 @@ import java.util.Random;
 
 public final class ModelPartExtension extends DummyClass {
 
+	ModelPart modelPart;
 	private float tempPivotX, tempPivotY, tempPivotZ;
 	private float tempRotationX, tempRotationY, tempRotationZ;
 	private int tempU, tempV;
-	private ModelPart modelPart;
 	private ModelPartData additionalModelPartData;
 	private ModelPartExtension parent;
 

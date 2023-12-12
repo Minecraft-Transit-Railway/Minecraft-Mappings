@@ -223,4 +223,5 @@ gradle的`jar`和`remapJar`命令分别构建了Fabric和Forge的反混淆JAR文
 要手动添加方法名称映射，请编辑`buildSrc`中的`MethodMaps`。
 
 ## 许可证
+
 该项目使用[MIT许可证](https://opensource.org/licenses/MIT)。

@@ -39,4 +39,12 @@ public final class OptimizedRenderer {
 			GlStateTracker.restore();
 		}
 	}
+
+	/**
+	 * @return {@code true} for 1.17+, {@code false} otherwise
+	 */
+	@MappedMethod
+	public boolean hasOptimizedRendering() {
+		return true;
+	}
 }

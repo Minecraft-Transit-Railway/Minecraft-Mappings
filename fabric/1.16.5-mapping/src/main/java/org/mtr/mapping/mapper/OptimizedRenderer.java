@@ -19,4 +19,12 @@ public final class OptimizedRenderer {
 	@MappedMethod
 	public void render(boolean renderTranslucent) {
 	}
+
+	/**
+	 * @return {@code true} for 1.17+, {@code false} otherwise
+	 */
+	@MappedMethod
+	public boolean hasOptimizedRendering() {
+		return false;
+	}
 }

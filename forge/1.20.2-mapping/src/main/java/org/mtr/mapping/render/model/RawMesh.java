@@ -179,7 +179,7 @@ public final class RawMesh {
 			}
 			if (shouldWriteVertexBuffer(mapping, VertexAttributeType.NORMAL)) {
 				final Vector3f normal = Utilities.copy(vertex.normal);
-				normal.normalize();
+				normal.data.normalize();
 				byteBuffer.put((byte) (normal.getX() * 0x7F)).put((byte) (normal.getY() * 0x7F)).put((byte) (normal.getZ() * 0x7F));
 			}
 			if (mapping.paddingVertex > 0) {
