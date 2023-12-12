@@ -93,14 +93,14 @@ public abstract class ClassScannerBase {
 			final boolean isMethod = executable instanceof Method;
 			final int modifiers = executable.getModifiers();
 
-			if (classInfo.allowedVisibility(modifiers)
+			if (classInfo.allowedVisibility(modifiers, !isMethod)
 					&& !Modifier.isNative(modifiers)
 					&& !executable.isSynthetic()
 					&& !EnumHelper.containsSignature(executable)
 					&& (classInfo.isEnum || !classInfo.options.contains(minecraftMethodName))
 					&& (!classInfo.isInterface || !isMethod || !((Method) executable).isDefault())
-					&& (!isMethod || classInfo.allowedVisibility(((Method) executable).getReturnType().getModifiers()))
-					&& Arrays.stream(executable.getParameters()).allMatch(parameter -> classInfo.allowedVisibility(parameter.getType().getModifiers()))
+					&& (!isMethod || classInfo.allowedVisibility(((Method) executable).getReturnType().getModifiers(), false))
+					&& Arrays.stream(executable.getParameters()).allMatch(parameter -> classInfo.allowedVisibility(parameter.getType().getModifiers(), false))
 			) {
 				final String generics = getGenerics(executable, false, true, classMap);
 				final String exceptions = getStringFromMethod(stringBuilder -> appendIfNotEmpty(stringBuilder, executable.getGenericExceptionTypes(), "throws ", "", ",", Type::getTypeName));
@@ -142,7 +142,7 @@ public abstract class ClassScannerBase {
 						Modifier.isStatic(modifiers),
 						Modifier.isFinal(modifiers),
 						Modifier.isAbstract(modifiers),
-						Modifier.toString(modifiers & ~Modifier.ABSTRACT & ~Modifier.TRANSIENT & ~(classInfo.isInterface ? Modifier.PUBLIC : 0)),
+						Modifier.toString(modifiers & ~Modifier.ABSTRACT & ~Modifier.TRANSIENT & ~(classInfo.isInterface ? Modifier.PUBLIC : 0) & ~(isMethod ? 0 : Modifier.PROTECTED) | (isMethod ? 0 : Modifier.PUBLIC)),
 						generics,
 						returnType,
 						parameters,
@@ -158,7 +158,7 @@ public abstract class ClassScannerBase {
 			final Map<Type, Type> typeMap = classTree.get(field.getDeclaringClass());
 			final int modifiers = field.getModifiers();
 
-			if (classInfo.allowedVisibility(modifiers)) {
+			if (classInfo.allowedVisibility(modifiers, false)) {
 				final Type genericType = field.getGenericType();
 				final TypeInfo fieldType = new TypeInfo(
 						field.getName(),
@@ -340,8 +340,8 @@ public abstract class ClassScannerBase {
 			return String.format("%s%s", className, isAbstractMapping && !isInterface ? "AbstractMapping" : "");
 		}
 
-		private boolean allowedVisibility(int modifiers) {
-			return Modifier.isPublic(modifiers) || isAbstractMapping && Modifier.isProtected(modifiers);
+		private boolean allowedVisibility(int modifiers, boolean allowPackagePrivate) {
+			return Modifier.isPublic(modifiers) || isAbstractMapping && (allowPackagePrivate ? !Modifier.isPrivate(modifiers) : Modifier.isProtected(modifiers));
 		}
 	}
 

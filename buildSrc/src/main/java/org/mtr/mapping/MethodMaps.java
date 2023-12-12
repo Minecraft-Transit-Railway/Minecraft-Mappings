@@ -44,7 +44,6 @@ public interface MethodMaps {
 		addMethodMap1.add("CheckboxWidget", "isChecked", "selected");
 		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "addScoreboardTag", "addCommandTag", "addTag");
 		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "getBlockPos", "blockPosition");
-		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "getEntityName", "getScoreboardName");
 		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "getEntityWorld", "getCommandSenderWorld");
 		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "getHeight", "getBbHeight");
 		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "getHorizontalFacing", "getDirection");
@@ -55,7 +54,6 @@ public interface MethodMaps {
 		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "getSwimHeight", "getFluidJumpThreshold", "method_29241");
 		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "getUuidAsString", "getStringUUID");
 		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "isSneaking", "isShiftKeyDown");
-		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "removeScoreboardTag", "removeTag");
 		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "setBodyYaw", "setYBodyRot");
 		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "setHeadYaw", "setYHeadRot");
 		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "setVelocity", "setDeltaMovement");
@@ -234,7 +232,6 @@ public interface MethodMaps {
 		addMethodMap1.add("RenderLayer", "getTextSeeThrough", "textSeeThrough");
 		addMethodMap1.add("RenderLayer", "getTranslucent", "translucent");
 		addMethodMap1.add("RenderLayer", "getTranslucentMovingBlock", "translucentMovingBlock");
-		addMethodMap1.add("RenderLayer", "getTranslucentNoCrumbling", "translucentNoCrumbling");
 		addMethodMap1.add("RenderLayer", "getTripwire", "tripwire");
 		addMethodMap1.add("RenderLayer", "getWaterMask", "waterMask");
 		addMethodMap1.add("RenderLayer", "hasCrumbling", "affectsCrumbling");
@@ -249,7 +246,6 @@ public interface MethodMaps {
 		addMethodMap1.add("Scoreboard", "updateRemovedTeam", "onTeamRemoved");
 		addMethodMap1.add("Scoreboard", "updateScoreboardTeam", "onTeamChanged");
 		addMethodMap1.add("Scoreboard", "updateScoreboardTeamAndPlayers", "onTeamAdded");
-		addMethodMap1.add("ScoreboardPlayerScore", "clearScore", "reset");
 		addMethodMap1.add("Screen", "close", "onClose");
 		addMethodMap1.add("Screen", "OPTIONS_BACKGROUND_TEXTURE", "BACKGROUND_LOCATION");
 		addMethodMap1.add("Screen", "shouldPause", "isPauseScreen");
@@ -344,7 +340,7 @@ public interface MethodMaps {
 		addMethodMap2.add("MathHelper", "idealHash", "public static int (int)", "murmurHash3Mixer");
 		addMethodMap2.add("MathHelper", "lerpAngleDegrees", "public static float (float,float,float)", "rotLerp");
 		addMethodMap2.add("RenderLayer", "getOutline", "public static RenderLayer (Identifier)", "outline");
-		addMethodMap2.add("Scoreboard", "clearPlayerTeam", "public boolean (java.lang.String)", "removePlayerFromTeam");
+		addMethodMap2.add("ScoreboardScore", "setScore", "public void (int)", "value");
 		addMethodMap2.add("ServerPlayerEntity", "sendMessage", "public void (Text,boolean)", "displayClientMessage");
 		addMethodMap2.add("ServerWorld|World", "isChunkLoaded", "public boolean (int,int)", "hasChunk");
 		addMethodMap2.add("ServerWorld|World", "isSavingDisabled", "public boolean ()", "noSave");

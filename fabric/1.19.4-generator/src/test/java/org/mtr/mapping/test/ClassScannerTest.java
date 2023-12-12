@@ -177,7 +177,7 @@ public final class ClassScannerTest {
 		scanner.put("ScoreboardCriterion", ScoreboardCriterion.class);
 		scanner.put("ScoreboardCriterionRenderType", ScoreboardCriterion.RenderType.class);
 		scanner.put("ScoreboardObjective", ScoreboardObjective.class);
-		scanner.put("ScoreboardPlayerScore", ScoreboardPlayerScore.class);
+		scanner.put("ScoreboardScore", ScoreboardPlayerScore.class);
 		scanner.put("ServerPlayerEntity", ServerPlayerEntity.class, "damageArmor", "damageHelmet", "damageShield", "getType");
 		scanner.put("ServerWorld", ServerWorld.class);
 		scanner.put("ServerWorldAccess", ServerWorldAccess.class);

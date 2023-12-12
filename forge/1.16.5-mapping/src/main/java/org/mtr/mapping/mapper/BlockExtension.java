@@ -5,6 +5,7 @@ import net.minecraft.util.text.ITextComponent;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -13,6 +14,30 @@ public class BlockExtension extends BlockAbstractMapping implements BlockHelper 
 	@MappedMethod
 	public BlockExtension(BlockSettings blockSettings) {
 		super(blockSettings);
+	}
+
+	@MappedMethod
+	public void onBreak3(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+		super.playerWillDestroy2(world, pos, state, player);
+	}
+
+	@Deprecated
+	@Override
+	public final void playerWillDestroy2(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+		onBreak3(world, pos, state, player);
+	}
+
+	@Nonnull
+	@MappedMethod
+	public ItemStack getPickStack3(BlockView world, BlockPos pos, BlockState state) {
+		return super.getCloneItemStack2(world, pos, state);
+	}
+
+	@Nonnull
+	@Deprecated
+	@Override
+	public final ItemStack getCloneItemStack2(BlockView world, BlockPos pos, BlockState state) {
+		return getPickStack3(world, pos, state);
 	}
 
 	@Deprecated
