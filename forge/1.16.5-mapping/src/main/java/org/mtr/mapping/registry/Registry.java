@@ -23,18 +23,18 @@ import java.util.function.Supplier;
 
 public final class Registry extends DummyClass {
 
-	static SimpleChannel simpleChannel;
-	private static int packetIdCounter;
+	SimpleChannel simpleChannel;
+	private int packetIdCounter;
 	private static final String PROTOCOL_VERSION = "1";
 
 	@MappedMethod
-	public static void init() {
+	public void init() {
 		MinecraftForge.EVENT_BUS.register(MainEventBus.class);
 		FMLJavaModLoadingContext.get().getModEventBus().register(ModEventBus.class);
 	}
 
 	@MappedMethod
-	public static BlockRegistryObject registerBlock(Identifier identifier, Supplier<Block> supplier) {
+	public BlockRegistryObject registerBlock(Identifier identifier, Supplier<Block> supplier) {
 		ModEventBus.BLOCKS.add(() -> {
 			final net.minecraft.block.Block block = supplier.get().data;
 			block.setRegistryName(identifier.data);
@@ -44,7 +44,7 @@ public final class Registry extends DummyClass {
 	}
 
 	@MappedMethod
-	public static BlockRegistryObject registerBlockWithBlockItem(Identifier identifier, Supplier<Block> supplier, CreativeModeTabHolder creativeModeTabHolder) {
+	public BlockRegistryObject registerBlockWithBlockItem(Identifier identifier, Supplier<Block> supplier, CreativeModeTabHolder creativeModeTabHolder) {
 		ModEventBus.BLOCKS.add(() -> {
 			final net.minecraft.block.Block block = supplier.get().data;
 			block.setRegistryName(identifier.data);
@@ -60,7 +60,7 @@ public final class Registry extends DummyClass {
 	}
 
 	@MappedMethod
-	public static ItemRegistryObject registerItem(Identifier identifier, Function<ItemSettings, Item> function, CreativeModeTabHolder creativeModeTabHolder) {
+	public ItemRegistryObject registerItem(Identifier identifier, Function<ItemSettings, Item> function, CreativeModeTabHolder creativeModeTabHolder) {
 		ModEventBus.ITEMS.add(() -> {
 			final net.minecraft.item.Item item = function.apply(new ItemSettings().tab(creativeModeTabHolder.creativeModeTab)).data;
 			item.setRegistryName(identifier.data);
@@ -70,7 +70,7 @@ public final class Registry extends DummyClass {
 	}
 
 	@MappedMethod
-	public static <T extends BlockEntityExtension> BlockEntityTypeRegistryObject<T> registerBlockEntityType(Identifier identifier, BiFunction<BlockPos, BlockState, T> function, Supplier<Block>... blockSuppliers) {
+	public <T extends BlockEntityExtension> BlockEntityTypeRegistryObject<T> registerBlockEntityType(Identifier identifier, BiFunction<BlockPos, BlockState, T> function, Supplier<Block>... blockSuppliers) {
 		ModEventBus.BLOCK_ENTITY_TYPES.add(() -> {
 			final TileEntityType<T> tileEntityType = TileEntityType.Builder.of(() -> function.apply(null, null), HolderBase.convertArray(blockSuppliers, net.minecraft.block.Block[]::new)).build(null);
 			tileEntityType.setRegistryName(identifier.data);
@@ -80,7 +80,7 @@ public final class Registry extends DummyClass {
 	}
 
 	@MappedMethod
-	public static <T extends EntityExtension> EntityTypeRegistryObject<T> registerEntityType(Identifier identifier, BiFunction<EntityType<?>, World, T> function, float width, float height) {
+	public <T extends EntityExtension> EntityTypeRegistryObject<T> registerEntityType(Identifier identifier, BiFunction<EntityType<?>, World, T> function, float width, float height) {
 		ModEventBus.ENTITY_TYPES.add(() -> {
 			final net.minecraft.entity.EntityType<T> entityType = net.minecraft.entity.EntityType.Builder.of(getEntityFactory(function), EntityClassification.MISC).sized(width, height).build(identifier.toString());
 			entityType.setRegistryName(identifier.data);
@@ -89,17 +89,17 @@ public final class Registry extends DummyClass {
 		return new EntityTypeRegistryObject<>(identifier);
 	}
 
-	private static <T extends EntityExtension> net.minecraft.entity.EntityType.IFactory<T> getEntityFactory(BiFunction<EntityType<?>, World, T> function) {
+	private <T extends EntityExtension> net.minecraft.entity.EntityType.IFactory<T> getEntityFactory(BiFunction<EntityType<?>, World, T> function) {
 		return (entityType, world) -> function.apply(new EntityType<>(entityType), new World(world));
 	}
 
 	@MappedMethod
-	public static CreativeModeTabHolder createCreativeModeTabHolder(Identifier identifier, Supplier<ItemStack> iconSupplier) {
+	public CreativeModeTabHolder createCreativeModeTabHolder(Identifier identifier, Supplier<ItemStack> iconSupplier) {
 		return new CreativeModeTabHolder(identifier, iconSupplier);
 	}
 
 	@MappedMethod
-	public static SoundEventRegistryObject registerSoundEvent(Identifier identifier) {
+	public SoundEventRegistryObject registerSoundEvent(Identifier identifier) {
 		ModEventBus.SOUND_EVENTS.add(() -> {
 			final SoundEvent soundEvent = new SoundEvent(identifier.data);
 			soundEvent.setRegistryName(identifier.data);
@@ -109,12 +109,12 @@ public final class Registry extends DummyClass {
 	}
 
 	@MappedMethod
-	public static void setupPackets(Identifier identifier) {
+	public void setupPackets(Identifier identifier) {
 		simpleChannel = NetworkRegistry.newSimpleChannel(identifier.data, () -> PROTOCOL_VERSION, Registry::validProtocol, Registry::validProtocol);
 	}
 
 	@MappedMethod
-	public static <T extends PacketHandler> void registerPacket(Class<T> classObject, Function<PacketBuffer, T> getInstance) {
+	public <T extends PacketHandler> void registerPacket(Class<T> classObject, Function<PacketBuffer, T> getInstance) {
 		if (simpleChannel != null) {
 			simpleChannel.registerMessage(packetIdCounter++, classObject, (packetHandler, packetBuffer) -> {
 				packetBuffer.writeUtf(classObject.getName());
@@ -139,7 +139,7 @@ public final class Registry extends DummyClass {
 	}
 
 	@MappedMethod
-	public static <T extends PacketHandler> void sendPacketToClient(ServerPlayerEntity serverPlayerEntity, T data) {
+	public <T extends PacketHandler> void sendPacketToClient(ServerPlayerEntity serverPlayerEntity, T data) {
 		if (simpleChannel != null) {
 			simpleChannel.send(PacketDistributor.PLAYER.with(() -> serverPlayerEntity.data), data);
 		}

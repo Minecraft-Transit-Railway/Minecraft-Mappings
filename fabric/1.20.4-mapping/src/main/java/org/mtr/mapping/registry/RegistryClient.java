@@ -26,35 +26,40 @@ import java.util.function.Function;
 public final class RegistryClient extends DummyClass {
 
 	public static Function<World, ? extends EntityExtension> worldRenderingEntity;
-	private static final List<Runnable> OBJECTS_TO_REGISTER = new ArrayList<>();
+	private final Registry registry;
+	private final List<Runnable> objectsToRegister = new ArrayList<>();
 
-	@MappedMethod
-	public static void init() {
-		OBJECTS_TO_REGISTER.forEach(Runnable::run);
+	public RegistryClient(Registry registry) {
+		this.registry = registry;
 	}
 
 	@MappedMethod
-	public static <T extends BlockEntityTypeRegistryObject<U>, U extends BlockEntityExtension> void registerBlockEntityRenderer(T blockEntityType, Function<BlockEntityRenderer.Argument, BlockEntityRenderer<U>> rendererInstance) {
-		OBJECTS_TO_REGISTER.add(() -> BlockEntityRendererFactories.register(blockEntityType.get().data, context -> rendererInstance.apply(new BlockEntityRenderer.Argument(context))));
+	public void init() {
+		objectsToRegister.forEach(Runnable::run);
 	}
 
 	@MappedMethod
-	public static <T extends EntityTypeRegistryObject<U>, U extends EntityExtension> void registerEntityRenderer(T entityType, Function<EntityRenderer.Argument, EntityRenderer<U>> rendererInstance) {
-		OBJECTS_TO_REGISTER.add(() -> EntityRendererRegistry.register(entityType.get().data, dispatcher -> rendererInstance.apply(new EntityRenderer.Argument(dispatcher))));
+	public <T extends BlockEntityTypeRegistryObject<U>, U extends BlockEntityExtension> void registerBlockEntityRenderer(T blockEntityType, Function<BlockEntityRenderer.Argument, BlockEntityRenderer<U>> rendererInstance) {
+		objectsToRegister.add(() -> BlockEntityRendererFactories.register(blockEntityType.get().data, context -> rendererInstance.apply(new BlockEntityRenderer.Argument(context))));
 	}
 
 	@MappedMethod
-	public static void registerBlockRenderType(RenderLayer renderLayer, BlockRegistryObject block) {
-		OBJECTS_TO_REGISTER.add(() -> BlockRenderLayerMap.INSTANCE.putBlock(block.get().data, renderLayer.data));
+	public <T extends EntityTypeRegistryObject<U>, U extends EntityExtension> void registerEntityRenderer(T entityType, Function<EntityRenderer.Argument, EntityRenderer<U>> rendererInstance) {
+		objectsToRegister.add(() -> EntityRendererRegistry.register(entityType.get().data, dispatcher -> rendererInstance.apply(new EntityRenderer.Argument(dispatcher))));
 	}
 
 	@MappedMethod
-	public static KeyBinding registerKeyBinding(String translationKey, int key, String categoryKey) {
+	public void registerBlockRenderType(RenderLayer renderLayer, BlockRegistryObject block) {
+		objectsToRegister.add(() -> BlockRenderLayerMap.INSTANCE.putBlock(block.get().data, renderLayer.data));
+	}
+
+	@MappedMethod
+	public KeyBinding registerKeyBinding(String translationKey, int key, String categoryKey) {
 		return new KeyBinding(KeyBindingHelper.registerKeyBinding(new net.minecraft.client.option.KeyBinding(translationKey, InputUtil.Type.KEYSYM, key, categoryKey)));
 	}
 
 	@MappedMethod
-	public static void registerBlockColors(BlockColorProvider blockColorProvider, BlockRegistryObject... blocks) {
+	public void registerBlockColors(BlockColorProvider blockColorProvider, BlockRegistryObject... blocks) {
 		final net.minecraft.block.Block[] newBlocks = new net.minecraft.block.Block[blocks.length];
 		for (int i = 0; i < blocks.length; i++) {
 			newBlocks[i] = blocks[i].get().data;
@@ -63,7 +68,7 @@ public final class RegistryClient extends DummyClass {
 	}
 
 	@MappedMethod
-	public static void registerItemColors(ItemColorProvider itemColorProvider, ItemRegistryObject... items) {
+	public void registerItemColors(ItemColorProvider itemColorProvider, ItemRegistryObject... items) {
 		final net.minecraft.item.Item[] newItems = new net.minecraft.item.Item[items.length];
 		for (int i = 0; i < items.length; i++) {
 			newItems[i] = items[i].get().data;
@@ -72,14 +77,14 @@ public final class RegistryClient extends DummyClass {
 	}
 
 	@MappedMethod
-	public static void registerItemModelPredicate(ItemRegistryObject item, Identifier identifier, ModelPredicateProvider modelPredicateProvider) {
+	public void registerItemModelPredicate(ItemRegistryObject item, Identifier identifier, ModelPredicateProvider modelPredicateProvider) {
 		ModelPredicateProviderRegistry.register(item.get().data, identifier.data, (itemStack, clientWorld, livingEntity, seed) -> modelPredicateProvider.call(new ItemStack(itemStack), clientWorld == null ? null : new ClientWorld(clientWorld), livingEntity == null ? null : new LivingEntity(livingEntity)));
 	}
 
 	@MappedMethod
-	public static void setupPackets(Identifier identifier) {
+	public void setupPackets(Identifier identifier) {
 		ClientPlayNetworking.registerGlobalReceiver(identifier.data, (client, handler, buf, responseSender) -> {
-			final Function<PacketBuffer, ? extends PacketHandler> getInstance = Registry.PACKETS.get(buf.readString());
+			final Function<PacketBuffer, ? extends PacketHandler> getInstance = registry.packets.get(buf.readString());
 			if (getInstance != null) {
 				final PacketHandler packetHandler = getInstance.apply(new PacketBuffer(buf));
 				packetHandler.runClient();
@@ -89,12 +94,12 @@ public final class RegistryClient extends DummyClass {
 	}
 
 	@MappedMethod
-	public static <T extends PacketHandler> void sendPacketToServer(T data) {
-		if (Registry.packetsIdentifier != null) {
+	public <T extends PacketHandler> void sendPacketToServer(T data) {
+		if (registry.packetsIdentifier != null) {
 			final PacketByteBuf packetByteBuf = PacketByteBufs.create();
 			packetByteBuf.writeString(data.getClass().getName());
 			data.write(new PacketBuffer(packetByteBuf));
-			ClientPlayNetworking.send(Registry.packetsIdentifier.data, packetByteBuf);
+			ClientPlayNetworking.send(registry.packetsIdentifier.data, packetByteBuf);
 		}
 	}
 

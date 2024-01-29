@@ -21,37 +21,42 @@ import java.util.function.Function;
 public final class RegistryClient extends DummyClass {
 
 	public static Function<World, ? extends EntityExtension> worldRenderingEntity;
+	private final Registry registry;
+
+	public RegistryClient(Registry registry) {
+		this.registry = registry;
+	}
 
 	@MappedMethod
-	public static void init() {
+	public void init() {
 		MinecraftForge.EVENT_BUS.register(MainEventBusClient.class);
 		FMLJavaModLoadingContext.get().getModEventBus().register(ModEventBusClient.class);
 	}
 
 	@MappedMethod
-	public static <T extends BlockEntityTypeRegistryObject<U>, U extends BlockEntityExtension> void registerBlockEntityRenderer(T blockEntityType, Function<BlockEntityRenderer.Argument, BlockEntityRenderer<U>> rendererInstance) {
+	public <T extends BlockEntityTypeRegistryObject<U>, U extends BlockEntityExtension> void registerBlockEntityRenderer(T blockEntityType, Function<BlockEntityRenderer.Argument, BlockEntityRenderer<U>> rendererInstance) {
 		ModEventBusClient.CLIENT_OBJECTS_TO_REGISTER.add(() -> ClientRegistry.bindTileEntityRenderer(blockEntityType.get().data, dispatcher -> rendererInstance.apply(new BlockEntityRenderer.Argument(dispatcher))));
 	}
 
 	@MappedMethod
-	public static <T extends EntityTypeRegistryObject<U>, U extends EntityExtension> void registerEntityRenderer(T entityType, Function<EntityRenderer.Argument, EntityRenderer<U>> rendererInstance) {
+	public <T extends EntityTypeRegistryObject<U>, U extends EntityExtension> void registerEntityRenderer(T entityType, Function<EntityRenderer.Argument, EntityRenderer<U>> rendererInstance) {
 		ModEventBusClient.CLIENT_OBJECTS_TO_REGISTER.add(() -> RenderingRegistry.registerEntityRenderingHandler(entityType.get().data, dispatcher -> rendererInstance.apply(new EntityRenderer.Argument(dispatcher))));
 	}
 
 	@MappedMethod
-	public static void registerBlockRenderType(RenderLayer renderLayer, BlockRegistryObject block) {
+	public void registerBlockRenderType(RenderLayer renderLayer, BlockRegistryObject block) {
 		ModEventBusClient.CLIENT_OBJECTS_TO_REGISTER.add(() -> RenderTypeLookup.setRenderLayer(block.get().data, renderLayer.data));
 	}
 
 	@MappedMethod
-	public static KeyBinding registerKeyBinding(String translationKey, int key, String categoryKey) {
+	public KeyBinding registerKeyBinding(String translationKey, int key, String categoryKey) {
 		final net.minecraft.client.settings.KeyBinding keyBinding = new net.minecraft.client.settings.KeyBinding(translationKey, InputMappings.Type.KEYSYM, key, categoryKey);
 		ModEventBusClient.CLIENT_OBJECTS_TO_REGISTER.add(() -> ClientRegistry.registerKeyBinding(keyBinding));
 		return new KeyBinding(keyBinding);
 	}
 
 	@MappedMethod
-	public static void registerBlockColors(BlockColorProvider blockColorProvider, BlockRegistryObject... blocks) {
+	public void registerBlockColors(BlockColorProvider blockColorProvider, BlockRegistryObject... blocks) {
 		ModEventBusClient.BLOCK_COLORS.add(event -> {
 			final net.minecraft.block.Block[] newBlocks = new net.minecraft.block.Block[blocks.length];
 			for (int i = 0; i < blocks.length; i++) {
@@ -62,7 +67,7 @@ public final class RegistryClient extends DummyClass {
 	}
 
 	@MappedMethod
-	public static void registerItemColors(ItemColorProvider itemColorProvider, ItemRegistryObject... items) {
+	public void registerItemColors(ItemColorProvider itemColorProvider, ItemRegistryObject... items) {
 		ModEventBusClient.ITEM_COLORS.add(event -> {
 			final net.minecraft.item.Item[] newItems = new net.minecraft.item.Item[items.length];
 			for (int i = 0; i < items.length; i++) {
@@ -73,18 +78,18 @@ public final class RegistryClient extends DummyClass {
 	}
 
 	@MappedMethod
-	public static void registerItemModelPredicate(ItemRegistryObject item, Identifier identifier, ModelPredicateProvider modelPredicateProvider) {
+	public void registerItemModelPredicate(ItemRegistryObject item, Identifier identifier, ModelPredicateProvider modelPredicateProvider) {
 		ModEventBusClient.CLIENT_OBJECTS_TO_REGISTER_QUEUED.add(() -> ItemModelsProperties.register(item.get().data, identifier.data, (itemStack, clientWorld, livingEntity) -> modelPredicateProvider.call(new ItemStack(itemStack), clientWorld == null ? null : new ClientWorld(clientWorld), livingEntity == null ? null : new LivingEntity(livingEntity))));
 	}
 
 	@MappedMethod
-	public static void setupPackets(Identifier identifier) {
+	public void setupPackets(Identifier identifier) {
 	}
 
 	@MappedMethod
-	public static <T extends PacketHandler> void sendPacketToServer(T data) {
-		if (Registry.simpleChannel != null) {
-			Registry.simpleChannel.sendToServer(data);
+	public <T extends PacketHandler> void sendPacketToServer(T data) {
+		if (registry.simpleChannel != null) {
+			registry.simpleChannel.sendToServer(data);
 		}
 	}
 

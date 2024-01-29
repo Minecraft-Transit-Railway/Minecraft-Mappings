@@ -26,72 +26,72 @@ import java.util.function.Supplier;
 
 public final class Registry extends DummyClass {
 
-	static Identifier packetsIdentifier;
-	static final Map<String, Function<PacketBuffer, ? extends PacketHandler>> PACKETS = new HashMap<>();
-	private static final List<Runnable> OBJECTS_TO_REGISTER = new ArrayList<>();
+	Identifier packetsIdentifier;
+	final Map<String, Function<PacketBuffer, ? extends PacketHandler>> packets = new HashMap<>();
+	private final List<Runnable> objectsToRegister = new ArrayList<>();
 
 	@MappedMethod
-	public static void init() {
-		OBJECTS_TO_REGISTER.forEach(Runnable::run);
+	public void init() {
+		objectsToRegister.forEach(Runnable::run);
 	}
 
 	@MappedMethod
-	public static BlockRegistryObject registerBlock(Identifier identifier, Supplier<Block> supplier) {
+	public BlockRegistryObject registerBlock(Identifier identifier, Supplier<Block> supplier) {
 		final Block block = supplier.get();
-		OBJECTS_TO_REGISTER.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.BLOCK, identifier.data, block.data));
+		objectsToRegister.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.BLOCK, identifier.data, block.data));
 		return new BlockRegistryObject(block);
 	}
 
 	@MappedMethod
-	public static BlockRegistryObject registerBlockWithBlockItem(Identifier identifier, Supplier<Block> supplier, CreativeModeTabHolder creativeModeTabHolder) {
+	public BlockRegistryObject registerBlockWithBlockItem(Identifier identifier, Supplier<Block> supplier, CreativeModeTabHolder creativeModeTabHolder) {
 		final Block block = supplier.get();
-		OBJECTS_TO_REGISTER.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.BLOCK, identifier.data, block.data));
-		OBJECTS_TO_REGISTER.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.ITEM, identifier.data, new BlockItemExtension(block, new ItemSettings().group(creativeModeTabHolder.creativeModeTab))));
+		objectsToRegister.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.BLOCK, identifier.data, block.data));
+		objectsToRegister.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.ITEM, identifier.data, new BlockItemExtension(block, new ItemSettings().group(creativeModeTabHolder.creativeModeTab))));
 		return new BlockRegistryObject(block);
 	}
 
 	@MappedMethod
-	public static ItemRegistryObject registerItem(Identifier identifier, Function<ItemSettings, Item> function, CreativeModeTabHolder creativeModeTabHolder) {
+	public ItemRegistryObject registerItem(Identifier identifier, Function<ItemSettings, Item> function, CreativeModeTabHolder creativeModeTabHolder) {
 		final Item item = function.apply(new ItemSettings().group(creativeModeTabHolder.creativeModeTab));
-		OBJECTS_TO_REGISTER.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.ITEM, identifier.data, item.data));
+		objectsToRegister.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.ITEM, identifier.data, item.data));
 		return new ItemRegistryObject(item);
 	}
 
 	@MappedMethod
-	public static <T extends BlockEntityExtension> BlockEntityTypeRegistryObject<T> registerBlockEntityType(Identifier identifier, BiFunction<BlockPos, BlockState, T> function, Supplier<Block>... blockSuppliers) {
+	public <T extends BlockEntityExtension> BlockEntityTypeRegistryObject<T> registerBlockEntityType(Identifier identifier, BiFunction<BlockPos, BlockState, T> function, Supplier<Block>... blockSuppliers) {
 		final net.minecraft.block.entity.BlockEntityType<T> blockEntityType = FabricBlockEntityTypeBuilder.create((pos, state) -> function.apply(new BlockPos(pos), new BlockState(state)), HolderBase.convertArray(blockSuppliers, net.minecraft.block.Block[]::new)).build(null);
-		OBJECTS_TO_REGISTER.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.BLOCK_ENTITY_TYPE, identifier.data, blockEntityType));
+		objectsToRegister.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.BLOCK_ENTITY_TYPE, identifier.data, blockEntityType));
 		return new BlockEntityTypeRegistryObject<>(new BlockEntityType<>(blockEntityType));
 	}
 
 	@MappedMethod
-	public static <T extends EntityExtension> EntityTypeRegistryObject<T> registerEntityType(Identifier identifier, BiFunction<EntityType<?>, World, T> function, float width, float height) {
+	public <T extends EntityExtension> EntityTypeRegistryObject<T> registerEntityType(Identifier identifier, BiFunction<EntityType<?>, World, T> function, float width, float height) {
 		final net.minecraft.entity.EntityType<T> entityType = FabricEntityTypeBuilder.create(SpawnGroup.MISC, getEntityFactory(function)).dimensions(EntityDimensions.fixed(width, height)).build();
-		OBJECTS_TO_REGISTER.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.ENTITY_TYPE, identifier.data, entityType));
+		objectsToRegister.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.ENTITY_TYPE, identifier.data, entityType));
 		return new EntityTypeRegistryObject<>(new EntityType<>(entityType));
 	}
 
-	private static <T extends EntityExtension> net.minecraft.entity.EntityType.EntityFactory<T> getEntityFactory(BiFunction<EntityType<?>, World, T> function) {
+	private <T extends EntityExtension> net.minecraft.entity.EntityType.EntityFactory<T> getEntityFactory(BiFunction<EntityType<?>, World, T> function) {
 		return (entityType, world) -> function.apply(new EntityType<>(entityType), new World(world));
 	}
 
 	@MappedMethod
-	public static CreativeModeTabHolder createCreativeModeTabHolder(Identifier identifier, Supplier<ItemStack> iconSupplier) {
+	public CreativeModeTabHolder createCreativeModeTabHolder(Identifier identifier, Supplier<ItemStack> iconSupplier) {
 		return new CreativeModeTabHolder(FabricItemGroupBuilder.create(identifier.data).icon(() -> iconSupplier.get().data).build());
 	}
 
 	@MappedMethod
-	public static SoundEventRegistryObject registerSoundEvent(Identifier identifier) {
+	public SoundEventRegistryObject registerSoundEvent(Identifier identifier) {
 		final SoundEvent soundEvent = new SoundEvent(identifier);
-		OBJECTS_TO_REGISTER.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.SOUND_EVENT, identifier.data, soundEvent.data));
+		objectsToRegister.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.SOUND_EVENT, identifier.data, soundEvent.data));
 		return new SoundEventRegistryObject(soundEvent);
 	}
 
 	@MappedMethod
-	public static void setupPackets(Identifier identifier) {
+	public void setupPackets(Identifier identifier) {
 		packetsIdentifier = identifier;
 		ServerPlayNetworking.registerGlobalReceiver(identifier.data, (server, player, handler, buf, responseSender) -> {
-			final Function<PacketBuffer, ? extends PacketHandler> getInstance = PACKETS.get(buf.readString());
+			final Function<PacketBuffer, ? extends PacketHandler> getInstance = packets.get(buf.readString());
 			if (getInstance != null) {
 				final PacketHandler packetHandler = getInstance.apply(new PacketBuffer(buf));
 				packetHandler.runServer();
@@ -101,12 +101,12 @@ public final class Registry extends DummyClass {
 	}
 
 	@MappedMethod
-	public static <T extends PacketHandler> void registerPacket(Class<T> classObject, Function<PacketBuffer, T> getInstance) {
-		PACKETS.put(classObject.getName(), getInstance);
+	public <T extends PacketHandler> void registerPacket(Class<T> classObject, Function<PacketBuffer, T> getInstance) {
+		packets.put(classObject.getName(), getInstance);
 	}
 
 	@MappedMethod
-	public static <T extends PacketHandler> void sendPacketToClient(ServerPlayerEntity serverPlayerEntity, T data) {
+	public <T extends PacketHandler> void sendPacketToClient(ServerPlayerEntity serverPlayerEntity, T data) {
 		if (packetsIdentifier != null) {
 			final PacketByteBuf packetByteBuf = PacketByteBufs.create();
 			packetByteBuf.writeString(data.getClass().getName());
