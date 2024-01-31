@@ -306,6 +306,8 @@ public interface MethodMaps {
 		addMethodMap1.add("Window", "setVsync", "updateVsync");
 		addMethodMap1.add("Window", "swapBuffers", "updateDisplay");
 		addMethodMap1.add("Window", "toggleFullscreen", "toggleFullScreen");
+		addMethodMap2.add("AbstractSoundInstance|MovingSoundInstance", "canPlay", "public boolean ()", "canPlaySound");
+		addMethodMap2.add("AbstractSoundInstance|MovingSoundInstance", "shouldAlwaysPlay", "public boolean ()", "canStartSilent");
 		addMethodMap2.add("BlockEntity", "markDirty", "public void ()", "setChanged");
 		addMethodMap2.add("BlockItem|Item", "hasRecipeRemainder", "public boolean ()", "hasCraftingRemainingItem");
 		addMethodMap2.add("BlockPos", "add", "public BlockPos (Vector3i)", "offset");
