@@ -262,9 +262,9 @@ public interface MethodMaps {
 		addMethodMap1.add("TextFieldWidget", "setFocusUnlocked", "setCanLoseFocus");
 		addMethodMap1.add("TextFieldWidget", "setSelectionEnd", "setCursorPosition");
 		addMethodMap1.add("TextFieldWidget", "setSelectionStart", "setHighlightPos");
-		addMethodMap1.add("TextFieldWidget", "setText", "insertText");
+		addMethodMap1.add("TextFieldWidget", "setText", "setValue");
 		addMethodMap1.add("TextFieldWidget", "setUneditableColor", "setTextColorUneditable");
-		addMethodMap1.add("TextFieldWidget", "write", "setValue");
+		addMethodMap1.add("TextFieldWidget", "write", "insertText");
 		addMethodMap1.add("TextureManager", "bindTexture", "bind", "bindForSetup");
 		addMethodMap1.add("TextureManager", "destroyTexture", "release");
 		addMethodMap1.add("Vector3d", "crossProduct", "cross");
