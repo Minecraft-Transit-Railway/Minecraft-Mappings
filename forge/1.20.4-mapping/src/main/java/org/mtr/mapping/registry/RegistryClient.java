@@ -1,6 +1,7 @@
 package org.mtr.mapping.registry;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import io.netty.buffer.Unpooled;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -15,6 +16,7 @@ import org.mtr.mapping.mapper.BlockEntityRenderer;
 import org.mtr.mapping.mapper.EntityExtension;
 import org.mtr.mapping.mapper.EntityRenderer;
 import org.mtr.mapping.tool.DummyClass;
+import org.mtr.mapping.tool.PacketBufferSender;
 
 import javax.annotation.Nullable;
 import java.util.function.Function;
@@ -59,7 +61,7 @@ public final class RegistryClient extends DummyClass {
 	@MappedMethod
 	public void registerBlockColors(BlockColorProvider blockColorProvider, BlockRegistryObject... blocks) {
 		ModEventBusClient.BLOCK_COLORS.add(event -> {
-			final net.minecraft.world.level.block.Block[] newBlocks = new Block[blocks.length];
+			final Block[] newBlocks = new Block[blocks.length];
 			for (int i = 0; i < blocks.length; i++) {
 				newBlocks[i] = blocks[i].get().data;
 			}
@@ -90,7 +92,10 @@ public final class RegistryClient extends DummyClass {
 	@MappedMethod
 	public <T extends PacketHandler> void sendPacketToServer(T data) {
 		if (registry.simpleChannel != null) {
-			registry.simpleChannel.send(data, PacketDistributor.SERVER.noArg());
+			final PacketBufferSender packetBufferSender = new PacketBufferSender(Unpooled::buffer);
+			packetBufferSender.writeString(data.getClass().getName());
+			data.write(packetBufferSender);
+			packetBufferSender.send(byteBuf -> registry.simpleChannel.send(byteBuf, PacketDistributor.SERVER.noArg()));
 		}
 	}
 

@@ -1,5 +1,7 @@
 package org.mtr.mapping.registry;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -16,7 +18,11 @@ import org.mtr.mapping.mapper.BlockItemExtension;
 import org.mtr.mapping.mapper.EntityExtension;
 import org.mtr.mapping.tool.DummyClass;
 import org.mtr.mapping.tool.HolderBase;
+import org.mtr.mapping.tool.PacketBufferReceiver;
+import org.mtr.mapping.tool.PacketBufferSender;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -24,7 +30,7 @@ import java.util.function.Supplier;
 public final class Registry extends DummyClass {
 
 	SimpleChannel simpleChannel;
-	private int packetIdCounter;
+	final Map<String, Function<PacketBufferReceiver, ? extends PacketHandler>> packets = new HashMap<>();
 	private static final int PROTOCOL_VERSION = 1;
 
 	@MappedMethod
@@ -91,25 +97,26 @@ public final class Registry extends DummyClass {
 	}
 
 	@MappedMethod
-	public <T extends PacketHandler> void registerPacket(Class<T> classObject, Function<PacketBuffer, T> getInstance) {
+	public <T extends PacketHandler> void registerPacket(Class<T> classObject, Function<PacketBufferReceiver, T> getInstance) {
+		packets.put(classObject.getName(), getInstance);
 		if (simpleChannel != null) {
-			simpleChannel.messageBuilder(classObject, packetIdCounter++).encoder((packetHandler, packetBuffer) -> {
-				packetBuffer.writeUtf(classObject.getName());
-				packetHandler.write(new PacketBuffer(packetBuffer));
-			}).decoder(packetBuffer -> {
-				packetBuffer.readUtf();
-				return getInstance.apply(new PacketBuffer(packetBuffer));
-			}).consumerNetworkThread((packetHandler, context) -> {
-				if (context.getDirection().getReceptionSide().isClient()) {
-					packetHandler.runClient();
-					context.enqueueWork(packetHandler::runClientQueued);
-				} else {
-					packetHandler.runServer();
-					final ServerPlayer serverPlayerEntity = context.getSender();
-					if (serverPlayerEntity != null) {
-						context.enqueueWork(() -> packetHandler.runServerQueued(new MinecraftServer(serverPlayerEntity.server), new ServerPlayerEntity(serverPlayerEntity)));
+			simpleChannel.messageBuilder(ByteBuf.class, 0).encoder((byteBuf, packetBuffer) -> packetBuffer.writeBytes(byteBuf)).decoder(packetBuffer -> packetBuffer.readBytes(packetBuffer.readableBytes())).consumerNetworkThread((byteBuf, context) -> {
+				PacketBufferReceiver.receive(byteBuf, packetBufferReceiver -> {
+					final Function<PacketBufferReceiver, ? extends PacketHandler> getPacketInstance = packets.get(packetBufferReceiver.readString());
+					if (getPacketInstance != null) {
+						final PacketHandler packetHandler = getPacketInstance.apply(packetBufferReceiver);
+						if (context.getDirection().getReceptionSide().isClient()) {
+							packetHandler.runClient();
+							context.enqueueWork(packetHandler::runClientQueued);
+						} else {
+							packetHandler.runServer();
+							final ServerPlayer serverPlayerEntity = context.getSender();
+							if (serverPlayerEntity != null) {
+								context.enqueueWork(() -> packetHandler.runServerQueued(new MinecraftServer(serverPlayerEntity.server), new ServerPlayerEntity(serverPlayerEntity)));
+							}
+						}
 					}
-				}
+				});
 			}).add();
 		}
 	}
@@ -117,7 +124,10 @@ public final class Registry extends DummyClass {
 	@MappedMethod
 	public <T extends PacketHandler> void sendPacketToClient(ServerPlayerEntity serverPlayerEntity, T data) {
 		if (simpleChannel != null) {
-			simpleChannel.send(data, PacketDistributor.PLAYER.with(serverPlayerEntity.data));
+			final PacketBufferSender packetBufferSender = new PacketBufferSender(Unpooled::buffer);
+			packetBufferSender.writeString(data.getClass().getName());
+			data.write(packetBufferSender);
+			packetBufferSender.send(byteBuf -> simpleChannel.send(byteBuf, PacketDistributor.PLAYER.with(serverPlayerEntity.data)));
 		}
 	}
 

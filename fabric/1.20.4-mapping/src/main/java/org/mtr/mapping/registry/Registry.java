@@ -21,6 +21,8 @@ import org.mtr.mapping.mapper.BlockItemExtension;
 import org.mtr.mapping.mapper.EntityExtension;
 import org.mtr.mapping.tool.DummyClass;
 import org.mtr.mapping.tool.HolderBase;
+import org.mtr.mapping.tool.PacketBufferReceiver;
+import org.mtr.mapping.tool.PacketBufferSender;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,7 +35,7 @@ import java.util.function.Supplier;
 public final class Registry extends DummyClass {
 
 	Identifier packetsIdentifier;
-	final Map<String, Function<PacketBuffer, ? extends PacketHandler>> packets = new HashMap<>();
+	final Map<String, Function<PacketBufferReceiver, ? extends PacketHandler>> packets = new HashMap<>();
 	private final List<Runnable> objectsToRegister = new ArrayList<>();
 
 	@MappedMethod
@@ -101,28 +103,28 @@ public final class Registry extends DummyClass {
 	@MappedMethod
 	public void setupPackets(Identifier identifier) {
 		packetsIdentifier = identifier;
-		ServerPlayNetworking.registerGlobalReceiver(identifier.data, (server, player, handler, buf, responseSender) -> {
-			final Function<PacketBuffer, ? extends PacketHandler> getInstance = packets.get(buf.readString());
+		ServerPlayNetworking.registerGlobalReceiver(identifier.data, (server, player, handler, buf, responseSender) -> PacketBufferReceiver.receive(buf, packetBufferReceiver -> {
+			final Function<PacketBufferReceiver, ? extends PacketHandler> getInstance = packets.get(packetBufferReceiver.readString());
 			if (getInstance != null) {
-				final PacketHandler packetHandler = getInstance.apply(new PacketBuffer(buf));
+				final PacketHandler packetHandler = getInstance.apply(packetBufferReceiver);
 				packetHandler.runServer();
 				server.execute(() -> packetHandler.runServerQueued(new MinecraftServer(server), new ServerPlayerEntity(player)));
 			}
-		});
+		}));
 	}
 
 	@MappedMethod
-	public <T extends PacketHandler> void registerPacket(Class<T> classObject, Function<PacketBuffer, T> getInstance) {
+	public <T extends PacketHandler> void registerPacket(Class<T> classObject, Function<PacketBufferReceiver, T> getInstance) {
 		packets.put(classObject.getName(), getInstance);
 	}
 
 	@MappedMethod
 	public <T extends PacketHandler> void sendPacketToClient(ServerPlayerEntity serverPlayerEntity, T data) {
 		if (packetsIdentifier != null) {
-			final PacketByteBuf packetByteBuf = PacketByteBufs.create();
-			packetByteBuf.writeString(data.getClass().getName());
-			data.write(new PacketBuffer(packetByteBuf));
-			ServerPlayNetworking.send(serverPlayerEntity.data, packetsIdentifier.data, packetByteBuf);
+			final PacketBufferSender packetBufferSender = new PacketBufferSender(PacketByteBufs::create);
+			packetBufferSender.writeString(data.getClass().getName());
+			data.write(packetBufferSender);
+			packetBufferSender.send(byteBuf -> ServerPlayNetworking.send(serverPlayerEntity.data, packetsIdentifier.data, byteBuf instanceof PacketByteBuf ? (PacketByteBuf) byteBuf : new PacketByteBuf(byteBuf)));
 		}
 	}
 }

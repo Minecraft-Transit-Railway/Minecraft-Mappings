@@ -1,6 +1,7 @@
 package org.mtr.mapping.registry;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import io.netty.buffer.Unpooled;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -14,6 +15,7 @@ import org.mtr.mapping.mapper.BlockEntityRenderer;
 import org.mtr.mapping.mapper.EntityExtension;
 import org.mtr.mapping.mapper.EntityRenderer;
 import org.mtr.mapping.tool.DummyClass;
+import org.mtr.mapping.tool.PacketBufferSender;
 
 import javax.annotation.Nullable;
 import java.util.function.Function;
@@ -89,7 +91,10 @@ public final class RegistryClient extends DummyClass {
 	@MappedMethod
 	public <T extends PacketHandler> void sendPacketToServer(T data) {
 		if (registry.simpleChannel != null) {
-			registry.simpleChannel.sendToServer(data);
+			final PacketBufferSender packetBufferSender = new PacketBufferSender(Unpooled::buffer);
+			packetBufferSender.writeString(data.getClass().getName());
+			data.write(packetBufferSender);
+			packetBufferSender.send(registry.simpleChannel::sendToServer);
 		}
 	}
 

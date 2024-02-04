@@ -194,6 +194,7 @@ public interface MethodMaps {
 		addMethodMap1.add("MinecraftClient", "getLastFrameDuration", "getDeltaFrameTime");
 		addMethodMap1.add("MinecraftClient", "getTickDelta", "getFrameTime");
 		addMethodMap1.add("MinecraftClient", "setScreen", "openScreen");
+		addMethodMap1.add("MinecraftServer", "getRunDirectory", "getServerDirectory");
 		addMethodMap1.add("NativeImage", "setColor", "setPixelColor", "setPixelRGBA");
 		addMethodMap1.add("NativeImageFormat", "RGB", "BGR");
 		addMethodMap1.add("NativeImageFormat", "RGBA", "ABGR");

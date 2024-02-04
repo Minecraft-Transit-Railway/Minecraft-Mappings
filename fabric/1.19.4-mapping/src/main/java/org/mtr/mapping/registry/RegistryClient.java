@@ -17,6 +17,8 @@ import org.mtr.mapping.mapper.BlockEntityRenderer;
 import org.mtr.mapping.mapper.EntityExtension;
 import org.mtr.mapping.mapper.EntityRenderer;
 import org.mtr.mapping.tool.DummyClass;
+import org.mtr.mapping.tool.PacketBufferReceiver;
+import org.mtr.mapping.tool.PacketBufferSender;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -83,23 +85,23 @@ public final class RegistryClient extends DummyClass {
 
 	@MappedMethod
 	public void setupPackets(Identifier identifier) {
-		ClientPlayNetworking.registerGlobalReceiver(identifier.data, (client, handler, buf, responseSender) -> {
-			final Function<PacketBuffer, ? extends PacketHandler> getInstance = registry.PACKETS.get(buf.readString());
+		ClientPlayNetworking.registerGlobalReceiver(identifier.data, (client, handler, buf, responseSender) -> PacketBufferReceiver.receive(buf, packetBufferReceiver -> {
+			final Function<PacketBufferReceiver, ? extends PacketHandler> getInstance = registry.packets.get(packetBufferReceiver.readString());
 			if (getInstance != null) {
-				final PacketHandler packetHandler = getInstance.apply(new PacketBuffer(buf));
+				final PacketHandler packetHandler = getInstance.apply(packetBufferReceiver);
 				packetHandler.runClient();
 				client.execute(packetHandler::runClientQueued);
 			}
-		});
+		}));
 	}
 
 	@MappedMethod
 	public <T extends PacketHandler> void sendPacketToServer(T data) {
 		if (registry.packetsIdentifier != null) {
-			final PacketByteBuf packetByteBuf = PacketByteBufs.create();
-			packetByteBuf.writeString(data.getClass().getName());
-			data.write(new PacketBuffer(packetByteBuf));
-			ClientPlayNetworking.send(registry.packetsIdentifier.data, packetByteBuf);
+			final PacketBufferSender packetBufferSender = new PacketBufferSender(PacketByteBufs::create);
+			packetBufferSender.writeString(data.getClass().getName());
+			data.write(packetBufferSender);
+			packetBufferSender.send(byteBuf -> ClientPlayNetworking.send(registry.packetsIdentifier.data, byteBuf instanceof PacketByteBuf ? (PacketByteBuf) byteBuf : new PacketByteBuf(byteBuf)));
 		}
 	}
 

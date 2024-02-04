@@ -1,5 +1,7 @@
 package org.mtr.mapping.registry;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.SoundEvent;
@@ -16,7 +18,11 @@ import org.mtr.mapping.mapper.BlockItemExtension;
 import org.mtr.mapping.mapper.EntityExtension;
 import org.mtr.mapping.tool.DummyClass;
 import org.mtr.mapping.tool.HolderBase;
+import org.mtr.mapping.tool.PacketBufferReceiver;
+import org.mtr.mapping.tool.PacketBufferSender;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -24,7 +30,7 @@ import java.util.function.Supplier;
 public final class Registry extends DummyClass {
 
 	SimpleChannel simpleChannel;
-	private int packetIdCounter;
+	final Map<String, Function<PacketBufferReceiver, ? extends PacketHandler>> packets = new HashMap<>();
 	private static final String PROTOCOL_VERSION = "1";
 
 	@MappedMethod
@@ -114,26 +120,27 @@ public final class Registry extends DummyClass {
 	}
 
 	@MappedMethod
-	public <T extends PacketHandler> void registerPacket(Class<T> classObject, Function<PacketBuffer, T> getInstance) {
+	public <T extends PacketHandler> void registerPacket(Class<T> classObject, Function<PacketBufferReceiver, T> getInstance) {
+		packets.put(classObject.getName(), getInstance);
 		if (simpleChannel != null) {
-			simpleChannel.registerMessage(packetIdCounter++, classObject, (packetHandler, packetBuffer) -> {
-				packetBuffer.writeUtf(classObject.getName());
-				packetHandler.write(new PacketBuffer(packetBuffer));
-			}, packetBuffer -> {
-				packetBuffer.readUtf();
-				return getInstance.apply(new PacketBuffer(packetBuffer));
-			}, (packetHandler, contextSupplier) -> {
+			simpleChannel.registerMessage(0, ByteBuf.class, (byteBuf, packetBuffer) -> packetBuffer.writeBytes(byteBuf), packetBuffer -> packetBuffer.readBytes(packetBuffer.readableBytes()), (byteBuf, contextSupplier) -> {
 				final NetworkEvent.Context context = contextSupplier.get();
-				if (context.getDirection().getReceptionSide().isClient()) {
-					packetHandler.runClient();
-					context.enqueueWork(packetHandler::runClientQueued);
-				} else {
-					packetHandler.runServer();
-					final net.minecraft.entity.player.ServerPlayerEntity serverPlayerEntity = context.getSender();
-					if (serverPlayerEntity != null) {
-						context.enqueueWork(() -> packetHandler.runServerQueued(new MinecraftServer(serverPlayerEntity.server), new ServerPlayerEntity(serverPlayerEntity)));
+				PacketBufferReceiver.receive(byteBuf, packetBufferReceiver -> {
+					final Function<PacketBufferReceiver, ? extends PacketHandler> getPacketInstance = packets.get(packetBufferReceiver.readString());
+					if (getPacketInstance != null) {
+						final PacketHandler packetHandler = getPacketInstance.apply(packetBufferReceiver);
+						if (context.getDirection().getReceptionSide().isClient()) {
+							packetHandler.runClient();
+							context.enqueueWork(packetHandler::runClientQueued);
+						} else {
+							packetHandler.runServer();
+							final net.minecraft.entity.player.ServerPlayerEntity serverPlayerEntity = context.getSender();
+							if (serverPlayerEntity != null) {
+								context.enqueueWork(() -> packetHandler.runServerQueued(new MinecraftServer(serverPlayerEntity.server), new ServerPlayerEntity(serverPlayerEntity)));
+							}
+						}
 					}
-				}
+				});
 			});
 		}
 	}
@@ -141,7 +148,10 @@ public final class Registry extends DummyClass {
 	@MappedMethod
 	public <T extends PacketHandler> void sendPacketToClient(ServerPlayerEntity serverPlayerEntity, T data) {
 		if (simpleChannel != null) {
-			simpleChannel.send(PacketDistributor.PLAYER.with(() -> serverPlayerEntity.data), data);
+			final PacketBufferSender packetBufferSender = new PacketBufferSender(Unpooled::buffer);
+			packetBufferSender.writeString(data.getClass().getName());
+			data.write(packetBufferSender);
+			packetBufferSender.send(byteBuf -> simpleChannel.send(PacketDistributor.PLAYER.with(() -> serverPlayerEntity.data), byteBuf));
 		}
 	}
 
