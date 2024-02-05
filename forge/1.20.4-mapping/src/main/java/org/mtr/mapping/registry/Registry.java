@@ -1,7 +1,10 @@
 package org.mtr.mapping.registry;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -24,6 +27,7 @@ import org.mtr.mapping.tool.PacketBufferSender;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -92,33 +96,40 @@ public final class Registry extends DummyClass {
 	}
 
 	@MappedMethod
+	public void registerCommand(String command, Consumer<CommandBuilder<?>> buildCommand) {
+		MainEventBus.COMMANDS.add(() -> {
+			final CommandBuilder<LiteralArgumentBuilder<CommandSourceStack>> commandBuilder = new CommandBuilder<>(Commands.literal(command));
+			buildCommand.accept(commandBuilder);
+			return commandBuilder;
+		});
+	}
+
+	@MappedMethod
 	public void setupPackets(Identifier identifier) {
 		simpleChannel = ChannelBuilder.named(identifier.data).networkProtocolVersion(PROTOCOL_VERSION).clientAcceptedVersions(Registry::validProtocol).serverAcceptedVersions(Registry::validProtocol).simpleChannel();
+		simpleChannel.messageBuilder(ByteBuf.class, 0).encoder((byteBuf, packetBuffer) -> packetBuffer.writeBytes(byteBuf)).decoder(packetBuffer -> packetBuffer.readBytes(packetBuffer.readableBytes())).consumerNetworkThread((byteBuf, context) -> {
+			PacketBufferReceiver.receive(byteBuf, packetBufferReceiver -> {
+				final Function<PacketBufferReceiver, ? extends PacketHandler> getPacketInstance = packets.get(packetBufferReceiver.readString());
+				if (getPacketInstance != null) {
+					final PacketHandler packetHandler = getPacketInstance.apply(packetBufferReceiver);
+					if (context.getDirection().getReceptionSide().isClient()) {
+						packetHandler.runClient();
+						context.enqueueWork(packetHandler::runClientQueued);
+					} else {
+						packetHandler.runServer();
+						final ServerPlayer serverPlayerEntity = context.getSender();
+						if (serverPlayerEntity != null) {
+							context.enqueueWork(() -> packetHandler.runServerQueued(new MinecraftServer(serverPlayerEntity.server), new ServerPlayerEntity(serverPlayerEntity)));
+						}
+					}
+				}
+			});
+		}).add();
 	}
 
 	@MappedMethod
 	public <T extends PacketHandler> void registerPacket(Class<T> classObject, Function<PacketBufferReceiver, T> getInstance) {
 		packets.put(classObject.getName(), getInstance);
-		if (simpleChannel != null) {
-			simpleChannel.messageBuilder(ByteBuf.class, 0).encoder((byteBuf, packetBuffer) -> packetBuffer.writeBytes(byteBuf)).decoder(packetBuffer -> packetBuffer.readBytes(packetBuffer.readableBytes())).consumerNetworkThread((byteBuf, context) -> {
-				PacketBufferReceiver.receive(byteBuf, packetBufferReceiver -> {
-					final Function<PacketBufferReceiver, ? extends PacketHandler> getPacketInstance = packets.get(packetBufferReceiver.readString());
-					if (getPacketInstance != null) {
-						final PacketHandler packetHandler = getPacketInstance.apply(packetBufferReceiver);
-						if (context.getDirection().getReceptionSide().isClient()) {
-							packetHandler.runClient();
-							context.enqueueWork(packetHandler::runClientQueued);
-						} else {
-							packetHandler.runServer();
-							final ServerPlayer serverPlayerEntity = context.getSender();
-							if (serverPlayerEntity != null) {
-								context.enqueueWork(() -> packetHandler.runServerQueued(new MinecraftServer(serverPlayerEntity.server), new ServerPlayerEntity(serverPlayerEntity)));
-							}
-						}
-					}
-				});
-			}).add();
-		}
 	}
 
 	@MappedMethod

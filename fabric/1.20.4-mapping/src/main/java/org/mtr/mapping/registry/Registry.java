@@ -1,5 +1,7 @@
 package org.mtr.mapping.registry;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -13,6 +15,8 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
@@ -29,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -98,6 +103,15 @@ public final class Registry extends DummyClass {
 		final SoundEvent soundEvent = SoundEvent.of(identifier);
 		objectsToRegister.add(() -> net.minecraft.registry.Registry.register(Registries.SOUND_EVENT, identifier.data, soundEvent.data));
 		return new SoundEventRegistryObject(soundEvent);
+	}
+
+	@MappedMethod
+	public void registerCommand(String command, Consumer<CommandBuilder<?>> buildCommand) {
+		CommandRegistrationCallback.EVENT.register((dispatcher, commandRegistryAccess, environment) -> {
+			final CommandBuilder<LiteralArgumentBuilder<ServerCommandSource>> commandBuilder = new CommandBuilder<>(CommandManager.literal(command));
+			buildCommand.accept(commandBuilder);
+			dispatcher.register(commandBuilder.argumentBuilder);
+		});
 	}
 
 	@MappedMethod
