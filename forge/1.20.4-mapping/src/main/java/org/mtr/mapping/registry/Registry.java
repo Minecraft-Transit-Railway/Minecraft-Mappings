@@ -107,8 +107,8 @@ public final class Registry extends DummyClass {
 	@MappedMethod
 	public void setupPackets(Identifier identifier) {
 		simpleChannel = ChannelBuilder.named(identifier.data).networkProtocolVersion(PROTOCOL_VERSION).clientAcceptedVersions(Registry::validProtocol).serverAcceptedVersions(Registry::validProtocol).simpleChannel();
-		simpleChannel.messageBuilder(ByteBuf.class, 0).encoder((byteBuf, packetBuffer) -> packetBuffer.writeBytes(byteBuf)).decoder(packetBuffer -> packetBuffer.readBytes(packetBuffer.readableBytes())).consumerNetworkThread((byteBuf, context) -> {
-			PacketBufferReceiver.receive(byteBuf, packetBufferReceiver -> {
+		simpleChannel.messageBuilder(PacketObject.class, 0).encoder((packetObject, packetBuffer) -> packetBuffer.writeBytes(packetObject.byteBuf)).decoder(packetBuffer -> new PacketObject(packetBuffer.readBytes(packetBuffer.readableBytes()))).consumerNetworkThread((packetObject, context) -> {
+			PacketBufferReceiver.receive(packetObject.byteBuf, packetBufferReceiver -> {
 				final Function<PacketBufferReceiver, ? extends PacketHandler> getPacketInstance = packets.get(packetBufferReceiver.readString());
 				if (getPacketInstance != null) {
 					final PacketHandler packetHandler = getPacketInstance.apply(packetBufferReceiver);
@@ -138,11 +138,20 @@ public final class Registry extends DummyClass {
 			final PacketBufferSender packetBufferSender = new PacketBufferSender(Unpooled::buffer);
 			packetBufferSender.writeString(data.getClass().getName());
 			data.write(packetBufferSender);
-			packetBufferSender.send(byteBuf -> simpleChannel.send(byteBuf, PacketDistributor.PLAYER.with(serverPlayerEntity.data)));
+			packetBufferSender.send(byteBuf -> simpleChannel.send(new PacketObject(byteBuf), PacketDistributor.PLAYER.with(serverPlayerEntity.data)));
 		}
 	}
 
 	private static boolean validProtocol(Channel.VersionTest.Status status, int version) {
 		return version == PROTOCOL_VERSION || status == Channel.VersionTest.Status.VANILLA || status == Channel.VersionTest.Status.MISSING;
+	}
+
+	static class PacketObject {
+
+		final ByteBuf byteBuf;
+
+		PacketObject(ByteBuf byteBuf) {
+			this.byteBuf = byteBuf;
+		}
 	}
 }

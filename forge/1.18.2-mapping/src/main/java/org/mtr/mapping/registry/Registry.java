@@ -131,9 +131,9 @@ public final class Registry extends DummyClass {
 	@MappedMethod
 	public void setupPackets(Identifier identifier) {
 		simpleChannel = NetworkRegistry.newSimpleChannel(identifier.data, () -> PROTOCOL_VERSION, Registry::validProtocol, Registry::validProtocol);
-		simpleChannel.registerMessage(0, ByteBuf.class, (byteBuf, packetBuffer) -> packetBuffer.writeBytes(byteBuf), packetBuffer -> packetBuffer.readBytes(packetBuffer.readableBytes()), (byteBuf, contextSupplier) -> {
+		simpleChannel.registerMessage(0, PacketObject.class, (packetObject, packetBuffer) -> packetBuffer.writeBytes(packetObject.byteBuf), packetBuffer -> new PacketObject(packetBuffer.readBytes(packetBuffer.readableBytes())), (packetObject, contextSupplier) -> {
 			final NetworkEvent.Context context = contextSupplier.get();
-			PacketBufferReceiver.receive(byteBuf, packetBufferReceiver -> {
+			PacketBufferReceiver.receive(packetObject.byteBuf, packetBufferReceiver -> {
 				final Function<PacketBufferReceiver, ? extends PacketHandler> getPacketInstance = packets.get(packetBufferReceiver.readString());
 				if (getPacketInstance != null) {
 					final PacketHandler packetHandler = getPacketInstance.apply(packetBufferReceiver);
@@ -163,11 +163,20 @@ public final class Registry extends DummyClass {
 			final PacketBufferSender packetBufferSender = new PacketBufferSender(Unpooled::buffer);
 			packetBufferSender.writeString(data.getClass().getName());
 			data.write(packetBufferSender);
-			packetBufferSender.send(byteBuf -> simpleChannel.send(PacketDistributor.PLAYER.with(() -> serverPlayerEntity.data), byteBuf));
+			packetBufferSender.send(byteBuf -> simpleChannel.send(PacketDistributor.PLAYER.with(() -> serverPlayerEntity.data), new PacketObject(byteBuf)));
 		}
 	}
 
 	private static boolean validProtocol(String text) {
 		return text.equals(PROTOCOL_VERSION) || text.equals(NetworkRegistry.ACCEPTVANILLA) || text.equals(NetworkRegistry.ABSENT);
+	}
+
+	static class PacketObject {
+
+		final ByteBuf byteBuf;
+
+		PacketObject(ByteBuf byteBuf) {
+			this.byteBuf = byteBuf;
+		}
 	}
 }
