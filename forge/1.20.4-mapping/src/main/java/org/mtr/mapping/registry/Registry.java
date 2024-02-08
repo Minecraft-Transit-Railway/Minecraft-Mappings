@@ -114,16 +114,14 @@ public final class Registry extends DummyClass {
 					final PacketHandler packetHandler = getPacketInstance.apply(packetBufferReceiver);
 					if (context.getDirection().getReceptionSide().isClient()) {
 						packetHandler.runClient();
-						context.enqueueWork(packetHandler::runClientQueued);
 					} else {
-						packetHandler.runServer();
 						final ServerPlayer serverPlayerEntity = context.getSender();
 						if (serverPlayerEntity != null) {
-							context.enqueueWork(() -> packetHandler.runServerQueued(new MinecraftServer(serverPlayerEntity.server), new ServerPlayerEntity(serverPlayerEntity)));
+							packetHandler.runServer(new MinecraftServer(serverPlayerEntity.server), new ServerPlayerEntity(serverPlayerEntity));
 						}
 					}
 				}
-			});
+			}, context::enqueueWork);
 		}).add();
 	}
 
@@ -138,7 +136,7 @@ public final class Registry extends DummyClass {
 			final PacketBufferSender packetBufferSender = new PacketBufferSender(Unpooled::buffer);
 			packetBufferSender.writeString(data.getClass().getName());
 			data.write(packetBufferSender);
-			packetBufferSender.send(byteBuf -> simpleChannel.send(new PacketObject(byteBuf), PacketDistributor.PLAYER.with(serverPlayerEntity.data)));
+			packetBufferSender.send(byteBuf -> simpleChannel.send(new PacketObject(byteBuf), PacketDistributor.PLAYER.with(serverPlayerEntity.data)), serverPlayerEntity.getServerMapped()::execute);
 		}
 	}
 

@@ -75,20 +75,26 @@ public final class PacketBufferReceiver extends DummyClass {
 		}
 	}
 
-	private void receive(long id, int index, ByteBuf byteBuf) {
+	private boolean receive(int index, ByteBuf byteBuf) {
 		byteBufArray[index] = byteBuf;
 		receivedCount++;
 		if (receivedCount == count) {
 			onComplete.accept(this);
-			RECEIVED_PACKETS.remove(id);
+			return true;
+		} else {
+			return false;
 		}
 	}
 
 	@MappedMethod
-	public static void receive(ByteBuf byteBuf, Consumer<PacketBufferReceiver> onComplete) {
+	public static void receive(ByteBuf byteBuf, Consumer<PacketBufferReceiver> onComplete, Consumer<Runnable> scheduler) {
 		final long id = byteBuf.readLong();
 		final int index = byteBuf.readInt();
 		final int count = byteBuf.readInt();
-		RECEIVED_PACKETS.computeIfAbsent(id, key -> new PacketBufferReceiver(count, onComplete)).receive(id, index, byteBuf);
+		scheduler.accept(() -> {
+			if (RECEIVED_PACKETS.computeIfAbsent(id, key -> new PacketBufferReceiver(count, onComplete)).receive(index, byteBuf)) {
+				RECEIVED_PACKETS.remove(id);
+			}
+		});
 	}
 }

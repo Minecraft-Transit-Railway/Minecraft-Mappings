@@ -71,9 +71,10 @@ public final class PacketBufferSender extends DummyClass {
 	}
 
 	@MappedMethod
-	public void send(Consumer<ByteBuf> consumer) {
+	public void send(Consumer<ByteBuf> consumer, Consumer<Runnable> scheduler) {
 		byteBufObjects.add(currentByteBuf);
 		final long id = new Random().nextLong();
+		final List<Runnable> queue = new ArrayList<>();
 		for (int i = 0; i < byteBufObjects.size(); i++) {
 			final ByteBuf byteBuf = byteBufObjects.get(i);
 			final int writerIndex = byteBuf.writerIndex();
@@ -82,8 +83,9 @@ public final class PacketBufferSender extends DummyClass {
 			byteBuf.writeInt(i);
 			byteBuf.writeInt(byteBufObjects.size());
 			byteBuf.writerIndex(writerIndex);
-			consumer.accept(byteBuf);
+			queue.add(() -> consumer.accept(byteBuf));
 		}
+		schedule(queue, scheduler);
 	}
 
 	private void write(int size) {
@@ -100,5 +102,14 @@ public final class PacketBufferSender extends DummyClass {
 		currentByteBuf.writeLong(0);
 		currentByteBuf.writeInt(0);
 		currentByteBuf.writeInt(0);
+	}
+
+	private static void schedule(List<Runnable> queue, Consumer<Runnable> scheduler) {
+		if (!queue.isEmpty()) {
+			scheduler.accept(() -> {
+				queue.remove(0).run();
+				schedule(queue, scheduler);
+			});
+		}
 	}
 }

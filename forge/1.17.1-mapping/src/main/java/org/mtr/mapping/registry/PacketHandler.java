@@ -12,18 +12,10 @@ public abstract class PacketHandler extends DummyClass {
 	public abstract void write(PacketBufferSender packetBufferSender);
 
 	@MappedMethod
-	public void runServer() {
+	public void runServer(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity) {
 	}
 
 	@MappedMethod
 	public void runClient() {
-	}
-
-	@MappedMethod
-	public void runServerQueued(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity) {
-	}
-
-	@MappedMethod
-	public void runClientQueued() {
 	}
 }

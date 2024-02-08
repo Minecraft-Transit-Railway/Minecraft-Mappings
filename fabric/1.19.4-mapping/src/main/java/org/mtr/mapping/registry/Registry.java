@@ -114,11 +114,9 @@ public final class Registry extends DummyClass {
 		ServerPlayNetworking.registerGlobalReceiver(identifier.data, (server, player, handler, buf, responseSender) -> PacketBufferReceiver.receive(buf, packetBufferReceiver -> {
 			final Function<PacketBufferReceiver, ? extends PacketHandler> getInstance = packets.get(packetBufferReceiver.readString());
 			if (getInstance != null) {
-				final PacketHandler packetHandler = getInstance.apply(packetBufferReceiver);
-				packetHandler.runServer();
-				server.execute(() -> packetHandler.runServerQueued(new MinecraftServer(server), new ServerPlayerEntity(player)));
+				getInstance.apply(packetBufferReceiver).runServer(new MinecraftServer(server), new ServerPlayerEntity(player));
 			}
-		}));
+		}, server::execute));
 	}
 
 	@MappedMethod
@@ -132,7 +130,7 @@ public final class Registry extends DummyClass {
 			final PacketBufferSender packetBufferSender = new PacketBufferSender(PacketByteBufs::create);
 			packetBufferSender.writeString(data.getClass().getName());
 			data.write(packetBufferSender);
-			packetBufferSender.send(byteBuf -> ServerPlayNetworking.send(serverPlayerEntity.data, packetsIdentifier.data, byteBuf instanceof PacketByteBuf ? (PacketByteBuf) byteBuf : new PacketByteBuf(byteBuf)));
+			packetBufferSender.send(byteBuf -> ServerPlayNetworking.send(serverPlayerEntity.data, packetsIdentifier.data, byteBuf instanceof PacketByteBuf ? (PacketByteBuf) byteBuf : new PacketByteBuf(byteBuf)), serverPlayerEntity.getServerMapped()::execute);
 		}
 	}
 }

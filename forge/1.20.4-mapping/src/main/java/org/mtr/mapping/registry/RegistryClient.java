@@ -95,7 +95,7 @@ public final class RegistryClient extends DummyClass {
 			final PacketBufferSender packetBufferSender = new PacketBufferSender(Unpooled::buffer);
 			packetBufferSender.writeString(data.getClass().getName());
 			data.write(packetBufferSender);
-			packetBufferSender.send(byteBuf -> registry.simpleChannel.send(new Registry.PacketObject(byteBuf), PacketDistributor.SERVER.noArg()));
+			packetBufferSender.send(byteBuf -> registry.simpleChannel.send(new Registry.PacketObject(byteBuf), PacketDistributor.SERVER.noArg()), MinecraftClient.getInstance()::execute);
 		}
 	}
 
