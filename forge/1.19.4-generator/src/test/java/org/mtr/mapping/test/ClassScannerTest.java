@@ -41,6 +41,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerFunctionManager;
@@ -222,6 +223,7 @@ public final class ClassScannerTest {
 		scanner.put("Team", PlayerTeam.class);
 		scanner.put("Tessellator", Tesselator.class);
 		scanner.put("Text", Component.class);
+		scanner.put("TextColor", TextColor.class);
 		scanner.put("TextFormatting", ChatFormatting.class);
 		scanner.put("TextRenderer", Font.class);
 		scanner.put("TextureManager", TextureManager.class);

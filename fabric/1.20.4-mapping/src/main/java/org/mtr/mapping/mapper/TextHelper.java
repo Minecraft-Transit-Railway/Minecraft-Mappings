@@ -28,4 +28,13 @@ public final class TextHelper extends DummyClass {
 	public static OrderedText mutableTextToOrderedText(MutableText mutableText) {
 		return mutableText.asOrderedText();
 	}
+
+	@MappedMethod
+	public static MutableText append(MutableText baseText, MutableText... moreText) {
+		MutableText result = baseText;
+		for (final MutableText mutableText : moreText) {
+			result = result.append(new org.mtr.mapping.holder.Text(mutableText.data));
+		}
+		return result;
+	}
 }

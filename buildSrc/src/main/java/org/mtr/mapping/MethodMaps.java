@@ -371,6 +371,7 @@ public interface MethodMaps {
 		addMethodMap2.add("ServerWorld|World", "isChunkLoaded", "public boolean (int,int)", "hasChunk");
 		addMethodMap2.add("ServerWorld|World", "isSavingDisabled", "public boolean ()", "noSave");
 		addMethodMap2.add("ServerWorld|World|WorldView", "isClient", "public boolean ()", "isClientSide");
+		addMethodMap2.add("Style", "fillStyle", "public MutableText (Style)", "withStyle");
 		addMethodMap2.add("Vector3d", "getX", "public double ()", "x");
 		addMethodMap2.add("Vector3d", "getY", "public double ()", "y");
 		addMethodMap2.add("Vector3d", "getZ", "public double ()", "z");
