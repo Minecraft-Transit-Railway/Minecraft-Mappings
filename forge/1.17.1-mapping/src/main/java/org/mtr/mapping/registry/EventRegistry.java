@@ -4,6 +4,7 @@ import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.MinecraftServer;
 import org.mtr.mapping.holder.ServerPlayerEntity;
 import org.mtr.mapping.holder.ServerWorld;
+import org.mtr.mapping.holder.WorldChunk;
 import org.mtr.mapping.tool.DummyClass;
 
 import java.util.function.BiConsumer;
@@ -59,5 +60,15 @@ public class EventRegistry extends DummyClass {
 	@MappedMethod
 	public static void registerPlayerDisconnect(BiConsumer<MinecraftServer, ServerPlayerEntity> consumer) {
 		MainEventBus.playerDisconnectRunnable = consumer;
+	}
+
+	@MappedMethod
+	public static void registerChunkLoad(BiConsumer<ServerWorld, WorldChunk> consumer) {
+		MainEventBus.chunkLoadConsumer = consumer;
+	}
+
+	@MappedMethod
+	public static void registerChunkUnload(BiConsumer<ServerWorld, WorldChunk> consumer) {
+		MainEventBus.chunkUnloadConsumer = consumer;
 	}
 }

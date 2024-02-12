@@ -5,6 +5,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -12,11 +13,13 @@ import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
+import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import org.mtr.mapping.holder.MinecraftServer;
 import org.mtr.mapping.holder.ServerPlayerEntity;
 import org.mtr.mapping.holder.ServerWorld;
+import org.mtr.mapping.holder.WorldChunk;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +48,10 @@ public final class MainEventBus {
 	static BiConsumer<MinecraftServer, ServerPlayerEntity> playerJoinRunnable = (minecraftServer, serverPlayerEntity) -> {
 	};
 	static BiConsumer<MinecraftServer, ServerPlayerEntity> playerDisconnectRunnable = (minecraftServer, serverPlayerEntity) -> {
+	};
+	static BiConsumer<ServerWorld, WorldChunk> chunkLoadConsumer = (world, chunk) -> {
+	};
+	static BiConsumer<ServerWorld, WorldChunk> chunkUnloadConsumer = (world, chunk) -> {
 	};
 	static final List<Supplier<CommandBuilder<LiteralArgumentBuilder<CommandSourceStack>>>> COMMANDS = new ArrayList<>();
 
@@ -99,6 +106,20 @@ public final class MainEventBus {
 		final Player playerEntity = event.getPlayer();
 		if (playerEntity instanceof ServerPlayer serverPlayerEntity) {
 			playerDisconnectRunnable.accept(new MinecraftServer(serverPlayerEntity.server), new ServerPlayerEntity(serverPlayerEntity));
+		}
+	}
+
+	@SubscribeEvent
+	public static void chunkLoad(ChunkEvent.Load event) {
+		if (event.getWorld() instanceof ServerLevel && event.getChunk() instanceof LevelChunk) {
+			chunkLoadConsumer.accept(new ServerWorld((ServerLevel) event.getWorld()), new WorldChunk((LevelChunk) event.getChunk()));
+		}
+	}
+
+	@SubscribeEvent
+	public static void chunkUnload(ChunkEvent.Load event) {
+		if (event.getWorld() instanceof ServerLevel && event.getChunk() instanceof LevelChunk) {
+			chunkUnloadConsumer.accept(new ServerWorld((ServerLevel) event.getWorld()), new WorldChunk((LevelChunk) event.getChunk()));
 		}
 	}
 

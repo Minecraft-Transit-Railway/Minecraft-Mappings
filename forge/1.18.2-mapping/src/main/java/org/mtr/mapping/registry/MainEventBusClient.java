@@ -1,12 +1,16 @@
 package org.mtr.mapping.registry;
 
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import org.mtr.mapping.holder.ClientWorld;
+import org.mtr.mapping.holder.WorldChunk;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public final class MainEventBusClient {
@@ -22,6 +26,10 @@ public final class MainEventBusClient {
 	static Consumer<ClientWorld> startWorldTickRunnable = world -> {
 	};
 	static Consumer<ClientWorld> endWorldTickRunnable = world -> {
+	};
+	static BiConsumer<ClientWorld, WorldChunk> chunkLoadConsumer = (world, chunk) -> {
+	};
+	static BiConsumer<ClientWorld, WorldChunk> chunkUnloadConsumer = (world, chunk) -> {
 	};
 
 	@SubscribeEvent
@@ -50,5 +58,19 @@ public final class MainEventBusClient {
 	@SubscribeEvent
 	public static void clientDisconnect(ClientPlayerNetworkEvent.LoggedOutEvent event) {
 		clientDisconnectRunnable.run();
+	}
+
+	@SubscribeEvent
+	public static void chunkLoad(ChunkEvent.Load event) {
+		if (event.getWorld() instanceof ClientLevel && event.getChunk() instanceof LevelChunk) {
+			chunkLoadConsumer.accept(new ClientWorld((ClientLevel) event.getWorld()), new WorldChunk((LevelChunk) event.getChunk()));
+		}
+	}
+
+	@SubscribeEvent
+	public static void chunkUnload(ChunkEvent.Load event) {
+		if (event.getWorld() instanceof ClientLevel && event.getChunk() instanceof LevelChunk) {
+			chunkUnloadConsumer.accept(new ClientWorld((ClientLevel) event.getWorld()), new WorldChunk((LevelChunk) event.getChunk()));
+		}
 	}
 }

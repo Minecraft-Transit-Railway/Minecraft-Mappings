@@ -3,9 +3,11 @@ package org.mtr.mapping.registry;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
@@ -15,6 +17,7 @@ import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import org.mtr.mapping.holder.MinecraftServer;
 import org.mtr.mapping.holder.ServerPlayerEntity;
 import org.mtr.mapping.holder.ServerWorld;
+import org.mtr.mapping.holder.WorldChunk;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +46,10 @@ public final class MainEventBus {
 	static BiConsumer<MinecraftServer, ServerPlayerEntity> playerJoinRunnable = (minecraftServer, serverPlayerEntity) -> {
 	};
 	static BiConsumer<MinecraftServer, ServerPlayerEntity> playerDisconnectRunnable = (minecraftServer, serverPlayerEntity) -> {
+	};
+	static BiConsumer<ServerWorld, WorldChunk> chunkLoadConsumer = (world, chunk) -> {
+	};
+	static BiConsumer<ServerWorld, WorldChunk> chunkUnloadConsumer = (world, chunk) -> {
 	};
 	static final List<Supplier<CommandBuilder<LiteralArgumentBuilder<CommandSource>>>> COMMANDS = new ArrayList<>();
 
@@ -107,6 +114,20 @@ public final class MainEventBus {
 		if (playerEntity instanceof net.minecraft.entity.player.ServerPlayerEntity) {
 			final net.minecraft.entity.player.ServerPlayerEntity serverPlayerEntity = (net.minecraft.entity.player.ServerPlayerEntity) playerEntity;
 			playerDisconnectRunnable.accept(new MinecraftServer(serverPlayerEntity.server), new ServerPlayerEntity(serverPlayerEntity));
+		}
+	}
+
+	@SubscribeEvent
+	public static void chunkLoad(ChunkEvent.Load event) {
+		if (event.getWorld() instanceof net.minecraft.world.server.ServerWorld && event.getChunk() instanceof Chunk) {
+			chunkLoadConsumer.accept(new ServerWorld((net.minecraft.world.server.ServerWorld) event.getWorld()), new WorldChunk((Chunk) event.getChunk()));
+		}
+	}
+
+	@SubscribeEvent
+	public static void chunkUnload(ChunkEvent.Load event) {
+		if (event.getWorld() instanceof net.minecraft.world.server.ServerWorld && event.getChunk() instanceof Chunk) {
+			chunkUnloadConsumer.accept(new ServerWorld((net.minecraft.world.server.ServerWorld) event.getWorld()), new WorldChunk((Chunk) event.getChunk()));
 		}
 	}
 

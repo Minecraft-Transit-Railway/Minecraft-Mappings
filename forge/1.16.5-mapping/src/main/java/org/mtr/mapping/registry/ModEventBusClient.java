@@ -1,6 +1,7 @@
 package org.mtr.mapping.registry;
 
 import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
@@ -10,6 +11,8 @@ import java.util.function.Consumer;
 
 public final class ModEventBusClient {
 
+	static Runnable resourceReloadRunnable = () -> {
+	};
 	static final List<Runnable> CLIENT_OBJECTS_TO_REGISTER = new ArrayList<>();
 	static final List<Runnable> CLIENT_OBJECTS_TO_REGISTER_QUEUED = new ArrayList<>();
 	static final List<Consumer<ColorHandlerEvent.Block>> BLOCK_COLORS = new ArrayList<>();
@@ -29,5 +32,12 @@ public final class ModEventBusClient {
 	@SubscribeEvent
 	public void registerItemColors(ColorHandlerEvent.Item event) {
 		ITEM_COLORS.forEach(consumer -> consumer.accept(event));
+	}
+
+	@SubscribeEvent
+	public static void resourceReload(TextureStitchEvent event) {
+		if (event.getMap().location().getPath().endsWith("blocks.png")) {
+			resourceReloadRunnable.run();
+		}
 	}
 }

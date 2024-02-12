@@ -2,8 +2,10 @@ package org.mtr.mapping.registry;
 
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.ClientWorld;
+import org.mtr.mapping.holder.WorldChunk;
 import org.mtr.mapping.tool.DummyClass;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class EventRegistryClient extends DummyClass {
@@ -36,5 +38,20 @@ public class EventRegistryClient extends DummyClass {
 	@MappedMethod
 	public static void registerClientDisconnect(Runnable runnable) {
 		MainEventBusClient.clientDisconnectRunnable = runnable;
+	}
+
+	@MappedMethod
+	public static void registerChunkLoad(BiConsumer<ClientWorld, WorldChunk> consumer) {
+		MainEventBusClient.chunkLoadConsumer = consumer;
+	}
+
+	@MappedMethod
+	public static void registerChunkUnload(BiConsumer<ClientWorld, WorldChunk> consumer) {
+		MainEventBusClient.chunkUnloadConsumer = consumer;
+	}
+
+	@MappedMethod
+	public static void registerResourceReloadEvent(Runnable runnable) {
+		ModEventBusClient.resourceReloadRunnable = runnable;
 	}
 }
