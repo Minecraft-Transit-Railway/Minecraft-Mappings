@@ -337,6 +337,14 @@ public interface MethodMaps {
 		addMethodMap2.add("BlockState", "shouldPostProcess", "public boolean (BlockView,BlockPos)", "hasPostProcess");
 		addMethodMap2.add("BlockState", "shouldSuffocate", "public boolean (BlockView,BlockPos)", "isSuffocating");
 		addMethodMap2.add("BlockState", "updateNeighbors", "public final void (WorldAccess,BlockPos,int)", "updateNeighbourShapes");
+		addMethodMap2.add("ChunkPos", "getEndX", "public int ()", "getMaxBlockX");
+		addMethodMap2.add("ChunkPos", "getEndZ", "public int ()", "getMaxBlockZ");
+		addMethodMap2.add("ChunkPos", "getPackedX", "public static int (long)", "getX");
+		addMethodMap2.add("ChunkPos", "getPackedZ", "public static int (long)", "getZ");
+		addMethodMap2.add("ChunkPos", "getRegionRelativeX", "public int ()", "getRegionLocalX");
+		addMethodMap2.add("ChunkPos", "getRegionRelativeZ", "public int ()", "getRegionLocalZ");
+		addMethodMap2.add("ChunkPos", "getStartX", "public int ()", "getMinBlockX");
+		addMethodMap2.add("ChunkPos", "getStartZ", "public int ()", "getMinBlockZ");
 		addMethodMap2.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "addVelocity", "public void (double,double,double)", "push");
 		addMethodMap2.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "getBodyY", "public double (double)", "getY");
 		addMethodMap2.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "getPitch", "public float (float)", "getViewXRot");
