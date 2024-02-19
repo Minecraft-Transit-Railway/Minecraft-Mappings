@@ -1,6 +1,8 @@
 package org.mtr.mapping.registry;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -36,10 +38,12 @@ public final class Registry extends DummyClass {
 	Identifier packetsIdentifier;
 	final Map<String, Function<PacketBufferReceiver, ? extends PacketHandler>> packets = new HashMap<>();
 	private final List<Runnable> objectsToRegister = new ArrayList<>();
+	private final List<Consumer<CommandDispatcher<ServerCommandSource>>> commandsToRegister = new ArrayList<>();
 
 	@MappedMethod
 	public void init() {
 		objectsToRegister.forEach(Runnable::run);
+		CommandRegistrationCallback.EVENT.register((dispatcher, environment) -> commandsToRegister.forEach(consumer -> consumer.accept(dispatcher)));
 	}
 
 	@MappedMethod
@@ -95,11 +99,14 @@ public final class Registry extends DummyClass {
 	}
 
 	@MappedMethod
-	public void registerCommand(String command, Consumer<CommandBuilder<?>> buildCommand) {
-		CommandRegistrationCallback.EVENT.register((dispatcher, environment) -> {
+	public void registerCommand(String command, Consumer<CommandBuilder<?>> buildCommand, String... redirects) {
+		commandsToRegister.add(dispatcher -> {
 			final CommandBuilder<LiteralArgumentBuilder<ServerCommandSource>> commandBuilder = new CommandBuilder<>(CommandManager.literal(command));
 			buildCommand.accept(commandBuilder);
-			dispatcher.register(commandBuilder.argumentBuilder);
+			final LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register(commandBuilder.argumentBuilder);
+			for (final String redirect : redirects) {
+				dispatcher.register(CommandManager.literal(redirect).redirect(literalCommandNode));
+			}
 		});
 	}
 

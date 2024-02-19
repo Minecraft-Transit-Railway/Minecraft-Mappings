@@ -1,6 +1,7 @@
 package org.mtr.mapping.registry;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.command.CommandSource;
@@ -119,11 +120,14 @@ public final class Registry extends DummyClass {
 	}
 
 	@MappedMethod
-	public void registerCommand(String command, Consumer<CommandBuilder<?>> buildCommand) {
-		MainEventBus.COMMANDS.add(() -> {
+	public void registerCommand(String command, Consumer<CommandBuilder<?>> buildCommand, String... redirects) {
+		MainEventBus.COMMANDS.add(dispatcher -> {
 			final CommandBuilder<LiteralArgumentBuilder<CommandSource>> commandBuilder = new CommandBuilder<>(Commands.literal(command));
 			buildCommand.accept(commandBuilder);
-			return commandBuilder;
+			final LiteralCommandNode<CommandSource> literalCommandNode = dispatcher.register(commandBuilder.argumentBuilder);
+			for (final String redirect : redirects) {
+				dispatcher.register(Commands.literal(redirect).redirect(literalCommandNode));
+			}
 		});
 	}
 

@@ -2,6 +2,7 @@ package org.mtr.mapping.registry;
 
 import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.command.CommandSource;
@@ -17,7 +18,7 @@ import javax.annotation.Nullable;
 import java.util.function.Consumer;
 import java.util.function.ToIntFunction;
 
-public final class CommandBuilder<T extends ArgumentBuilder<CommandSource, T>> {
+public final class CommandBuilder<T extends ArgumentBuilder<CommandSource, T>> extends DummyClass {
 
 	T argumentBuilder;
 
@@ -33,6 +34,13 @@ public final class CommandBuilder<T extends ArgumentBuilder<CommandSource, T>> {
 	@MappedMethod
 	public <U> void then(String argumentName, ArgumentType<U> argumentType, Consumer<CommandBuilder<?>> consumer) {
 		final CommandBuilder<RequiredArgumentBuilder<CommandSource, U>> commandBuilder = new CommandBuilder<>(Commands.argument(argumentName, argumentType));
+		consumer.accept(commandBuilder);
+		argumentBuilder = argumentBuilder.then(commandBuilder.argumentBuilder);
+	}
+
+	@MappedMethod
+	public void then(String commandName, Consumer<CommandBuilder<?>> consumer) {
+		final CommandBuilder<LiteralArgumentBuilder<CommandSource>> commandBuilder = new CommandBuilder<>(Commands.literal(commandName));
 		consumer.accept(commandBuilder);
 		argumentBuilder = argumentBuilder.then(commandBuilder.argumentBuilder);
 	}

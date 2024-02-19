@@ -1,6 +1,6 @@
 package org.mtr.mapping.registry;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.chunk.Chunk;
@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public final class MainEventBus {
 
@@ -51,7 +50,7 @@ public final class MainEventBus {
 	};
 	static BiConsumer<ServerWorld, WorldChunk> chunkUnloadConsumer = (world, chunk) -> {
 	};
-	static final List<Supplier<CommandBuilder<LiteralArgumentBuilder<CommandSource>>>> COMMANDS = new ArrayList<>();
+	static final List<Consumer<CommandDispatcher<CommandSource>>> COMMANDS = new ArrayList<>();
 
 	@SubscribeEvent
 	public static void serverStarting(FMLServerStartingEvent event) {
@@ -133,6 +132,6 @@ public final class MainEventBus {
 
 	@SubscribeEvent
 	public static void registerCommands(RegisterCommandsEvent event) {
-		COMMANDS.forEach(supplier -> event.getDispatcher().register(supplier.get().argumentBuilder));
+		COMMANDS.forEach(consumer -> consumer.accept(event.getDispatcher()));
 	}
 }

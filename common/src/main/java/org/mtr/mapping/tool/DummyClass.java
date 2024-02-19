@@ -1,14 +1,13 @@
 package org.mtr.mapping.tool;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mtr.mapping.annotation.MappedMethod;
 
 public abstract class DummyClass {
 
 	private static boolean logging = false;
-	private static final Logger LOGGER = Logger.getLogger("global");
+	private static final Logger LOGGER = LogManager.getLogger("MinecraftMappings");
 
 	@MappedMethod
 	public static void enableLogging() {
@@ -32,7 +31,7 @@ public abstract class DummyClass {
 	@MappedMethod
 	public static void logException(Exception e) {
 		if (logging) {
-			LOGGER.log(Level.INFO, e.getMessage(), e);
+			LOGGER.error(e);
 		}
 	}
 }

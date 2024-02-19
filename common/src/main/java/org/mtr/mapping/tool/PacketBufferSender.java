@@ -17,7 +17,7 @@ public final class PacketBufferSender extends DummyClass {
 	private final Supplier<ByteBuf> createInstance;
 
 	private static final int HEADER_BYTES = 8 + 4 + 4;
-	private static final int MAX_PACKET_BYTES = 0x100000 - HEADER_BYTES;
+	private static final int MAX_PACKET_BYTES = 0x7FFF - HEADER_BYTES;
 
 	@MappedMethod
 	public PacketBufferSender(Supplier<ByteBuf> createInstance) {

@@ -365,6 +365,8 @@ public interface MethodMaps {
 		addMethodMap2.add("ClientPlayerEntity|Entity|PlayerEntity", "getLerpedPos", "public final Vector3d (float)", "getPosition", "method_30950");
 		addMethodMap2.add("ClientPlayerEntity|Entity|PlayerEntity", "getOppositeRotationVector", "public final Vector3d (float)", "getUpVector");
 		addMethodMap2.add("ClientPlayerEntity|Entity|PlayerEntity", "getRotationVec", "public final Vector3d (float)", "getViewVector");
+		addMethodMap2.add("ClientPlayerEntity|PlayerEntity|ServerPlayerEntity", "getActiveItem", "public ItemStack ()", "getUseItem");
+		addMethodMap2.add("ClientPlayerEntity|PlayerEntity|ServerPlayerEntity", "getOffHandStack", "public ItemStack ()", "getOffhandItem");
 		addMethodMap2.add("Direction", "rotateYClockwise", "public Direction ()", "getClockWise");
 		addMethodMap2.add("Direction", "rotateYCounterclockwise", "public Direction ()", "getCounterClockWise");
 		addMethodMap2.add("MathHelper", "ceilLog2", "public static int (int)", "ceillog2", "log2DeBruijn");
