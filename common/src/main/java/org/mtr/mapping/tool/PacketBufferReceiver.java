@@ -88,11 +88,12 @@ public final class PacketBufferReceiver extends DummyClass {
 
 	@MappedMethod
 	public static void receive(ByteBuf byteBuf, Consumer<PacketBufferReceiver> onComplete, Consumer<Runnable> scheduler) {
-		final long id = byteBuf.readLong();
-		final int index = byteBuf.readInt();
-		final int count = byteBuf.readInt();
+		final ByteBuf byteBufCopy = byteBuf.copy();
 		scheduler.accept(() -> {
-			if (RECEIVED_PACKETS.computeIfAbsent(id, key -> new PacketBufferReceiver(count, onComplete)).receive(index, byteBuf)) {
+			final long id = byteBufCopy.readLong();
+			final int index = byteBufCopy.readInt();
+			final int count = byteBufCopy.readInt();
+			if (RECEIVED_PACKETS.computeIfAbsent(id, key -> new PacketBufferReceiver(count, onComplete)).receive(index, byteBufCopy)) {
 				RECEIVED_PACKETS.remove(id);
 			}
 		});
