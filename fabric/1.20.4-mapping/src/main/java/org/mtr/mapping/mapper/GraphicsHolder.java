@@ -30,7 +30,10 @@ public final class GraphicsHolder extends DummyClass {
 	final VertexConsumerProvider vertexConsumerProvider;
 	final DrawContext drawContext;
 
-	public static final int DEFAULT_LIGHT = 0xF000F0;
+	@MappedMethod
+	public static int getDefaultLight() {
+		return 0xF000F0;
+	}
 
 	@Deprecated
 	public static void createInstanceSafe(@Nullable MatrixStack matrixStack, @Nullable VertexConsumerProvider vertexConsumerProvider, Consumer<GraphicsHolder> consumer) {

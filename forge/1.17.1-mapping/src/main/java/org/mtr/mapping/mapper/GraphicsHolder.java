@@ -28,7 +28,10 @@ public final class GraphicsHolder extends DummyClass {
 	final PoseStack matrixStack;
 	private final MultiBufferSource vertexConsumerProvider;
 
-	public static final int DEFAULT_LIGHT = 0xF000F0;
+	@MappedMethod
+	public static int getDefaultLight() {
+		return 0xF000F0;
+	}
 
 	@Deprecated
 	public static void createInstanceSafe(@Nullable PoseStack matrixStack, @Nullable MultiBufferSource vertexConsumerProvider, Consumer<GraphicsHolder> consumer) {
