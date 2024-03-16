@@ -4,6 +4,7 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.SlabType;
+import net.minecraft.block.enums.StairShape;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.block.BlockColorProvider;
 import net.minecraft.client.color.item.ItemColorProvider;
@@ -191,6 +192,7 @@ public final class ClassScannerTest {
 		scanner.put("SoundEvents", SoundEvents.class);
 		scanner.put("SoundInstance", SoundInstance.class);
 		scanner.put("SoundManager", SoundManager.class);
+		scanner.put("StairShape", StairShape.class);
 		scanner.put("Style", Style.class);
 		scanner.put("Team", Team.class);
 		scanner.put("Tessellator", Tessellator.class);
@@ -233,6 +235,7 @@ public final class ClassScannerTest {
 		scanner.putAbstract("Screen", Screen.class);
 		scanner.putAbstract("SlabBlock", SlabBlock.class);
 		scanner.putAbstract("SliderWidget", SliderWidget.class);
+		scanner.putAbstract("StairsBlock", StairsBlock.class);
 		scanner.putAbstract("TextFieldWidget", TextFieldWidget.class);
 		scanner.putAbstract("TexturedButtonWidget", TexturedButtonWidget.class);
 		scanner.putAbstract("ToggleButtonWidget", ToggleButtonWidget.class);

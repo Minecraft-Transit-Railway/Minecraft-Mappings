@@ -68,4 +68,13 @@ public interface BlockHelper extends DummyInterface {
 	static BlockSettings createBlockSettings(boolean blockPiston, ToIntFunction<BlockState> luminanceFunction) {
 		return setLuminance(createBlockSettings(blockPiston), luminanceFunction);
 	}
+
+	@MappedMethod
+	static VoxelShape shapeUnion(VoxelShape voxelShape, VoxelShape... voxelShapes) {
+		VoxelShape result = voxelShape;
+		for (final VoxelShape additionalShape : voxelShapes) {
+			result = VoxelShapes.union(result, additionalShape);
+		}
+		return result;
+	}
 }

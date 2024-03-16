@@ -57,6 +57,11 @@ public final class Registry extends DummyClass {
 
 	@MappedMethod
 	public BlockRegistryObject registerBlockWithBlockItem(Identifier identifier, Supplier<Block> supplier, CreativeModeTabHolder creativeModeTabHolder) {
+		return registerBlockWithBlockItem(identifier, supplier, BlockItemExtension::new, creativeModeTabHolder);
+	}
+
+	@MappedMethod
+	public BlockRegistryObject registerBlockWithBlockItem(Identifier identifier, Supplier<Block> supplier, BiFunction<Block, ItemSettings, BlockItemExtension> function, CreativeModeTabHolder creativeModeTabHolder) {
 		ModEventBus.BLOCKS.add(() -> {
 			final net.minecraft.world.level.block.Block block = supplier.get().data;
 			block.setRegistryName(identifier.data);
@@ -64,7 +69,7 @@ public final class Registry extends DummyClass {
 		});
 		final BlockRegistryObject blockRegistryObject = new BlockRegistryObject(identifier);
 		ModEventBus.BLOCK_ITEMS.add(() -> {
-			final BlockItemExtension blockItemExtension = new BlockItemExtension(blockRegistryObject.get(), new ItemSettings().tab(creativeModeTabHolder.creativeModeTab));
+			final BlockItemExtension blockItemExtension = function.apply(blockRegistryObject.get(), new ItemSettings().tab(creativeModeTabHolder.creativeModeTab));
 			blockItemExtension.setRegistryName(identifier.data);
 			return blockItemExtension;
 		});

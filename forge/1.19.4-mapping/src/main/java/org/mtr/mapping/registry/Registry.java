@@ -52,9 +52,14 @@ public final class Registry extends DummyClass {
 
 	@MappedMethod
 	public BlockRegistryObject registerBlockWithBlockItem(Identifier identifier, Supplier<Block> supplier, CreativeModeTabHolder creativeModeTabHolder) {
+		return registerBlockWithBlockItem(identifier, supplier, BlockItemExtension::new, creativeModeTabHolder);
+	}
+
+	@MappedMethod
+	public BlockRegistryObject registerBlockWithBlockItem(Identifier identifier, Supplier<Block> supplier, BiFunction<Block, ItemSettings, BlockItemExtension> function, CreativeModeTabHolder creativeModeTabHolder) {
 		ModEventBus.BLOCKS.put(identifier, supplier);
 		final BlockRegistryObject blockRegistryObject = new BlockRegistryObject(identifier);
-		ModEventBus.BLOCK_ITEMS.put(identifier, () -> new BlockItemExtension(blockRegistryObject.get(), new ItemSettings()));
+		ModEventBus.BLOCK_ITEMS.put(identifier, () -> function.apply(blockRegistryObject.get(), new ItemSettings()));
 		creativeModeTabHolder.itemSuppliers.add(new ItemRegistryObject(identifier)::get);
 		return blockRegistryObject;
 	}

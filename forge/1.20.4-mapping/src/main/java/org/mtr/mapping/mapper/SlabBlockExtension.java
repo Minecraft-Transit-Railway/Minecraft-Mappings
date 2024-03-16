@@ -1,11 +1,13 @@
 package org.mtr.mapping.mapper;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.StateDefinition;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
 import org.mtr.mapping.tool.HolderBase;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class SlabBlockExtension extends SlabBlockAbstractMapping implements BlockHelper {
@@ -19,6 +21,12 @@ public class SlabBlockExtension extends SlabBlockAbstractMapping implements Bloc
 	@Override
 	protected final void createBlockStateDefinition2(StateDefinition.Builder<Block, net.minecraft.world.level.block.state.BlockState> builder) {
 		createBlockStateDefinitionHelper(builder);
+	}
+
+	@Deprecated
+	@Override
+	public final void appendHoverText2(ItemStack stack, @Nullable BlockView world, List<Component> tooltipList, TooltipContext options) {
+		appendTooltipHelper(stack, world, tooltipList, options);
 	}
 
 	@MappedMethod

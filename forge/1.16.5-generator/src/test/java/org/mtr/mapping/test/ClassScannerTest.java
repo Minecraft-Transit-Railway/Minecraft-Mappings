@@ -56,6 +56,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.state.*;
 import net.minecraft.state.properties.SlabType;
+import net.minecraft.state.properties.StairsShape;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.*;
@@ -198,6 +199,7 @@ public final class ClassScannerTest {
 		scanner.put("SoundEvents", SoundEvents.class);
 		scanner.put("SoundInstance", ISound.class);
 		scanner.put("SoundManager", SoundHandler.class);
+		scanner.put("StairShape", StairsShape.class);
 		scanner.put("Style", Style.class);
 		scanner.put("Team", ScorePlayerTeam.class);
 		scanner.put("Tessellator", Tessellator.class);
@@ -240,6 +242,7 @@ public final class ClassScannerTest {
 		scanner.putAbstract("Screen", Screen.class);
 		scanner.putAbstract("SlabBlock", SlabBlock.class, "canCreatureSpawn", "getBedSpawnPosition", "getRespawnPosition");
 		scanner.putAbstract("SliderWidget", AbstractSlider.class);
+		scanner.putAbstract("StairsBlock", StairsBlock.class, "canCreatureSpawn", "getBedSpawnPosition", "getRespawnPosition");
 		scanner.putAbstract("TextFieldWidget", TextFieldWidget.class);
 		scanner.putAbstract("TexturedButtonWidget", ImageButton.class);
 		scanner.putAbstract("ToggleButtonWidget", ToggleWidget.class);

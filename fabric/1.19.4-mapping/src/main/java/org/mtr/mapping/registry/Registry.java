@@ -57,9 +57,14 @@ public final class Registry extends DummyClass {
 
 	@MappedMethod
 	public BlockRegistryObject registerBlockWithBlockItem(Identifier identifier, Supplier<Block> supplier, CreativeModeTabHolder creativeModeTabHolder) {
+		return registerBlockWithBlockItem(identifier, supplier, BlockItemExtension::new, creativeModeTabHolder);
+	}
+
+	@MappedMethod
+	public BlockRegistryObject registerBlockWithBlockItem(Identifier identifier, Supplier<Block> supplier, BiFunction<Block, ItemSettings, BlockItemExtension> function, CreativeModeTabHolder creativeModeTabHolder) {
 		final Block block = supplier.get();
 		objectsToRegister.add(() -> net.minecraft.registry.Registry.register(Registries.BLOCK, identifier.data, block.data));
-		final BlockItemExtension blockItemExtension = new BlockItemExtension(block, new ItemSettings());
+		final BlockItemExtension blockItemExtension = function.apply(block, new ItemSettings());
 		objectsToRegister.add(() -> net.minecraft.registry.Registry.register(Registries.ITEM, identifier.data, blockItemExtension));
 		ItemGroupEvents.modifyEntriesEvent(creativeModeTabHolder.creativeModeTab).register(content -> content.add(blockItemExtension));
 		return new BlockRegistryObject(block);

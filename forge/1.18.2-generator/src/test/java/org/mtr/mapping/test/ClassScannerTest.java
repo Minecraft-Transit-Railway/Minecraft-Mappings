@@ -227,6 +227,7 @@ public final class ClassScannerTest {
 		scanner.put("SoundEvents", SoundEvents.class);
 		scanner.put("SoundInstance", SoundInstance.class);
 		scanner.put("SoundManager", SoundManager.class);
+		scanner.put("StairShape", StairsShape.class);
 		scanner.put("Style", Style.class);
 		scanner.put("Team", PlayerTeam.class);
 		scanner.put("Tessellator", Tesselator.class);
@@ -269,6 +270,7 @@ public final class ClassScannerTest {
 		scanner.putAbstract("Screen", Screen.class);
 		scanner.putAbstract("SlabBlock", SlabBlock.class, "getRespawnPosition", "isValidSpawn");
 		scanner.putAbstract("SliderWidget", AbstractSliderButton.class);
+		scanner.putAbstract("StairsBlock", StairBlock.class, "getRespawnPosition", "isValidSpawn");
 		scanner.putAbstract("TextFieldWidget", EditBox.class);
 		scanner.putAbstract("TexturedButtonWidget", ImageButton.class);
 		scanner.putAbstract("ToggleButtonWidget", StateSwitchingButton.class);

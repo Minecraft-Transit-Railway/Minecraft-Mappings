@@ -10,11 +10,11 @@ import org.mtr.mapping.tool.HolderBase;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class SlabBlockExtension extends SlabBlockAbstractMapping implements BlockHelper {
+public class StairsBlockExtension extends StairsBlockAbstractMapping implements BlockHelper {
 
 	@MappedMethod
-	public SlabBlockExtension(BlockSettings blockSettings) {
-		super(blockSettings);
+	public StairsBlockExtension(BlockState baseBlockState, BlockSettings blockSettings) {
+		super(baseBlockState, blockSettings);
 	}
 
 	@Deprecated
@@ -32,12 +32,14 @@ public class SlabBlockExtension extends SlabBlockAbstractMapping implements Bloc
 	@MappedMethod
 	@Override
 	public void addBlockProperties(List<HolderBase<?>> properties) {
-		properties.add(new Property<>(TYPE));
+		properties.add(new Property<>(FACING));
+		properties.add(new Property<>(HALF));
+		properties.add(new Property<>(SHAPE));
 		properties.add(new Property<>(WATERLOGGED));
 	}
 
 	@MappedMethod
-	public static SlabType getType(BlockState state) {
-		return SlabType.convert(state.data.getValue(TYPE));
+	public static StairShape getType(BlockState state) {
+		return StairShape.convert(state.data.getValue(SHAPE));
 	}
 }
