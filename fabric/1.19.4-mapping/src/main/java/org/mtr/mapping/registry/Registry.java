@@ -56,25 +56,29 @@ public final class Registry extends DummyClass {
 	}
 
 	@MappedMethod
-	public BlockRegistryObject registerBlockWithBlockItem(Identifier identifier, Supplier<Block> supplier, CreativeModeTabHolder creativeModeTabHolder) {
-		return registerBlockWithBlockItem(identifier, supplier, BlockItemExtension::new, creativeModeTabHolder);
+	public BlockRegistryObject registerBlockWithBlockItem(Identifier identifier, Supplier<Block> supplier, CreativeModeTabHolder... creativeModeTabHolders) {
+		return registerBlockWithBlockItem(identifier, supplier, BlockItemExtension::new, creativeModeTabHolders);
 	}
 
 	@MappedMethod
-	public BlockRegistryObject registerBlockWithBlockItem(Identifier identifier, Supplier<Block> supplier, BiFunction<Block, ItemSettings, BlockItemExtension> function, CreativeModeTabHolder creativeModeTabHolder) {
+	public BlockRegistryObject registerBlockWithBlockItem(Identifier identifier, Supplier<Block> supplier, BiFunction<Block, ItemSettings, BlockItemExtension> function, CreativeModeTabHolder... creativeModeTabHolders) {
 		final Block block = supplier.get();
 		objectsToRegister.add(() -> net.minecraft.registry.Registry.register(Registries.BLOCK, identifier.data, block.data));
 		final BlockItemExtension blockItemExtension = function.apply(block, new ItemSettings());
 		objectsToRegister.add(() -> net.minecraft.registry.Registry.register(Registries.ITEM, identifier.data, blockItemExtension));
-		ItemGroupEvents.modifyEntriesEvent(creativeModeTabHolder.creativeModeTab).register(content -> content.add(blockItemExtension));
+		for (final CreativeModeTabHolder creativeModeTabHolder : creativeModeTabHolders) {
+			ItemGroupEvents.modifyEntriesEvent(creativeModeTabHolder.creativeModeTab).register(content -> content.add(blockItemExtension));
+		}
 		return new BlockRegistryObject(block);
 	}
 
 	@MappedMethod
-	public ItemRegistryObject registerItem(Identifier identifier, Function<ItemSettings, Item> function, CreativeModeTabHolder creativeModeTabHolder) {
+	public ItemRegistryObject registerItem(Identifier identifier, Function<ItemSettings, Item> function, CreativeModeTabHolder... creativeModeTabHolders) {
 		final Item item = function.apply(new ItemSettings());
 		objectsToRegister.add(() -> net.minecraft.registry.Registry.register(Registries.ITEM, identifier.data, item.data));
-		ItemGroupEvents.modifyEntriesEvent(creativeModeTabHolder.creativeModeTab).register(content -> content.add(item.data));
+		for (final CreativeModeTabHolder creativeModeTabHolder : creativeModeTabHolders) {
+			ItemGroupEvents.modifyEntriesEvent(creativeModeTabHolder.creativeModeTab).register(content -> content.add(item.data));
+		}
 		return new ItemRegistryObject(item);
 	}
 

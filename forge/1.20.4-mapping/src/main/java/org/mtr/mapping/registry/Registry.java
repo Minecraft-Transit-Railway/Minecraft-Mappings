@@ -51,24 +51,28 @@ public final class Registry extends DummyClass {
 	}
 
 	@MappedMethod
-	public BlockRegistryObject registerBlockWithBlockItem(Identifier identifier, Supplier<Block> supplier, CreativeModeTabHolder creativeModeTabHolder) {
-		return registerBlockWithBlockItem(identifier, supplier, BlockItemExtension::new, creativeModeTabHolder);
+	public BlockRegistryObject registerBlockWithBlockItem(Identifier identifier, Supplier<Block> supplier, CreativeModeTabHolder... creativeModeTabHolders) {
+		return registerBlockWithBlockItem(identifier, supplier, BlockItemExtension::new, creativeModeTabHolders);
 	}
 
 	@MappedMethod
-	public BlockRegistryObject registerBlockWithBlockItem(Identifier identifier, Supplier<Block> supplier, BiFunction<Block, ItemSettings, BlockItemExtension> function, CreativeModeTabHolder creativeModeTabHolder) {
+	public BlockRegistryObject registerBlockWithBlockItem(Identifier identifier, Supplier<Block> supplier, BiFunction<Block, ItemSettings, BlockItemExtension> function, CreativeModeTabHolder... creativeModeTabHolders) {
 		ModEventBus.BLOCKS.put(identifier, supplier);
 		final BlockRegistryObject blockRegistryObject = new BlockRegistryObject(identifier);
 		ModEventBus.BLOCK_ITEMS.put(identifier, () -> function.apply(blockRegistryObject.get(), new ItemSettings()));
-		creativeModeTabHolder.itemSuppliers.add(new ItemRegistryObject(identifier)::get);
+		for (final CreativeModeTabHolder creativeModeTabHolder : creativeModeTabHolders) {
+			creativeModeTabHolder.itemSuppliers.add(new ItemRegistryObject(identifier)::get);
+		}
 		return blockRegistryObject;
 	}
 
 	@MappedMethod
-	public ItemRegistryObject registerItem(Identifier identifier, Function<ItemSettings, Item> function, CreativeModeTabHolder creativeModeTabHolder) {
+	public ItemRegistryObject registerItem(Identifier identifier, Function<ItemSettings, Item> function, CreativeModeTabHolder... creativeModeTabHolders) {
 		ModEventBus.ITEMS.put(identifier, () -> function.apply(new ItemSettings()));
 		final ItemRegistryObject itemRegistryObject = new ItemRegistryObject(identifier);
-		creativeModeTabHolder.itemSuppliers.add(itemRegistryObject::get);
+		for (final CreativeModeTabHolder creativeModeTabHolder : creativeModeTabHolders) {
+			creativeModeTabHolder.itemSuppliers.add(itemRegistryObject::get);
+		}
 		return itemRegistryObject;
 	}
 

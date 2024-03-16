@@ -84,4 +84,15 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 			level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE);
 		}
 	}
+
+	@MappedMethod
+	public double getRenderDistance3() {
+		return super.getViewDistance2();
+	}
+
+	@Deprecated
+	@Override
+	public final double getViewDistance2() {
+		return getRenderDistance3();
+	}
 }

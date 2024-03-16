@@ -64,4 +64,15 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 		super.markDirty2();
 		sync();
 	}
+
+	@MappedMethod
+	public double getRenderDistance3() {
+		return super.getRenderDistance2();
+	}
+
+	@Deprecated
+	@Override
+	public final double getRenderDistance2() {
+		return getRenderDistance3();
+	}
 }

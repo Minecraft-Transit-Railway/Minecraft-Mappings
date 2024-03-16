@@ -27,6 +27,12 @@ public abstract class BlockEntityRenderer<T extends BlockEntityExtension> implem
 		return net.minecraft.client.render.block.entity.BlockEntityRenderer.super.rendersOutsideBoundingBox(blockEntity);
 	}
 
+	@Deprecated
+	@Override
+	public final boolean rendersOutsideBoundingBox(T blockEntity) {
+		return rendersOutsideBoundingBox2(blockEntity);
+	}
+
 	@MappedMethod
 	public int getRenderDistance2() {
 		return net.minecraft.client.render.block.entity.BlockEntityRenderer.super.getRenderDistance();

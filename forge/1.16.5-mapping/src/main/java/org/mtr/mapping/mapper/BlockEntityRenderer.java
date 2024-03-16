@@ -47,7 +47,6 @@ public abstract class BlockEntityRenderer<T extends BlockEntityExtension> extend
 	@Deprecated
 	public static final class Argument {
 
-		@Deprecated
 		private final TileEntityRendererDispatcher data;
 
 		public Argument(TileEntityRendererDispatcher data) {

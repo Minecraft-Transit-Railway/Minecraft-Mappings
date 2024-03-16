@@ -54,21 +54,21 @@ public final class Registry extends DummyClass {
 	}
 
 	@MappedMethod
-	public BlockRegistryObject registerBlockWithBlockItem(Identifier identifier, Supplier<Block> supplier, CreativeModeTabHolder creativeModeTabHolder) {
-		return registerBlockWithBlockItem(identifier, supplier, BlockItemExtension::new, creativeModeTabHolder);
+	public BlockRegistryObject registerBlockWithBlockItem(Identifier identifier, Supplier<Block> supplier, CreativeModeTabHolder... creativeModeTabHolders) {
+		return registerBlockWithBlockItem(identifier, supplier, BlockItemExtension::new, creativeModeTabHolders);
 	}
 
 	@MappedMethod
-	public BlockRegistryObject registerBlockWithBlockItem(Identifier identifier, Supplier<Block> supplier, BiFunction<Block, ItemSettings, BlockItemExtension> function, CreativeModeTabHolder creativeModeTabHolder) {
+	public BlockRegistryObject registerBlockWithBlockItem(Identifier identifier, Supplier<Block> supplier, BiFunction<Block, ItemSettings, BlockItemExtension> function, CreativeModeTabHolder... creativeModeTabHolders) {
 		final Block block = supplier.get();
 		objectsToRegister.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.BLOCK, identifier.data, block.data));
-		objectsToRegister.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.ITEM, identifier.data, function.apply(block, new ItemSettings().group(creativeModeTabHolder.creativeModeTab))));
+		objectsToRegister.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.ITEM, identifier.data, function.apply(block, getItemSettings(creativeModeTabHolders))));
 		return new BlockRegistryObject(block);
 	}
 
 	@MappedMethod
-	public ItemRegistryObject registerItem(Identifier identifier, Function<ItemSettings, Item> function, CreativeModeTabHolder creativeModeTabHolder) {
-		final Item item = function.apply(new ItemSettings().group(creativeModeTabHolder.creativeModeTab));
+	public ItemRegistryObject registerItem(Identifier identifier, Function<ItemSettings, Item> function, CreativeModeTabHolder... creativeModeTabHolders) {
+		final Item item = function.apply(getItemSettings(creativeModeTabHolders));
 		objectsToRegister.add(() -> net.minecraft.util.registry.Registry.register(net.minecraft.util.registry.Registry.ITEM, identifier.data, item.data));
 		return new ItemRegistryObject(item);
 	}
@@ -138,6 +138,14 @@ public final class Registry extends DummyClass {
 			packetBufferSender.writeString(data.getClass().getName());
 			data.write(packetBufferSender);
 			packetBufferSender.send(byteBuf -> ServerPlayNetworking.send(serverPlayerEntity.data, packetsIdentifier.data, byteBuf instanceof PacketByteBuf ? (PacketByteBuf) byteBuf : new PacketByteBuf(byteBuf)), serverPlayerEntity.getServerMapped()::execute);
+		}
+	}
+
+	private static ItemSettings getItemSettings(CreativeModeTabHolder... creativeModeTabHolders) {
+		if (creativeModeTabHolders.length == 0) {
+			return new ItemSettings();
+		} else {
+			return new ItemSettings().group(creativeModeTabHolders[0].creativeModeTab);
 		}
 	}
 }

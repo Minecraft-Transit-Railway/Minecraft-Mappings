@@ -59,4 +59,9 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping {
 			world.updateListeners(pos, getCachedState(), getCachedState(), net.minecraft.block.Block.NOTIFY_LISTENERS);
 		}
 	}
+
+	@MappedMethod
+	public double getRenderDistance3() {
+		return 0;
+	}
 }
