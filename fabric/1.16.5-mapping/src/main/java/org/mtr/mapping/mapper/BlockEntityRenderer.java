@@ -4,6 +4,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
 import org.mtr.mapping.annotation.MappedMethod;
+import org.mtr.mapping.holder.Vector3d;
 
 public abstract class BlockEntityRenderer<T extends BlockEntityExtension> extends net.minecraft.client.render.block.entity.BlockEntityRenderer<T> {
 
@@ -30,6 +31,16 @@ public abstract class BlockEntityRenderer<T extends BlockEntityExtension> extend
 	@Override
 	public final boolean rendersOutsideBoundingBox(T blockEntity) {
 		return rendersOutsideBoundingBox2(blockEntity);
+	}
+
+	@MappedMethod
+	public int getRenderDistance2() {
+		return 0;
+	}
+
+	@MappedMethod
+	public boolean isInRenderDistance(T blockEntity, Vector3d position) {
+		return true;
 	}
 
 	@Deprecated

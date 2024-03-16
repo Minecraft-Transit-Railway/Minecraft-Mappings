@@ -111,6 +111,9 @@ public final class BuildTools {
 	}
 
 	public String getForgeVersion() {
+		if (minecraftVersion.equals("1.18.2")) {
+			return "40.2.17"; // TODO 40.2.18 is not working
+		}
 		return getJson("https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json").getAsJsonObject().getAsJsonObject("promos").get(minecraftVersion + "-latest").getAsString();
 	}
 

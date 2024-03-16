@@ -3,7 +3,9 @@ package org.mtr.mapping.mapper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.world.phys.Vec3;
 import org.mtr.mapping.annotation.MappedMethod;
+import org.mtr.mapping.holder.Vector3d;
 
 public abstract class BlockEntityRenderer<T extends BlockEntityExtension> implements net.minecraft.client.renderer.blockentity.BlockEntityRenderer<T> {
 
@@ -29,6 +31,28 @@ public abstract class BlockEntityRenderer<T extends BlockEntityExtension> implem
 	@Override
 	public final boolean shouldRenderOffScreen(T blockEntity) {
 		return rendersOutsideBoundingBox2(blockEntity);
+	}
+
+	@MappedMethod
+	public int getRenderDistance2() {
+		return net.minecraft.client.renderer.blockentity.BlockEntityRenderer.super.getViewDistance();
+	}
+
+	@Deprecated
+	@Override
+	public final int getViewDistance() {
+		return getRenderDistance2();
+	}
+
+	@MappedMethod
+	public boolean isInRenderDistance(T blockEntity, Vector3d position) {
+		return net.minecraft.client.renderer.blockentity.BlockEntityRenderer.super.shouldRender(blockEntity, position.data);
+	}
+
+	@Deprecated
+	@Override
+	public final boolean shouldRender(T blockEntity, Vec3 position) {
+		return isInRenderDistance(blockEntity, new Vector3d(position));
 	}
 
 	@Deprecated

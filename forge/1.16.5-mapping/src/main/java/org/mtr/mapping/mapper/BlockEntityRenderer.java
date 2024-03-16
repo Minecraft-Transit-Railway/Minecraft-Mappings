@@ -5,6 +5,7 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import org.mtr.mapping.annotation.MappedMethod;
+import org.mtr.mapping.holder.Vector3d;
 
 public abstract class BlockEntityRenderer<T extends BlockEntityExtension> extends TileEntityRenderer<T> {
 
@@ -33,9 +34,20 @@ public abstract class BlockEntityRenderer<T extends BlockEntityExtension> extend
 		return rendersOutsideBoundingBox2(blockEntity);
 	}
 
+	@MappedMethod
+	public int getRenderDistance2() {
+		return 0;
+	}
+
+	@MappedMethod
+	public boolean isInRenderDistance(T blockEntity, Vector3d position) {
+		return true;
+	}
+
 	@Deprecated
 	public static final class Argument {
 
+		@Deprecated
 		private final TileEntityRendererDispatcher data;
 
 		public Argument(TileEntityRendererDispatcher data) {
