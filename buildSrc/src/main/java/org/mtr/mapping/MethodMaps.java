@@ -250,6 +250,8 @@ public interface MethodMaps {
 		addMethodMap1.add("Screen", "close", "onClose");
 		addMethodMap1.add("Screen", "OPTIONS_BACKGROUND_TEXTURE", "BACKGROUND_LOCATION");
 		addMethodMap1.add("Screen", "shouldPause", "isPauseScreen");
+		addMethodMap1.add("SoundEvents", "ENTITY_EXPERIENCE_ORB_PICKUP", "EXPERIENCE_ORB_PICKUP");
+		addMethodMap1.add("SoundEvents", "ITEM_BUCKET_FILL", "BUCKET_FILL");
 		addMethodMap1.add("TextFieldWidget", "eraseCharacters", "deleteChars");
 		addMethodMap1.add("TextFieldWidget", "eraseWords", "deleteWords");
 		addMethodMap1.add("TextFieldWidget", "getCharacterX", "getScreenX");

@@ -258,6 +258,7 @@ public final class ClassScannerTest {
 		scanner.putAbstract("ButtonWidget", Button.class);
 		scanner.putAbstract("CheckboxWidget", Checkbox.class);
 		scanner.putAbstract("ClickableWidget", AbstractWidget.class);
+		scanner.putAbstract("DoorBlock", DoorBlock.class, "getRespawnPosition", "isValidSpawn");
 		scanner.putAbstract("Entity", Entity.class, "getType");
 		scanner.putAbstract("EntityModel", EntityModel.class);
 		scanner.putAbstract("Item", Item.class);

@@ -226,6 +226,7 @@ public final class ClassScannerTest {
 		scanner.putAbstract("ButtonWidget", ButtonWidget.class);
 		scanner.putAbstract("CheckboxWidget", CheckboxWidget.class);
 		scanner.putAbstract("ClickableWidget", ClickableWidget.class);
+		scanner.putAbstract("DoorBlock", DoorBlock.class);
 		scanner.putAbstract("Entity", Entity.class, "getType");
 		scanner.putAbstract("EntityModel", EntityModel.class);
 		scanner.putAbstract("Item", Item.class);
