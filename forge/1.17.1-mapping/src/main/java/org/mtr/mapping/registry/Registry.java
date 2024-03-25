@@ -6,6 +6,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.MobCategory;
@@ -108,6 +109,21 @@ public final class Registry extends DummyClass {
 
 	private <T extends EntityExtension> net.minecraft.world.entity.EntityType.EntityFactory<T> getEntityFactory(BiFunction<EntityType<?>, World, T> function) {
 		return (entityType, world) -> function.apply(new EntityType<>(entityType), new World(world));
+	}
+
+	@MappedMethod
+	public ParticleTypeRegistryObject registerParticleType(Identifier identifier) {
+		return registerParticleType(identifier, false);
+	}
+
+	@MappedMethod
+	public ParticleTypeRegistryObject registerParticleType(Identifier identifier, boolean alwaysSpawn) {
+		ModEventBus.PARTICLE_TYPES.add(() -> {
+			final SimpleParticleType defaultParticleType = new SimpleParticleType(alwaysSpawn);
+			defaultParticleType.setRegistryName(identifier.data);
+			return defaultParticleType;
+		});
+		return new ParticleTypeRegistryObject(identifier);
 	}
 
 	@MappedMethod

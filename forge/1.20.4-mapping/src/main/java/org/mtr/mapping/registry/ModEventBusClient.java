@@ -1,15 +1,17 @@
 package org.mtr.mapping.registry;
 
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.RegisterColorHandlersEvent;
-import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
-import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.Tuple;
+import net.minecraftforge.client.event.*;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import org.mtr.mapping.holder.SpriteProvider;
+import org.mtr.mapping.mapper.ParticleFactoryExtension;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public final class ModEventBusClient {
 
@@ -21,6 +23,7 @@ public final class ModEventBusClient {
 	static final List<Consumer<RegisterKeyMappingsEvent>> KEY_MAPPINGS = new ArrayList<>();
 	static final List<Consumer<RegisterColorHandlersEvent.Block>> BLOCK_COLORS = new ArrayList<>();
 	static final List<Consumer<RegisterColorHandlersEvent.Item>> ITEM_COLORS = new ArrayList<>();
+	static final List<Tuple<ParticleTypeRegistryObject, Function<SpriteProvider, ParticleFactoryExtension>>> PARTICLE_FACTORIES = new ArrayList<>();
 
 	@SubscribeEvent
 	public static void registerClient(FMLClientSetupEvent event) {
@@ -46,6 +49,11 @@ public final class ModEventBusClient {
 	@SubscribeEvent
 	public void registerItemColors(RegisterColorHandlersEvent.Item event) {
 		ITEM_COLORS.forEach(consumer -> consumer.accept(event));
+	}
+
+	@SubscribeEvent
+	public void registerParticleFactories(RegisterParticleProvidersEvent event) {
+		PARTICLE_FACTORIES.forEach(tuple -> Minecraft.getInstance().particleEngine.register(tuple.getA().get().data, spriteProvider -> tuple.getB().apply(new SpriteProvider(spriteProvider))));
 	}
 
 	@SubscribeEvent

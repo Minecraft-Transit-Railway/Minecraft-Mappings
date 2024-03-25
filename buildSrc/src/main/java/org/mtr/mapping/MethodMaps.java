@@ -331,6 +331,7 @@ public interface MethodMaps {
 		addMethodMap2.add("BlockState", "isFullCube", "public boolean (BlockView,BlockPos)", "isCollisionShapeFullBlock");
 		addMethodMap2.add("BlockState", "isOpaque", "public boolean ()", "canOcclude");
 		addMethodMap2.add("BlockState", "isOpaqueFullCube", "public boolean (BlockView,BlockPos)", "isSolidRender");
+		addMethodMap2.add("BlockState", "isSideSolidFullSquare", "public boolean (BlockView,BlockPos,Direction)", "isFaceSturdy");
 		addMethodMap2.add("BlockState", "isSolidBlock", "public boolean (BlockView,BlockPos)", "isRedstoneConductor");
 		addMethodMap2.add("BlockState", "isToolRequired", "public boolean ()", "requiresCorrectToolForDrops");
 		addMethodMap2.add("BlockState", "isTransparent", "public boolean (BlockView,BlockPos)", "isTranslucent", "propagatesSkylightDown");

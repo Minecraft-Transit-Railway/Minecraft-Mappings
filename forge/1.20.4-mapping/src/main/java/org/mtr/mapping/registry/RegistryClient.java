@@ -5,16 +5,14 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.PacketDistributor;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
-import org.mtr.mapping.mapper.BlockEntityExtension;
-import org.mtr.mapping.mapper.BlockEntityRenderer;
-import org.mtr.mapping.mapper.EntityExtension;
-import org.mtr.mapping.mapper.EntityRenderer;
+import org.mtr.mapping.mapper.*;
 import org.mtr.mapping.tool.DummyClass;
 import org.mtr.mapping.tool.PacketBufferSender;
 
@@ -44,6 +42,11 @@ public final class RegistryClient extends DummyClass {
 	@MappedMethod
 	public <T extends EntityTypeRegistryObject<U>, U extends EntityExtension> void registerEntityRenderer(T entityType, Function<EntityRenderer.Argument, EntityRenderer<U>> rendererInstance) {
 		ModEventBusClient.BLOCK_ENTITY_RENDERERS.add(event -> event.registerEntityRenderer(entityType.get().data, dispatcher -> rendererInstance.apply(new EntityRenderer.Argument(dispatcher))));
+	}
+
+	@MappedMethod
+	public void registerParticleRenderer(ParticleTypeRegistryObject particleTypeRegistryObject, Function<SpriteProvider, ParticleFactoryExtension> factory) {
+		ModEventBusClient.PARTICLE_FACTORIES.add(new Tuple<>(particleTypeRegistryObject, spriteProvider -> factory.apply(new SpriteProvider(spriteProvider.data))));
 	}
 
 	@MappedMethod

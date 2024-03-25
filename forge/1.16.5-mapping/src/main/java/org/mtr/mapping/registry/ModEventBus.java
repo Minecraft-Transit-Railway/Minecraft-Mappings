@@ -3,6 +3,7 @@ package org.mtr.mapping.registry;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
+import net.minecraft.particles.ParticleType;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.event.RegistryEvent;
@@ -22,6 +23,7 @@ public final class ModEventBus {
 	static final List<Supplier<Item>> ITEMS = new ArrayList<>();
 	static final List<Supplier<TileEntityType<? extends BlockEntityExtension>>> BLOCK_ENTITY_TYPES = new ArrayList<>();
 	static final List<Supplier<EntityType<? extends EntityExtension>>> ENTITY_TYPES = new ArrayList<>();
+	static final List<Supplier<ParticleType<?>>> PARTICLE_TYPES = new ArrayList<>();
 	static final List<Supplier<SoundEvent>> SOUND_EVENTS = new ArrayList<>();
 
 	@SubscribeEvent
@@ -43,6 +45,11 @@ public final class ModEventBus {
 	@SubscribeEvent
 	public static void registerEntityTypes(RegistryEvent.Register<EntityType<?>> event) {
 		ENTITY_TYPES.forEach(supplier -> event.getRegistry().register(supplier.get()));
+	}
+
+	@SubscribeEvent
+	public static void registerParticleTypes(RegistryEvent.Register<ParticleType<?>> event) {
+		PARTICLE_TYPES.forEach(supplier -> event.getRegistry().register(supplier.get()));
 	}
 
 	@SubscribeEvent

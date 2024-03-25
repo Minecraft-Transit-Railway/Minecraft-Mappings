@@ -10,6 +10,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.network.PacketByteBuf;
@@ -98,6 +99,18 @@ public final class Registry extends DummyClass {
 
 	private <T extends EntityExtension> net.minecraft.entity.EntityType.EntityFactory<T> getEntityFactory(BiFunction<EntityType<?>, World, T> function) {
 		return (entityType, world) -> function.apply(new EntityType<>(entityType), new World(world));
+	}
+
+	@MappedMethod
+	public ParticleTypeRegistryObject registerParticleType(Identifier identifier) {
+		return registerParticleType(identifier, false);
+	}
+
+	@MappedMethod
+	public ParticleTypeRegistryObject registerParticleType(Identifier identifier, boolean alwaysSpawn) {
+		final DefaultParticleType defaultParticleType = new DefaultParticleType(FabricParticleTypes.simple(alwaysSpawn));
+		objectsToRegister.add(() -> net.minecraft.registry.Registry.register(Registries.PARTICLE_TYPE, identifier.data, defaultParticleType.data));
+		return new ParticleTypeRegistryObject(defaultParticleType, identifier);
 	}
 
 	@MappedMethod
