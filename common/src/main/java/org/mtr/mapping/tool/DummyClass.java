@@ -31,6 +31,8 @@ public abstract class DummyClass {
 	@MappedMethod
 	public static void logException(Exception e) {
 		if (logging) {
+			LOGGER.error("", e);
+		} else {
 			LOGGER.error(e);
 		}
 	}

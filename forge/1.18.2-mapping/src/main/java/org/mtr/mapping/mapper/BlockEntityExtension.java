@@ -4,11 +4,10 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.common.extensions.IForgeBlockEntity;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
 
-public abstract class BlockEntityExtension extends BlockEntityAbstractMapping implements IForgeBlockEntity {
+public abstract class BlockEntityExtension extends BlockEntityAbstractMapping {
 
 	@MappedMethod
 	public BlockEntityExtension(BlockEntityType<?> type, BlockPos blockPos, BlockState blockState) {
@@ -40,7 +39,7 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 	@Deprecated
 	@Override
 	public final CompoundTag getUpdateTag2() {
-		final CompoundTag compoundTag = new CompoundTag();
+		final CompoundTag compoundTag = super.getUpdateTag2();
 		writeCompoundTag(compoundTag);
 		return compoundTag;
 	}
