@@ -6,8 +6,11 @@ import org.mtr.mapping.annotation.MappedMethod;
 
 public final class ModelPartExtension extends ModelRenderer {
 
+	private final Model model;
+
 	ModelPartExtension(Model model) {
 		super(model);
+		this.model = model;
 	}
 
 	@MappedMethod
@@ -28,8 +31,10 @@ public final class ModelPartExtension extends ModelRenderer {
 	}
 
 	@MappedMethod
-	public void addChild(ModelPartExtension modelPartExtension) {
+	public ModelPartExtension addChild() {
+		final ModelPartExtension modelPartExtension = new ModelPartExtension(model);
 		super.addChild(modelPartExtension);
+		return modelPartExtension;
 	}
 
 	@MappedMethod

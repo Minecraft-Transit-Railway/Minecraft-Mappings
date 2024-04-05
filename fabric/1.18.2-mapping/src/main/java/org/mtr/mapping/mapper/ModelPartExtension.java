@@ -14,8 +14,6 @@ public final class ModelPartExtension extends DummyClass {
 	private float tempPivotX, tempPivotY, tempPivotZ;
 	private float tempRotationX, tempRotationY, tempRotationZ;
 	private int tempU, tempV;
-	private ModelPartData additionalModelPartData;
-	private ModelPartExtension parent;
 
 	private final List<String> nameTree = new ArrayList<>();
 	private final ModelPartData modelPartData;
@@ -47,30 +45,17 @@ public final class ModelPartExtension extends DummyClass {
 	}
 
 	@MappedMethod
-	public void addChild(ModelPartExtension modelPartExtension) {
-		modelPartExtension.parent = this;
+	public ModelPartExtension addChild() {
+		final ModelPartExtension modelPartExtension = new ModelPartExtension(modelPartData.addChild(getLastName(), ModelPartBuilder.create(), getModelTransform()));
 		modelPartExtension.nameTree.addAll(0, nameTree);
+		return modelPartExtension;
 	}
 
 	@MappedMethod
 	public void addCuboid(float x, float y, float z, int sizeX, int sizeY, int sizeZ, float inflation, boolean mirrored) {
-		final String name = nameTree.isEmpty() ? "" : nameTree.get(nameTree.size() - 1);
+		final String name = getLastName();
 		final ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().mirrored(mirrored).cuboid(name, x, y, z, sizeX, sizeY, sizeZ, new Dilation(inflation), tempU, tempV);
-		final ModelTransform modelTransform = ModelTransform.of(tempPivotX, tempPivotY, tempPivotZ, tempRotationX, tempRotationY, tempRotationZ);
-
-		if (parent == null) {
-			if (additionalModelPartData == null) {
-				additionalModelPartData = modelPartData.addChild(name, modelPartBuilder, modelTransform);
-			} else {
-				additionalModelPartData.addChild(getRandomPartName(), modelPartBuilder, ModelTransform.of(0, 0, 0, 0, 0, 0));
-			}
-		} else {
-			if (parent.additionalModelPartData == null) {
-				parent.addCuboid(0, 0, 0, 0, 0, 0, 0, false);
-			}
-			additionalModelPartData = parent.additionalModelPartData.addChild(name, modelPartBuilder, modelTransform);
-			parent = null;
-		}
+		modelPartData.addChild(name, modelPartBuilder, getModelTransform());
 	}
 
 	@MappedMethod
@@ -100,6 +85,14 @@ public final class ModelPartExtension extends DummyClass {
 	void setModelPart(ModelPart mainModelPart) {
 		modelPart = mainModelPart;
 		nameTree.forEach(name -> modelPart = modelPart.getChild(name));
+	}
+
+	private String getLastName() {
+		return nameTree.isEmpty() ? "" : nameTree.get(nameTree.size() - 1);
+	}
+
+	private ModelTransform getModelTransform() {
+		return ModelTransform.of(tempPivotX, tempPivotY, tempPivotZ, tempRotationX, tempRotationY, tempRotationZ);
 	}
 
 	private static String getRandomPartName() {
