@@ -18,12 +18,18 @@ public final class ModelPartExtension extends DummyClass {
 	private float tempPivotX, tempPivotY, tempPivotZ;
 	private float tempRotationX, tempRotationY, tempRotationZ;
 	private int tempU, tempV;
+	private PartDefinition modelPartData;
+	private boolean childAdded = false;
 
 	private final List<String> nameTree = new ArrayList<>();
-	private final PartDefinition modelPartData;
 
 	ModelPartExtension(PartDefinition modelPartData) {
 		nameTree.add(getRandomPartName());
+		this.modelPartData = modelPartData;
+	}
+
+	private ModelPartExtension(String name, PartDefinition modelPartData) {
+		nameTree.add(name);
 		this.modelPartData = modelPartData;
 	}
 
@@ -50,14 +56,17 @@ public final class ModelPartExtension extends DummyClass {
 
 	@MappedMethod
 	public ModelPartExtension addChild() {
-		final ModelPartExtension modelPartExtension = new ModelPartExtension(modelPartData.addOrReplaceChild(getLastName(), CubeListBuilder.create(), getModelTransform()));
+		setChild();
+		final String name = getRandomPartName();
+		final ModelPartExtension modelPartExtension = new ModelPartExtension(name, modelPartData.addOrReplaceChild(name, CubeListBuilder.create(), getModelTransform()));
 		modelPartExtension.nameTree.addAll(0, nameTree);
 		return modelPartExtension;
 	}
 
 	@MappedMethod
 	public void addCuboid(float x, float y, float z, int sizeX, int sizeY, int sizeZ, float inflation, boolean mirrored) {
-		final String name = getLastName();
+		setChild();
+		final String name = getRandomPartName();
 		final CubeListBuilder modelPartBuilder = CubeListBuilder.create().mirror(mirrored).addBox(name, x, y, z, sizeX, sizeY, sizeZ, new CubeDeformation(inflation), tempU, tempV);
 		modelPartData.addOrReplaceChild(name, modelPartBuilder, getModelTransform());
 	}
@@ -89,6 +98,13 @@ public final class ModelPartExtension extends DummyClass {
 	void setModelPart(ModelPart mainModelPart) {
 		modelPart = mainModelPart;
 		nameTree.forEach(name -> modelPart = modelPart.getChild(name));
+	}
+
+	private void setChild() {
+		if (!childAdded) {
+			modelPartData = modelPartData.addOrReplaceChild(getLastName(), CubeListBuilder.create(), PartPose.offsetAndRotation(0, 0, 0, 0, 0, 0));
+			childAdded = true;
+		}
 	}
 
 	private String getLastName() {

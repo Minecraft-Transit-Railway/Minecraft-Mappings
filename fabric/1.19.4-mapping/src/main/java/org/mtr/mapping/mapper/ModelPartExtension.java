@@ -14,12 +14,18 @@ public final class ModelPartExtension extends DummyClass {
 	private float tempPivotX, tempPivotY, tempPivotZ;
 	private float tempRotationX, tempRotationY, tempRotationZ;
 	private int tempU, tempV;
+	private ModelPartData modelPartData;
+	private boolean childAdded = false;
 
 	private final List<String> nameTree = new ArrayList<>();
-	private final ModelPartData modelPartData;
 
 	ModelPartExtension(ModelPartData modelPartData) {
 		nameTree.add(getRandomPartName());
+		this.modelPartData = modelPartData;
+	}
+
+	private ModelPartExtension(String name, ModelPartData modelPartData) {
+		nameTree.add(name);
 		this.modelPartData = modelPartData;
 	}
 
@@ -46,14 +52,17 @@ public final class ModelPartExtension extends DummyClass {
 
 	@MappedMethod
 	public ModelPartExtension addChild() {
-		final ModelPartExtension modelPartExtension = new ModelPartExtension(modelPartData.addChild(getLastName(), ModelPartBuilder.create(), getModelTransform()));
+		setChild();
+		final String name = getRandomPartName();
+		final ModelPartExtension modelPartExtension = new ModelPartExtension(name, modelPartData.addChild(name, ModelPartBuilder.create(), getModelTransform()));
 		modelPartExtension.nameTree.addAll(0, nameTree);
 		return modelPartExtension;
 	}
 
 	@MappedMethod
 	public void addCuboid(float x, float y, float z, int sizeX, int sizeY, int sizeZ, float inflation, boolean mirrored) {
-		final String name = getLastName();
+		setChild();
+		final String name = getRandomPartName();
 		final ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().mirrored(mirrored).cuboid(name, x, y, z, sizeX, sizeY, sizeZ, new Dilation(inflation), tempU, tempV);
 		modelPartData.addChild(name, modelPartBuilder, getModelTransform());
 	}
@@ -85,6 +94,13 @@ public final class ModelPartExtension extends DummyClass {
 	void setModelPart(ModelPart mainModelPart) {
 		modelPart = mainModelPart;
 		nameTree.forEach(name -> modelPart = modelPart.getChild(name));
+	}
+
+	private void setChild() {
+		if (!childAdded) {
+			modelPartData = modelPartData.addChild(getLastName(), ModelPartBuilder.create(), ModelTransform.of(0, 0, 0, 0, 0, 0));
+			childAdded = true;
+		}
 	}
 
 	private String getLastName() {
