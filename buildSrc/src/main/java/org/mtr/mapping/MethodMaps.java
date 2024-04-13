@@ -384,6 +384,10 @@ public interface MethodMaps {
 		addMethodMap2.add("MathHelper", "floorLog2", "public static int (int)", "log2");
 		addMethodMap2.add("MathHelper", "idealHash", "public static int (int)", "murmurHash3Mixer");
 		addMethodMap2.add("MathHelper", "lerpAngleDegrees", "public static float (float,float,float)", "rotLerp");
+		addMethodMap2.add("MinecraftServer", "setFlightEnabled", "public void (boolean)", "setFlightAllowed");
+		addMethodMap2.add("MinecraftServer", "setOnlineMode", "public void (boolean)", "setUsesAuthentication");
+		addMethodMap2.add("MinecraftServer", "setPvpEnabled", "public void (boolean)", "setPvpAllowed");
+		addMethodMap2.add("MinecraftServer", "stop", "public void (boolean)", "halt");
 		addMethodMap2.add("RenderLayer", "getOutline", "public static RenderLayer (Identifier)", "outline");
 		addMethodMap2.add("ScoreboardScore", "setScore", "public void (int)", "value");
 		addMethodMap2.add("ServerPlayerEntity", "sendMessage", "public void (Text,boolean)", "displayClientMessage");

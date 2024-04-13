@@ -372,17 +372,17 @@ public final class BuildTools {
 	}
 
 	@FunctionalInterface
-	interface AddMethodMap1 {
+	public interface AddMethodMap1 {
 		void add(String className, String newMethodName, String... methods);
 	}
 
 	@FunctionalInterface
-	interface AddMethodMap2 {
+	public interface AddMethodMap2 {
 		void add(String className, String newMethodName, String signature, String... methods);
 	}
 
 	@FunctionalInterface
-	interface Blacklist {
+	public interface Blacklist {
 		void add(String className, String method, String signature);
 	}
 
