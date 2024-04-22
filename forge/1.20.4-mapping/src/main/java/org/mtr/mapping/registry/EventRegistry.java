@@ -12,63 +12,70 @@ import java.util.function.Consumer;
 
 public class EventRegistry extends DummyClass {
 
-	@MappedMethod
-	public static void registerServerStarting(Consumer<MinecraftServer> consumer) {
-		MainEventBus.serverStartingConsumer = consumer;
+	private final MainEventBus mainEventBus;
+
+	@Deprecated
+	EventRegistry(MainEventBus mainEventBus) {
+		this.mainEventBus = mainEventBus;
 	}
 
 	@MappedMethod
-	public static void registerServerStarted(Consumer<MinecraftServer> consumer) {
-		MainEventBus.serverStartedConsumer = consumer;
+	public void registerServerStarting(Consumer<MinecraftServer> consumer) {
+		mainEventBus.serverStartingConsumer = consumer;
 	}
 
 	@MappedMethod
-	public static void registerServerStopping(Consumer<MinecraftServer> consumer) {
-		MainEventBus.serverStoppingConsumer = consumer;
+	public void registerServerStarted(Consumer<MinecraftServer> consumer) {
+		mainEventBus.serverStartedConsumer = consumer;
 	}
 
 	@MappedMethod
-	public static void registerServerStopped(Consumer<MinecraftServer> consumer) {
-		MainEventBus.serverStoppedConsumer = consumer;
+	public void registerServerStopping(Consumer<MinecraftServer> consumer) {
+		mainEventBus.serverStoppingConsumer = consumer;
 	}
 
 	@MappedMethod
-	public static void registerStartServerTick(Runnable runnable) {
-		MainEventBus.startServerTickRunnable = runnable;
+	public void registerServerStopped(Consumer<MinecraftServer> consumer) {
+		mainEventBus.serverStoppedConsumer = consumer;
 	}
 
 	@MappedMethod
-	public static void registerEndServerTick(Runnable runnable) {
-		MainEventBus.endServerTickRunnable = runnable;
+	public void registerStartServerTick(Runnable runnable) {
+		mainEventBus.startServerTickRunnable = runnable;
 	}
 
 	@MappedMethod
-	public static void registerStartWorldTick(Consumer<ServerWorld> consumer) {
-		MainEventBus.startWorldTickRunnable = consumer;
+	public void registerEndServerTick(Runnable runnable) {
+		mainEventBus.endServerTickRunnable = runnable;
 	}
 
 	@MappedMethod
-	public static void registerEndWorldTick(Consumer<ServerWorld> consumer) {
-		MainEventBus.endWorldTickRunnable = consumer;
+	public void registerStartWorldTick(Consumer<ServerWorld> consumer) {
+		mainEventBus.startWorldTickRunnable = consumer;
 	}
 
 	@MappedMethod
-	public static void registerPlayerJoin(BiConsumer<MinecraftServer, ServerPlayerEntity> consumer) {
-		MainEventBus.playerJoinRunnable = consumer;
+	public void registerEndWorldTick(Consumer<ServerWorld> consumer) {
+		mainEventBus.endWorldTickRunnable = consumer;
 	}
 
 	@MappedMethod
-	public static void registerPlayerDisconnect(BiConsumer<MinecraftServer, ServerPlayerEntity> consumer) {
-		MainEventBus.playerDisconnectRunnable = consumer;
+	public void registerPlayerJoin(BiConsumer<MinecraftServer, ServerPlayerEntity> consumer) {
+		mainEventBus.playerJoinRunnable = consumer;
 	}
 
 	@MappedMethod
-	public static void registerChunkLoad(BiConsumer<ServerWorld, WorldChunk> consumer) {
-		MainEventBus.chunkLoadConsumer = consumer;
+	public void registerPlayerDisconnect(BiConsumer<MinecraftServer, ServerPlayerEntity> consumer) {
+		mainEventBus.playerDisconnectRunnable = consumer;
 	}
 
 	@MappedMethod
-	public static void registerChunkUnload(BiConsumer<ServerWorld, WorldChunk> consumer) {
-		MainEventBus.chunkUnloadConsumer = consumer;
+	public void registerChunkLoad(BiConsumer<ServerWorld, WorldChunk> consumer) {
+		mainEventBus.chunkLoadConsumer = consumer;
+	}
+
+	@MappedMethod
+	public void registerChunkUnload(BiConsumer<ServerWorld, WorldChunk> consumer) {
+		mainEventBus.chunkUnloadConsumer = consumer;
 	}
 }

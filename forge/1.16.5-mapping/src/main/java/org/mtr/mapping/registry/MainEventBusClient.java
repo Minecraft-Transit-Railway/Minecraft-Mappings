@@ -14,25 +14,25 @@ import java.util.function.Consumer;
 
 public final class MainEventBusClient {
 
-	static Runnable startClientTickRunnable = () -> {
+	Runnable startClientTickRunnable = () -> {
 	};
-	static Runnable endClientTickRunnable = () -> {
+	Runnable endClientTickRunnable = () -> {
 	};
-	static Runnable clientJoinRunnable = () -> {
+	Runnable clientJoinRunnable = () -> {
 	};
-	static Runnable clientDisconnectRunnable = () -> {
+	Runnable clientDisconnectRunnable = () -> {
 	};
-	static Consumer<ClientWorld> startWorldTickRunnable = world -> {
+	Consumer<ClientWorld> startWorldTickRunnable = world -> {
 	};
-	static Consumer<ClientWorld> endWorldTickRunnable = world -> {
+	Consumer<ClientWorld> endWorldTickRunnable = world -> {
 	};
-	static BiConsumer<ClientWorld, WorldChunk> chunkLoadConsumer = (world, chunk) -> {
+	BiConsumer<ClientWorld, WorldChunk> chunkLoadConsumer = (world, chunk) -> {
 	};
-	static BiConsumer<ClientWorld, WorldChunk> chunkUnloadConsumer = (world, chunk) -> {
+	BiConsumer<ClientWorld, WorldChunk> chunkUnloadConsumer = (world, chunk) -> {
 	};
 
 	@SubscribeEvent
-	public static void clientTick(TickEvent.ClientTickEvent event) {
+	public void clientTick(TickEvent.ClientTickEvent event) {
 		switch (event.phase) {
 			case START:
 				startClientTickRunnable.run();
@@ -44,7 +44,7 @@ public final class MainEventBusClient {
 	}
 
 	@SubscribeEvent
-	public static void worldTick(TickEvent.WorldTickEvent event) {
+	public void worldTick(TickEvent.WorldTickEvent event) {
 		if (event.side == LogicalSide.CLIENT && event.world instanceof net.minecraft.client.world.ClientWorld) {
 			switch (event.phase) {
 				case START:
@@ -58,24 +58,24 @@ public final class MainEventBusClient {
 	}
 
 	@SubscribeEvent
-	public static void clientJoin(ClientPlayerNetworkEvent.LoggedInEvent event) {
+	public void clientJoin(ClientPlayerNetworkEvent.LoggedInEvent event) {
 		clientJoinRunnable.run();
 	}
 
 	@SubscribeEvent
-	public static void clientDisconnect(ClientPlayerNetworkEvent.LoggedOutEvent event) {
+	public void clientDisconnect(ClientPlayerNetworkEvent.LoggedOutEvent event) {
 		clientDisconnectRunnable.run();
 	}
 
 	@SubscribeEvent
-	public static void chunkLoad(ChunkEvent.Load event) {
+	public void chunkLoad(ChunkEvent.Load event) {
 		if (event.getWorld() instanceof net.minecraft.client.world.ClientWorld && event.getChunk() instanceof Chunk) {
 			chunkLoadConsumer.accept(new ClientWorld((net.minecraft.client.world.ClientWorld) event.getWorld()), new WorldChunk((Chunk) event.getChunk()));
 		}
 	}
 
 	@SubscribeEvent
-	public static void chunkUnload(ChunkEvent.Load event) {
+	public void chunkUnload(ChunkEvent.Load event) {
 		if (event.getWorld() instanceof net.minecraft.client.world.ClientWorld && event.getChunk() instanceof Chunk) {
 			chunkUnloadConsumer.accept(new ClientWorld((net.minecraft.client.world.ClientWorld) event.getWorld()), new WorldChunk((Chunk) event.getChunk()));
 		}

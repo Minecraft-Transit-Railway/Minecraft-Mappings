@@ -38,6 +38,7 @@ public final class Registry extends DummyClass {
 
 	Identifier packetsIdentifier;
 	final Map<String, Function<PacketBufferReceiver, ? extends PacketHandler>> packets = new HashMap<>();
+	public final EventRegistry eventRegistry = new EventRegistry();
 	private final List<Runnable> objectsToRegister = new ArrayList<>();
 	private final List<Consumer<CommandDispatcher<ServerCommandSource>>> commandsToRegister = new ArrayList<>();
 

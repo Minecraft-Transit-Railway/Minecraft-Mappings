@@ -20,47 +20,47 @@ import java.util.function.Consumer;
 public class EventRegistryClient extends DummyClass {
 
 	@MappedMethod
-	public static void registerStartClientTick(Runnable runnable) {
+	public void registerStartClientTick(Runnable runnable) {
 		ClientTickEvents.START_CLIENT_TICK.register(minecraftServer -> runnable.run());
 	}
 
 	@MappedMethod
-	public static void registerEndClientTick(Runnable runnable) {
+	public void registerEndClientTick(Runnable runnable) {
 		ClientTickEvents.END_CLIENT_TICK.register(minecraftServer -> runnable.run());
 	}
 
 	@MappedMethod
-	public static void registerStartWorldTick(Consumer<ClientWorld> consumer) {
+	public void registerStartWorldTick(Consumer<ClientWorld> consumer) {
 		ClientTickEvents.START_WORLD_TICK.register(clientWorld -> consumer.accept(new ClientWorld(clientWorld)));
 	}
 
 	@MappedMethod
-	public static void registerEndWorldTick(Consumer<ClientWorld> consumer) {
+	public void registerEndWorldTick(Consumer<ClientWorld> consumer) {
 		ClientTickEvents.END_WORLD_TICK.register(clientWorld -> consumer.accept(new ClientWorld(clientWorld)));
 	}
 
 	@MappedMethod
-	public static void registerClientJoin(Runnable runnable) {
+	public void registerClientJoin(Runnable runnable) {
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> runnable.run());
 	}
 
 	@MappedMethod
-	public static void registerClientDisconnect(Runnable runnable) {
+	public void registerClientDisconnect(Runnable runnable) {
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> runnable.run());
 	}
 
 	@MappedMethod
-	public static void registerChunkLoad(BiConsumer<ClientWorld, WorldChunk> consumer) {
+	public void registerChunkLoad(BiConsumer<ClientWorld, WorldChunk> consumer) {
 		ClientChunkEvents.CHUNK_LOAD.register((clientWorld, worldChunk) -> consumer.accept(new ClientWorld(clientWorld), new WorldChunk(worldChunk)));
 	}
 
 	@MappedMethod
-	public static void registerChunkUnload(BiConsumer<ClientWorld, WorldChunk> consumer) {
+	public void registerChunkUnload(BiConsumer<ClientWorld, WorldChunk> consumer) {
 		ClientChunkEvents.CHUNK_UNLOAD.register((clientWorld, worldChunk) -> consumer.accept(new ClientWorld(clientWorld), new WorldChunk(worldChunk)));
 	}
 
 	@MappedMethod
-	public static void registerResourceReloadEvent(Runnable runnable) {
+	public void registerResourceReloadEvent(Runnable runnable) {
 		final Identifier identifier = new Identifier(Integer.toHexString(new Random().nextInt()), "resource");
 		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
 			@Deprecated

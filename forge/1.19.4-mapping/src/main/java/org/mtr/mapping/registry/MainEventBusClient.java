@@ -15,25 +15,25 @@ import java.util.function.Consumer;
 
 public final class MainEventBusClient {
 
-	static Runnable startClientTickRunnable = () -> {
+	Runnable startClientTickRunnable = () -> {
 	};
-	static Runnable endClientTickRunnable = () -> {
+	Runnable endClientTickRunnable = () -> {
 	};
-	static Runnable clientJoinRunnable = () -> {
+	Runnable clientJoinRunnable = () -> {
 	};
-	static Runnable clientDisconnectRunnable = () -> {
+	Runnable clientDisconnectRunnable = () -> {
 	};
-	static Consumer<ClientWorld> startWorldTickRunnable = world -> {
+	Consumer<ClientWorld> startWorldTickRunnable = world -> {
 	};
-	static Consumer<ClientWorld> endWorldTickRunnable = world -> {
+	Consumer<ClientWorld> endWorldTickRunnable = world -> {
 	};
-	static BiConsumer<ClientWorld, WorldChunk> chunkLoadConsumer = (world, chunk) -> {
+	BiConsumer<ClientWorld, WorldChunk> chunkLoadConsumer = (world, chunk) -> {
 	};
-	static BiConsumer<ClientWorld, WorldChunk> chunkUnloadConsumer = (world, chunk) -> {
+	BiConsumer<ClientWorld, WorldChunk> chunkUnloadConsumer = (world, chunk) -> {
 	};
 
 	@SubscribeEvent
-	public static void clientTick(TickEvent.ClientTickEvent event) {
+	public void clientTick(TickEvent.ClientTickEvent event) {
 		switch (event.phase) {
 			case START -> startClientTickRunnable.run();
 			case END -> endClientTickRunnable.run();
@@ -41,7 +41,7 @@ public final class MainEventBusClient {
 	}
 
 	@SubscribeEvent
-	public static void worldTick(TickEvent.LevelTickEvent event) {
+	public void worldTick(TickEvent.LevelTickEvent event) {
 		if (event.side == LogicalSide.CLIENT && event.level instanceof ClientLevel) {
 			switch (event.phase) {
 				case START -> startWorldTickRunnable.accept(new ClientWorld((ClientLevel) event.level));
@@ -51,24 +51,24 @@ public final class MainEventBusClient {
 	}
 
 	@SubscribeEvent
-	public static void clientJoin(ClientPlayerNetworkEvent.LoggingIn event) {
+	public void clientJoin(ClientPlayerNetworkEvent.LoggingIn event) {
 		clientJoinRunnable.run();
 	}
 
 	@SubscribeEvent
-	public static void clientDisconnect(ClientPlayerNetworkEvent.LoggingOut event) {
+	public void clientDisconnect(ClientPlayerNetworkEvent.LoggingOut event) {
 		clientDisconnectRunnable.run();
 	}
 
 	@SubscribeEvent
-	public static void chunkLoad(ChunkEvent.Load event) {
+	public void chunkLoad(ChunkEvent.Load event) {
 		if (event.getLevel() instanceof ClientLevel && event.getChunk() instanceof LevelChunk) {
 			chunkLoadConsumer.accept(new ClientWorld((ClientLevel) event.getLevel()), new WorldChunk((LevelChunk) event.getChunk()));
 		}
 	}
 
 	@SubscribeEvent
-	public static void chunkUnload(ChunkEvent.Load event) {
+	public void chunkUnload(ChunkEvent.Load event) {
 		if (event.getLevel() instanceof ClientLevel && event.getChunk() instanceof LevelChunk) {
 			chunkUnloadConsumer.accept(new ClientWorld((ClientLevel) event.getLevel()), new WorldChunk((LevelChunk) event.getChunk()));
 		}

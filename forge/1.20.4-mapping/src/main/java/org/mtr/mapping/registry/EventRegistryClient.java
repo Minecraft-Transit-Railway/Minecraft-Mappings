@@ -10,48 +10,57 @@ import java.util.function.Consumer;
 
 public class EventRegistryClient extends DummyClass {
 
-	@MappedMethod
-	public static void registerStartClientTick(Runnable runnable) {
-		MainEventBusClient.startClientTickRunnable = runnable;
+	private final MainEventBusClient mainEventBusClient;
+	private final ModEventBusClient modEventBusClient;
+
+	@Deprecated
+	EventRegistryClient(MainEventBusClient mainEventBusClient, ModEventBusClient modEventBusClient) {
+		this.mainEventBusClient = mainEventBusClient;
+		this.modEventBusClient = modEventBusClient;
 	}
 
 	@MappedMethod
-	public static void registerEndClientTick(Runnable runnable) {
-		MainEventBusClient.endClientTickRunnable = runnable;
+	public void registerStartClientTick(Runnable runnable) {
+		mainEventBusClient.startClientTickRunnable = runnable;
 	}
 
 	@MappedMethod
-	public static void registerStartWorldTick(Consumer<ClientWorld> consumer) {
-		MainEventBusClient.startWorldTickRunnable = consumer;
+	public void registerEndClientTick(Runnable runnable) {
+		mainEventBusClient.endClientTickRunnable = runnable;
 	}
 
 	@MappedMethod
-	public static void registerEndWorldTick(Consumer<ClientWorld> consumer) {
-		MainEventBusClient.endWorldTickRunnable = consumer;
+	public void registerStartWorldTick(Consumer<ClientWorld> consumer) {
+		mainEventBusClient.startWorldTickRunnable = consumer;
 	}
 
 	@MappedMethod
-	public static void registerClientJoin(Runnable runnable) {
-		MainEventBusClient.clientJoinRunnable = runnable;
+	public void registerEndWorldTick(Consumer<ClientWorld> consumer) {
+		mainEventBusClient.endWorldTickRunnable = consumer;
 	}
 
 	@MappedMethod
-	public static void registerClientDisconnect(Runnable runnable) {
-		MainEventBusClient.clientDisconnectRunnable = runnable;
+	public void registerClientJoin(Runnable runnable) {
+		mainEventBusClient.clientJoinRunnable = runnable;
 	}
 
 	@MappedMethod
-	public static void registerChunkLoad(BiConsumer<ClientWorld, WorldChunk> consumer) {
-		MainEventBusClient.chunkLoadConsumer = consumer;
+	public void registerClientDisconnect(Runnable runnable) {
+		mainEventBusClient.clientDisconnectRunnable = runnable;
 	}
 
 	@MappedMethod
-	public static void registerChunkUnload(BiConsumer<ClientWorld, WorldChunk> consumer) {
-		MainEventBusClient.chunkUnloadConsumer = consumer;
+	public void registerChunkLoad(BiConsumer<ClientWorld, WorldChunk> consumer) {
+		mainEventBusClient.chunkLoadConsumer = consumer;
 	}
 
 	@MappedMethod
-	public static void registerResourceReloadEvent(Runnable runnable) {
-		ModEventBusClient.resourceReloadRunnable = runnable;
+	public void registerChunkUnload(BiConsumer<ClientWorld, WorldChunk> consumer) {
+		mainEventBusClient.chunkUnloadConsumer = consumer;
+	}
+
+	@MappedMethod
+	public void registerResourceReloadEvent(Runnable runnable) {
+		modEventBusClient.resourceReloadRunnable = runnable;
 	}
 }

@@ -36,18 +36,21 @@ import java.util.function.Supplier;
 public final class Registry extends DummyClass {
 
 	SimpleChannel simpleChannel;
+	private final MainEventBus mainEventBus = new MainEventBus();
+	private final ModEventBus modEventBus = new ModEventBus();
 	final Map<String, Function<PacketBufferReceiver, ? extends PacketHandler>> packets = new HashMap<>();
+	public final EventRegistry eventRegistry = new EventRegistry(mainEventBus);
 	private static final String PROTOCOL_VERSION = "1";
 
 	@MappedMethod
 	public void init() {
-		MinecraftForge.EVENT_BUS.register(MainEventBus.class);
-		FMLJavaModLoadingContext.get().getModEventBus().register(ModEventBus.class);
+		MinecraftForge.EVENT_BUS.register(mainEventBus);
+		FMLJavaModLoadingContext.get().getModEventBus().register(modEventBus);
 	}
 
 	@MappedMethod
 	public BlockRegistryObject registerBlock(Identifier identifier, Supplier<Block> supplier) {
-		ModEventBus.BLOCKS.add(() -> {
+		modEventBus.BLOCKS.add(() -> {
 			final net.minecraft.block.Block block = supplier.get().data;
 			block.setRegistryName(identifier.data);
 			return block;
@@ -62,13 +65,13 @@ public final class Registry extends DummyClass {
 
 	@MappedMethod
 	public BlockRegistryObject registerBlockWithBlockItem(Identifier identifier, Supplier<Block> supplier, BiFunction<Block, ItemSettings, BlockItemExtension> function, CreativeModeTabHolder... creativeModeTabHolders) {
-		ModEventBus.BLOCKS.add(() -> {
+		modEventBus.BLOCKS.add(() -> {
 			final net.minecraft.block.Block block = supplier.get().data;
 			block.setRegistryName(identifier.data);
 			return block;
 		});
 		final BlockRegistryObject blockRegistryObject = new BlockRegistryObject(identifier);
-		ModEventBus.BLOCK_ITEMS.add(() -> {
+		modEventBus.BLOCK_ITEMS.add(() -> {
 			final BlockItemExtension blockItemExtension = function.apply(blockRegistryObject.get(), getItemSettings(creativeModeTabHolders));
 			blockItemExtension.setRegistryName(identifier.data);
 			return blockItemExtension;
@@ -78,7 +81,7 @@ public final class Registry extends DummyClass {
 
 	@MappedMethod
 	public ItemRegistryObject registerItem(Identifier identifier, Function<ItemSettings, Item> function, CreativeModeTabHolder... creativeModeTabHolders) {
-		ModEventBus.ITEMS.add(() -> {
+		modEventBus.ITEMS.add(() -> {
 			final net.minecraft.item.Item item = function.apply(getItemSettings(creativeModeTabHolders)).data;
 			item.setRegistryName(identifier.data);
 			return item;
@@ -88,7 +91,7 @@ public final class Registry extends DummyClass {
 
 	@MappedMethod
 	public <T extends BlockEntityExtension> BlockEntityTypeRegistryObject<T> registerBlockEntityType(Identifier identifier, BiFunction<BlockPos, BlockState, T> function, Supplier<Block>... blockSuppliers) {
-		ModEventBus.BLOCK_ENTITY_TYPES.add(() -> {
+		modEventBus.BLOCK_ENTITY_TYPES.add(() -> {
 			final TileEntityType<T> tileEntityType = TileEntityType.Builder.of(() -> function.apply(null, null), HolderBase.convertArray(blockSuppliers, net.minecraft.block.Block[]::new)).build(null);
 			tileEntityType.setRegistryName(identifier.data);
 			return tileEntityType;
@@ -98,7 +101,7 @@ public final class Registry extends DummyClass {
 
 	@MappedMethod
 	public <T extends EntityExtension> EntityTypeRegistryObject<T> registerEntityType(Identifier identifier, BiFunction<EntityType<?>, World, T> function, float width, float height) {
-		ModEventBus.ENTITY_TYPES.add(() -> {
+		modEventBus.ENTITY_TYPES.add(() -> {
 			final net.minecraft.entity.EntityType<T> entityType = net.minecraft.entity.EntityType.Builder.of(getEntityFactory(function), EntityClassification.MISC).sized(width, height).build(identifier.toString());
 			entityType.setRegistryName(identifier.data);
 			return entityType;
@@ -117,7 +120,7 @@ public final class Registry extends DummyClass {
 
 	@MappedMethod
 	public ParticleTypeRegistryObject registerParticleType(Identifier identifier, boolean alwaysSpawn) {
-		ModEventBus.PARTICLE_TYPES.add(() -> {
+		modEventBus.PARTICLE_TYPES.add(() -> {
 			final BasicParticleType defaultParticleType = new BasicParticleType(alwaysSpawn);
 			defaultParticleType.setRegistryName(identifier.data);
 			return defaultParticleType;
@@ -132,7 +135,7 @@ public final class Registry extends DummyClass {
 
 	@MappedMethod
 	public SoundEventRegistryObject registerSoundEvent(Identifier identifier) {
-		ModEventBus.SOUND_EVENTS.add(() -> {
+		modEventBus.SOUND_EVENTS.add(() -> {
 			final SoundEvent soundEvent = new SoundEvent(identifier.data);
 			soundEvent.setRegistryName(identifier.data);
 			return soundEvent;
@@ -142,7 +145,7 @@ public final class Registry extends DummyClass {
 
 	@MappedMethod
 	public void registerCommand(String command, Consumer<CommandBuilder<?>> buildCommand, String... redirects) {
-		MainEventBus.COMMANDS.add(dispatcher -> {
+		mainEventBus.COMMANDS.add(dispatcher -> {
 			final CommandBuilder<LiteralArgumentBuilder<CommandSource>> commandBuilder = new CommandBuilder<>(Commands.literal(command));
 			buildCommand.accept(commandBuilder);
 			final LiteralCommandNode<CommandSource> literalCommandNode = dispatcher.register(commandBuilder.argumentBuilder);

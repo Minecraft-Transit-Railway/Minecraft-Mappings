@@ -15,29 +15,29 @@ import java.util.function.Function;
 
 public final class ModEventBusClient {
 
-	static Runnable resourceReloadRunnable = () -> {
+	Runnable resourceReloadRunnable = () -> {
 	};
-	static final List<Runnable> CLIENT_OBJECTS_TO_REGISTER = new ArrayList<>();
-	static final List<Runnable> CLIENT_OBJECTS_TO_REGISTER_QUEUED = new ArrayList<>();
-	static final List<Consumer<EntityRenderersEvent.RegisterRenderers>> BLOCK_ENTITY_RENDERERS = new ArrayList<>();
-	static final List<Consumer<RegisterKeyMappingsEvent>> KEY_MAPPINGS = new ArrayList<>();
-	static final List<Consumer<RegisterColorHandlersEvent.Block>> BLOCK_COLORS = new ArrayList<>();
-	static final List<Consumer<RegisterColorHandlersEvent.Item>> ITEM_COLORS = new ArrayList<>();
-	static final List<Tuple<ParticleTypeRegistryObject, Function<SpriteProvider, ParticleFactoryExtension>>> PARTICLE_FACTORIES = new ArrayList<>();
+	final List<Runnable> CLIENT_OBJECTS_TO_REGISTER = new ArrayList<>();
+	final List<Runnable> CLIENT_OBJECTS_TO_REGISTER_QUEUED = new ArrayList<>();
+	final List<Consumer<EntityRenderersEvent.RegisterRenderers>> BLOCK_ENTITY_RENDERERS = new ArrayList<>();
+	final List<Consumer<RegisterKeyMappingsEvent>> KEY_MAPPINGS = new ArrayList<>();
+	final List<Consumer<RegisterColorHandlersEvent.Block>> BLOCK_COLORS = new ArrayList<>();
+	final List<Consumer<RegisterColorHandlersEvent.Item>> ITEM_COLORS = new ArrayList<>();
+	final List<Tuple<ParticleTypeRegistryObject, Function<SpriteProvider, ParticleFactoryExtension>>> PARTICLE_FACTORIES = new ArrayList<>();
 
 	@SubscribeEvent
-	public static void registerClient(FMLClientSetupEvent event) {
+	public void registerClient(FMLClientSetupEvent event) {
 		CLIENT_OBJECTS_TO_REGISTER.forEach(Runnable::run);
 		event.enqueueWork(() -> CLIENT_OBJECTS_TO_REGISTER_QUEUED.forEach(Runnable::run));
 	}
 
 	@SubscribeEvent
-	public static void registerBlockEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+	public void registerBlockEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
 		BLOCK_ENTITY_RENDERERS.forEach(consumer -> consumer.accept(event));
 	}
 
 	@SubscribeEvent
-	public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
+	public void registerKeyMappings(RegisterKeyMappingsEvent event) {
 		KEY_MAPPINGS.forEach(consumer -> consumer.accept(event));
 	}
 
@@ -57,7 +57,7 @@ public final class ModEventBusClient {
 	}
 
 	@SubscribeEvent
-	public static void resourceReload(TextureStitchEvent event) {
+	public void resourceReload(TextureStitchEvent event) {
 		if (event.getAtlas().location().getPath().endsWith("blocks.png")) {
 			resourceReloadRunnable.run();
 		}

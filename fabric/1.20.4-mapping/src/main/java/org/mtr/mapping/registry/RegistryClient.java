@@ -26,9 +26,11 @@ import java.util.function.Function;
 public final class RegistryClient extends DummyClass {
 
 	public static Function<World, ? extends EntityExtension> worldRenderingEntity;
+	public final EventRegistryClient eventRegistryClient = new EventRegistryClient();
 	private final Registry registry;
 	private final List<Runnable> objectsToRegister = new ArrayList<>();
 
+	@MappedMethod
 	public RegistryClient(Registry registry) {
 		this.registry = registry;
 	}

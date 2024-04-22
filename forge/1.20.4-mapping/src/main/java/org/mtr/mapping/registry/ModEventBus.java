@@ -25,17 +25,17 @@ import java.util.function.Supplier;
 
 public final class ModEventBus {
 
-	static final Map<Identifier, Supplier<Block>> BLOCKS = new HashMap<>();
-	static final Map<Identifier, Supplier<BlockItemExtension>> BLOCK_ITEMS = new HashMap<>();
-	static final Map<Identifier, Supplier<Item>> ITEMS = new HashMap<>();
-	static final Map<Identifier, Supplier<BlockEntityType<? extends BlockEntityExtension>>> BLOCK_ENTITY_TYPES = new HashMap<>();
-	static final Map<Identifier, Supplier<EntityType<? extends EntityExtension>>> ENTITY_TYPES = new HashMap<>();
-	static final Map<Identifier, Supplier<ParticleType<?>>> PARTICLE_TYPES = new HashMap<>();
-	static final Map<Identifier, Supplier<SoundEvent>> SOUND_EVENTS = new HashMap<>();
-	static final List<CreativeModeTabHolder> CREATIVE_MODE_TABS = new ArrayList<>();
+	final Map<Identifier, Supplier<Block>> BLOCKS = new HashMap<>();
+	final Map<Identifier, Supplier<BlockItemExtension>> BLOCK_ITEMS = new HashMap<>();
+	final Map<Identifier, Supplier<Item>> ITEMS = new HashMap<>();
+	final Map<Identifier, Supplier<BlockEntityType<? extends BlockEntityExtension>>> BLOCK_ENTITY_TYPES = new HashMap<>();
+	final Map<Identifier, Supplier<EntityType<? extends EntityExtension>>> ENTITY_TYPES = new HashMap<>();
+	final Map<Identifier, Supplier<ParticleType<?>>> PARTICLE_TYPES = new HashMap<>();
+	final Map<Identifier, Supplier<SoundEvent>> SOUND_EVENTS = new HashMap<>();
+	final List<CreativeModeTabHolder> CREATIVE_MODE_TABS = new ArrayList<>();
 
 	@SubscribeEvent
-	public static void register(RegisterEvent event) {
+	public void register(RegisterEvent event) {
 		event.register(ForgeRegistries.Keys.BLOCKS, helper -> BLOCKS.forEach((identifier, supplier) -> helper.register(identifier.data, supplier.get().data)));
 		event.register(ForgeRegistries.Keys.ITEMS, helper -> {
 			BLOCK_ITEMS.forEach((identifier, supplier) -> helper.register(identifier.data, supplier.get()));

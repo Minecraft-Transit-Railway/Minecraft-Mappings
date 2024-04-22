@@ -21,48 +21,52 @@ import java.util.function.Function;
 public final class RegistryClient extends DummyClass {
 
 	public static Function<World, ? extends EntityExtension> worldRenderingEntity;
+	private final MainEventBusClient mainEventBusClient = new MainEventBusClient();
+	private final ModEventBusClient modEventBusClient = new ModEventBusClient();
+	public final EventRegistryClient eventRegistryClient = new EventRegistryClient(mainEventBusClient, modEventBusClient);
 	private final Registry registry;
 
+	@MappedMethod
 	public RegistryClient(Registry registry) {
 		this.registry = registry;
 	}
 
 	@MappedMethod
 	public void init() {
-		MinecraftForge.EVENT_BUS.register(MainEventBusClient.class);
-		FMLJavaModLoadingContext.get().getModEventBus().register(ModEventBusClient.class);
+		MinecraftForge.EVENT_BUS.register(mainEventBusClient);
+		FMLJavaModLoadingContext.get().getModEventBus().register(modEventBusClient);
 	}
 
 	@MappedMethod
 	public <T extends BlockEntityTypeRegistryObject<U>, U extends BlockEntityExtension> void registerBlockEntityRenderer(T blockEntityType, Function<BlockEntityRenderer.Argument, BlockEntityRenderer<U>> rendererInstance) {
-		ModEventBusClient.CLIENT_OBJECTS_TO_REGISTER.add(() -> ClientRegistry.bindTileEntityRenderer(blockEntityType.get().data, dispatcher -> rendererInstance.apply(new BlockEntityRenderer.Argument(dispatcher))));
+		modEventBusClient.CLIENT_OBJECTS_TO_REGISTER.add(() -> ClientRegistry.bindTileEntityRenderer(blockEntityType.get().data, dispatcher -> rendererInstance.apply(new BlockEntityRenderer.Argument(dispatcher))));
 	}
 
 	@MappedMethod
 	public <T extends EntityTypeRegistryObject<U>, U extends EntityExtension> void registerEntityRenderer(T entityType, Function<EntityRenderer.Argument, EntityRenderer<U>> rendererInstance) {
-		ModEventBusClient.CLIENT_OBJECTS_TO_REGISTER.add(() -> RenderingRegistry.registerEntityRenderingHandler(entityType.get().data, dispatcher -> rendererInstance.apply(new EntityRenderer.Argument(dispatcher))));
+		modEventBusClient.CLIENT_OBJECTS_TO_REGISTER.add(() -> RenderingRegistry.registerEntityRenderingHandler(entityType.get().data, dispatcher -> rendererInstance.apply(new EntityRenderer.Argument(dispatcher))));
 	}
 
 	@MappedMethod
 	public void registerParticleRenderer(ParticleTypeRegistryObject particleTypeRegistryObject, Function<SpriteProvider, ParticleFactoryExtension> factory) {
-		ModEventBusClient.PARTICLE_FACTORIES.add(new Tuple<>(particleTypeRegistryObject, spriteProvider -> factory.apply(new SpriteProvider(spriteProvider.data))));
+		modEventBusClient.PARTICLE_FACTORIES.add(new Tuple<>(particleTypeRegistryObject, spriteProvider -> factory.apply(new SpriteProvider(spriteProvider.data))));
 	}
 
 	@MappedMethod
 	public void registerBlockRenderType(RenderLayer renderLayer, BlockRegistryObject block) {
-		ModEventBusClient.CLIENT_OBJECTS_TO_REGISTER.add(() -> RenderTypeLookup.setRenderLayer(block.get().data, renderLayer.data));
+		modEventBusClient.CLIENT_OBJECTS_TO_REGISTER.add(() -> RenderTypeLookup.setRenderLayer(block.get().data, renderLayer.data));
 	}
 
 	@MappedMethod
 	public KeyBinding registerKeyBinding(String translationKey, int key, String categoryKey) {
 		final net.minecraft.client.settings.KeyBinding keyBinding = new net.minecraft.client.settings.KeyBinding(translationKey, InputMappings.Type.KEYSYM, key, categoryKey);
-		ModEventBusClient.CLIENT_OBJECTS_TO_REGISTER.add(() -> ClientRegistry.registerKeyBinding(keyBinding));
+		modEventBusClient.CLIENT_OBJECTS_TO_REGISTER.add(() -> ClientRegistry.registerKeyBinding(keyBinding));
 		return new KeyBinding(keyBinding);
 	}
 
 	@MappedMethod
 	public void registerBlockColors(BlockColorProvider blockColorProvider, BlockRegistryObject... blocks) {
-		ModEventBusClient.BLOCK_COLORS.add(event -> {
+		modEventBusClient.BLOCK_COLORS.add(event -> {
 			final net.minecraft.block.Block[] newBlocks = new net.minecraft.block.Block[blocks.length];
 			for (int i = 0; i < blocks.length; i++) {
 				newBlocks[i] = blocks[i].get().data;
@@ -73,7 +77,7 @@ public final class RegistryClient extends DummyClass {
 
 	@MappedMethod
 	public void registerItemColors(ItemColorProvider itemColorProvider, ItemRegistryObject... items) {
-		ModEventBusClient.ITEM_COLORS.add(event -> {
+		modEventBusClient.ITEM_COLORS.add(event -> {
 			final net.minecraft.item.Item[] newItems = new net.minecraft.item.Item[items.length];
 			for (int i = 0; i < items.length; i++) {
 				newItems[i] = items[i].get().data;
@@ -84,7 +88,7 @@ public final class RegistryClient extends DummyClass {
 
 	@MappedMethod
 	public void registerItemModelPredicate(ItemRegistryObject item, Identifier identifier, ModelPredicateProvider modelPredicateProvider) {
-		ModEventBusClient.CLIENT_OBJECTS_TO_REGISTER_QUEUED.add(() -> ItemModelsProperties.register(item.get().data, identifier.data, (itemStack, clientWorld, livingEntity) -> modelPredicateProvider.call(new ItemStack(itemStack), clientWorld == null ? null : new ClientWorld(clientWorld), livingEntity == null ? null : new LivingEntity(livingEntity))));
+		modEventBusClient.CLIENT_OBJECTS_TO_REGISTER_QUEUED.add(() -> ItemModelsProperties.register(item.get().data, identifier.data, (itemStack, clientWorld, livingEntity) -> modelPredicateProvider.call(new ItemStack(itemStack), clientWorld == null ? null : new ClientWorld(clientWorld), livingEntity == null ? null : new LivingEntity(livingEntity))));
 	}
 
 	@MappedMethod
