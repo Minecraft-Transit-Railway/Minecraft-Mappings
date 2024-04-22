@@ -19,31 +19,31 @@ public final class ModEventBusClient {
 
 	Runnable resourceReloadRunnable = () -> {
 	};
-	final List<Runnable> CLIENT_OBJECTS_TO_REGISTER = new ArrayList<>();
-	final List<Runnable> CLIENT_OBJECTS_TO_REGISTER_QUEUED = new ArrayList<>();
-	final List<Consumer<ColorHandlerEvent.Block>> BLOCK_COLORS = new ArrayList<>();
-	final List<Consumer<ColorHandlerEvent.Item>> ITEM_COLORS = new ArrayList<>();
-	final List<Tuple<ParticleTypeRegistryObject, Function<SpriteProvider, ParticleFactoryExtension>>> PARTICLE_FACTORIES = new ArrayList<>();
+	final List<Runnable> clientObjectsToRegister = new ArrayList<>();
+	final List<Runnable> clientObjectsToRegisterQueued = new ArrayList<>();
+	final List<Consumer<ColorHandlerEvent.Block>> blockColors = new ArrayList<>();
+	final List<Consumer<ColorHandlerEvent.Item>> itemColors = new ArrayList<>();
+	final List<Tuple<ParticleTypeRegistryObject, Function<SpriteProvider, ParticleFactoryExtension>>> particleFactories = new ArrayList<>();
 
 	@SubscribeEvent
 	public void registerClient(FMLClientSetupEvent event) {
-		CLIENT_OBJECTS_TO_REGISTER.forEach(Runnable::run);
-		event.enqueueWork(() -> CLIENT_OBJECTS_TO_REGISTER_QUEUED.forEach(Runnable::run));
+		clientObjectsToRegister.forEach(Runnable::run);
+		event.enqueueWork(() -> clientObjectsToRegisterQueued.forEach(Runnable::run));
 	}
 
 	@SubscribeEvent
 	public void registerBlockColors(ColorHandlerEvent.Block event) {
-		BLOCK_COLORS.forEach(consumer -> consumer.accept(event));
+		blockColors.forEach(consumer -> consumer.accept(event));
 	}
 
 	@SubscribeEvent
 	public void registerItemColors(ColorHandlerEvent.Item event) {
-		ITEM_COLORS.forEach(consumer -> consumer.accept(event));
+		itemColors.forEach(consumer -> consumer.accept(event));
 	}
 
 	@SubscribeEvent
 	public void registerParticleFactories(ParticleFactoryRegisterEvent event) {
-		PARTICLE_FACTORIES.forEach(tuple -> Minecraft.getInstance().particleEngine.register(tuple.getA().get().data, spriteProvider -> tuple.getB().apply(new SpriteProvider(spriteProvider))));
+		particleFactories.forEach(tuple -> Minecraft.getInstance().particleEngine.register(tuple.getA().get().data, spriteProvider -> tuple.getB().apply(new SpriteProvider(spriteProvider))));
 	}
 
 	@SubscribeEvent

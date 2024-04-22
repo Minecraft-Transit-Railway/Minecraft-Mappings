@@ -17,43 +17,43 @@ public final class ModEventBusClient {
 
 	Runnable resourceReloadRunnable = () -> {
 	};
-	final List<Runnable> CLIENT_OBJECTS_TO_REGISTER = new ArrayList<>();
-	final List<Runnable> CLIENT_OBJECTS_TO_REGISTER_QUEUED = new ArrayList<>();
-	final List<Consumer<EntityRenderersEvent.RegisterRenderers>> BLOCK_ENTITY_RENDERERS = new ArrayList<>();
-	final List<Consumer<RegisterKeyMappingsEvent>> KEY_MAPPINGS = new ArrayList<>();
-	final List<Consumer<RegisterColorHandlersEvent.Block>> BLOCK_COLORS = new ArrayList<>();
-	final List<Consumer<RegisterColorHandlersEvent.Item>> ITEM_COLORS = new ArrayList<>();
-	final List<Tuple<ParticleTypeRegistryObject, Function<SpriteProvider, ParticleFactoryExtension>>> PARTICLE_FACTORIES = new ArrayList<>();
+	final List<Runnable> clientObjectsToRegister = new ArrayList<>();
+	final List<Runnable> clientObjectsToRegisterQueued = new ArrayList<>();
+	final List<Consumer<EntityRenderersEvent.RegisterRenderers>> blockEntityRenderers = new ArrayList<>();
+	final List<Consumer<RegisterKeyMappingsEvent>> keyMappings = new ArrayList<>();
+	final List<Consumer<RegisterColorHandlersEvent.Block>> blockColors = new ArrayList<>();
+	final List<Consumer<RegisterColorHandlersEvent.Item>> itemColors = new ArrayList<>();
+	final List<Tuple<ParticleTypeRegistryObject, Function<SpriteProvider, ParticleFactoryExtension>>> particleFactories = new ArrayList<>();
 
 	@SubscribeEvent
 	public void registerClient(FMLClientSetupEvent event) {
-		CLIENT_OBJECTS_TO_REGISTER.forEach(Runnable::run);
-		event.enqueueWork(() -> CLIENT_OBJECTS_TO_REGISTER_QUEUED.forEach(Runnable::run));
+		clientObjectsToRegister.forEach(Runnable::run);
+		event.enqueueWork(() -> clientObjectsToRegisterQueued.forEach(Runnable::run));
 	}
 
 	@SubscribeEvent
 	public void registerBlockEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
-		BLOCK_ENTITY_RENDERERS.forEach(consumer -> consumer.accept(event));
+		blockEntityRenderers.forEach(consumer -> consumer.accept(event));
 	}
 
 	@SubscribeEvent
 	public void registerKeyMappings(RegisterKeyMappingsEvent event) {
-		KEY_MAPPINGS.forEach(consumer -> consumer.accept(event));
+		keyMappings.forEach(consumer -> consumer.accept(event));
 	}
 
 	@SubscribeEvent
 	public void registerBlockColors(RegisterColorHandlersEvent.Block event) {
-		BLOCK_COLORS.forEach(consumer -> consumer.accept(event));
+		blockColors.forEach(consumer -> consumer.accept(event));
 	}
 
 	@SubscribeEvent
 	public void registerItemColors(RegisterColorHandlersEvent.Item event) {
-		ITEM_COLORS.forEach(consumer -> consumer.accept(event));
+		itemColors.forEach(consumer -> consumer.accept(event));
 	}
 
 	@SubscribeEvent
 	public void registerParticleFactories(RegisterParticleProvidersEvent event) {
-		PARTICLE_FACTORIES.forEach(tuple -> Minecraft.getInstance().particleEngine.register(tuple.getA().get().data, spriteProvider -> tuple.getB().apply(new SpriteProvider(spriteProvider))));
+		particleFactories.forEach(tuple -> Minecraft.getInstance().particleEngine.register(tuple.getA().get().data, spriteProvider -> tuple.getB().apply(new SpriteProvider(spriteProvider))));
 	}
 
 	@SubscribeEvent

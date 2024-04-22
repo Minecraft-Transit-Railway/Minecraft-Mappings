@@ -28,11 +28,11 @@ public final class ModEventBus {
 	final Map<Identifier, Supplier<Block>> BLOCKS = new HashMap<>();
 	final Map<Identifier, Supplier<BlockItemExtension>> BLOCK_ITEMS = new HashMap<>();
 	final Map<Identifier, Supplier<Item>> ITEMS = new HashMap<>();
-	final Map<Identifier, Supplier<BlockEntityType<? extends BlockEntityExtension>>> BLOCK_ENTITY_TYPES = new HashMap<>();
-	final Map<Identifier, Supplier<EntityType<? extends EntityExtension>>> ENTITY_TYPES = new HashMap<>();
-	final Map<Identifier, Supplier<ParticleType<?>>> PARTICLE_TYPES = new HashMap<>();
-	final Map<Identifier, Supplier<SoundEvent>> SOUND_EVENTS = new HashMap<>();
-	final List<CreativeModeTabHolder> CREATIVE_MODE_TABS = new ArrayList<>();
+	final Map<Identifier, Supplier<BlockEntityType<? extends BlockEntityExtension>>> blockEntityTypes = new HashMap<>();
+	final Map<Identifier, Supplier<EntityType<? extends EntityExtension>>> entityTypes = new HashMap<>();
+	final Map<Identifier, Supplier<ParticleType<?>>> particleTypes = new HashMap<>();
+	final Map<Identifier, Supplier<SoundEvent>> soundEvents = new HashMap<>();
+	final List<CreativeModeTabHolder> creativeModeTabs = new ArrayList<>();
 
 	@SubscribeEvent
 	public void register(RegisterEvent event) {
@@ -41,15 +41,15 @@ public final class ModEventBus {
 			BLOCK_ITEMS.forEach((identifier, supplier) -> helper.register(identifier.data, supplier.get()));
 			ITEMS.forEach((identifier, supplier) -> helper.register(identifier.data, supplier.get().data));
 		});
-		event.register(ForgeRegistries.Keys.BLOCK_ENTITY_TYPES, helper -> BLOCK_ENTITY_TYPES.forEach((identifier, supplier) -> helper.register(identifier.data, supplier.get())));
-		event.register(ForgeRegistries.Keys.ENTITY_TYPES, helper -> ENTITY_TYPES.forEach((identifier, supplier) -> helper.register(identifier.data, supplier.get())));
-		event.register(ForgeRegistries.Keys.PARTICLE_TYPES, helper -> PARTICLE_TYPES.forEach((identifier, supplier) -> helper.register(identifier.data, supplier.get())));
-		event.register(Registries.CREATIVE_MODE_TAB, helper -> CREATIVE_MODE_TABS.forEach(creativeModeTabHolder -> helper.register(creativeModeTabHolder.identifier, CreativeModeTab.builder()
+		event.register(ForgeRegistries.Keys.BLOCK_ENTITY_TYPES, helper -> blockEntityTypes.forEach((identifier, supplier) -> helper.register(identifier.data, supplier.get())));
+		event.register(ForgeRegistries.Keys.ENTITY_TYPES, helper -> entityTypes.forEach((identifier, supplier) -> helper.register(identifier.data, supplier.get())));
+		event.register(ForgeRegistries.Keys.PARTICLE_TYPES, helper -> particleTypes.forEach((identifier, supplier) -> helper.register(identifier.data, supplier.get())));
+		event.register(Registries.CREATIVE_MODE_TAB, helper -> creativeModeTabs.forEach(creativeModeTabHolder -> helper.register(creativeModeTabHolder.identifier, CreativeModeTab.builder()
 				.title(Component.translatable(String.format("itemGroup.%s.%s", creativeModeTabHolder.identifier.getNamespace(), creativeModeTabHolder.identifier.getPath())))
 				.icon(() -> creativeModeTabHolder.iconSupplier.get().data)
 				.displayItems((params, output) -> creativeModeTabHolder.itemSuppliers.forEach(itemSupplier -> output.accept(itemSupplier.get().data)))
 				.build()
 		)));
-		event.register(ForgeRegistries.Keys.SOUND_EVENTS, helper -> SOUND_EVENTS.forEach(((identifier, supplier) -> helper.register(identifier.data, supplier.get().data))));
+		event.register(ForgeRegistries.Keys.SOUND_EVENTS, helper -> soundEvents.forEach(((identifier, supplier) -> helper.register(identifier.data, supplier.get().data))));
 	}
 }

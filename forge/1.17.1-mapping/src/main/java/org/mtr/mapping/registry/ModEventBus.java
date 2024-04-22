@@ -21,10 +21,10 @@ public final class ModEventBus {
 	final List<Supplier<Block>> BLOCKS = new ArrayList<>();
 	final List<Supplier<BlockItemExtension>> BLOCK_ITEMS = new ArrayList<>();
 	final List<Supplier<Item>> ITEMS = new ArrayList<>();
-	final List<Supplier<BlockEntityType<? extends BlockEntityExtension>>> BLOCK_ENTITY_TYPES = new ArrayList<>();
-	final List<Supplier<EntityType<? extends EntityExtension>>> ENTITY_TYPES = new ArrayList<>();
-	final List<Supplier<ParticleType<?>>> PARTICLE_TYPES = new ArrayList<>();
-	final List<Supplier<SoundEvent>> SOUND_EVENTS = new ArrayList<>();
+	final List<Supplier<BlockEntityType<? extends BlockEntityExtension>>> blockEntityTypes = new ArrayList<>();
+	final List<Supplier<EntityType<? extends EntityExtension>>> entityTypes = new ArrayList<>();
+	final List<Supplier<ParticleType<?>>> particleTypes = new ArrayList<>();
+	final List<Supplier<SoundEvent>> soundEvents = new ArrayList<>();
 
 	@SubscribeEvent
 	public void registerBlocks(RegistryEvent.Register<Block> event) {
@@ -39,21 +39,21 @@ public final class ModEventBus {
 
 	@SubscribeEvent
 	public void registerBlockEntityTypes(RegistryEvent.Register<BlockEntityType<?>> event) {
-		BLOCK_ENTITY_TYPES.forEach(supplier -> event.getRegistry().register(supplier.get()));
+		blockEntityTypes.forEach(supplier -> event.getRegistry().register(supplier.get()));
 	}
 
 	@SubscribeEvent
 	public void registerEntityTypes(RegistryEvent.Register<EntityType<?>> event) {
-		ENTITY_TYPES.forEach(supplier -> event.getRegistry().register(supplier.get()));
+		entityTypes.forEach(supplier -> event.getRegistry().register(supplier.get()));
 	}
 
 	@SubscribeEvent
 	public void registerParticleTypes(RegistryEvent.Register<ParticleType<?>> event) {
-		PARTICLE_TYPES.forEach(supplier -> event.getRegistry().register(supplier.get()));
+		particleTypes.forEach(supplier -> event.getRegistry().register(supplier.get()));
 	}
 
 	@SubscribeEvent
 	public void registerSoundEvents(RegistryEvent.Register<SoundEvent> event) {
-		SOUND_EVENTS.forEach(supplier -> event.getRegistry().register(supplier.get()));
+		soundEvents.forEach(supplier -> event.getRegistry().register(supplier.get()));
 	}
 }

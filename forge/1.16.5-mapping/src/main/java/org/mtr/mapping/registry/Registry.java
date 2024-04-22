@@ -91,7 +91,7 @@ public final class Registry extends DummyClass {
 
 	@MappedMethod
 	public <T extends BlockEntityExtension> BlockEntityTypeRegistryObject<T> registerBlockEntityType(Identifier identifier, BiFunction<BlockPos, BlockState, T> function, Supplier<Block>... blockSuppliers) {
-		modEventBus.BLOCK_ENTITY_TYPES.add(() -> {
+		modEventBus.blockEntityTypes.add(() -> {
 			final TileEntityType<T> tileEntityType = TileEntityType.Builder.of(() -> function.apply(null, null), HolderBase.convertArray(blockSuppliers, net.minecraft.block.Block[]::new)).build(null);
 			tileEntityType.setRegistryName(identifier.data);
 			return tileEntityType;
@@ -101,7 +101,7 @@ public final class Registry extends DummyClass {
 
 	@MappedMethod
 	public <T extends EntityExtension> EntityTypeRegistryObject<T> registerEntityType(Identifier identifier, BiFunction<EntityType<?>, World, T> function, float width, float height) {
-		modEventBus.ENTITY_TYPES.add(() -> {
+		modEventBus.entityTypes.add(() -> {
 			final net.minecraft.entity.EntityType<T> entityType = net.minecraft.entity.EntityType.Builder.of(getEntityFactory(function), EntityClassification.MISC).sized(width, height).build(identifier.toString());
 			entityType.setRegistryName(identifier.data);
 			return entityType;
@@ -120,7 +120,7 @@ public final class Registry extends DummyClass {
 
 	@MappedMethod
 	public ParticleTypeRegistryObject registerParticleType(Identifier identifier, boolean alwaysSpawn) {
-		modEventBus.PARTICLE_TYPES.add(() -> {
+		modEventBus.particleTypes.add(() -> {
 			final BasicParticleType defaultParticleType = new BasicParticleType(alwaysSpawn);
 			defaultParticleType.setRegistryName(identifier.data);
 			return defaultParticleType;
@@ -135,7 +135,7 @@ public final class Registry extends DummyClass {
 
 	@MappedMethod
 	public SoundEventRegistryObject registerSoundEvent(Identifier identifier) {
-		modEventBus.SOUND_EVENTS.add(() -> {
+		modEventBus.soundEvents.add(() -> {
 			final SoundEvent soundEvent = new SoundEvent(identifier.data);
 			soundEvent.setRegistryName(identifier.data);
 			return soundEvent;
@@ -145,7 +145,7 @@ public final class Registry extends DummyClass {
 
 	@MappedMethod
 	public void registerCommand(String command, Consumer<CommandBuilder<?>> buildCommand, String... redirects) {
-		mainEventBus.COMMANDS.add(dispatcher -> {
+		mainEventBus.commands.add(dispatcher -> {
 			final CommandBuilder<LiteralArgumentBuilder<CommandSource>> commandBuilder = new CommandBuilder<>(Commands.literal(command));
 			buildCommand.accept(commandBuilder);
 			final LiteralCommandNode<CommandSource> literalCommandNode = dispatcher.register(commandBuilder.argumentBuilder);

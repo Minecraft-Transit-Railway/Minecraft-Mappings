@@ -82,13 +82,13 @@ public final class Registry extends DummyClass {
 
 	@MappedMethod
 	public <T extends BlockEntityExtension> BlockEntityTypeRegistryObject<T> registerBlockEntityType(Identifier identifier, BiFunction<BlockPos, BlockState, T> function, Supplier<Block>... blockSuppliers) {
-		modEventBus.BLOCK_ENTITY_TYPES.put(identifier, () -> BlockEntityType.Builder.of((pos, state) -> function.apply(new BlockPos(pos), new BlockState(state)), HolderBase.convertArray(blockSuppliers, net.minecraft.world.level.block.Block[]::new)).build(null));
+		modEventBus.blockEntityTypes.put(identifier, () -> BlockEntityType.Builder.of((pos, state) -> function.apply(new BlockPos(pos), new BlockState(state)), HolderBase.convertArray(blockSuppliers, net.minecraft.world.level.block.Block[]::new)).build(null));
 		return new BlockEntityTypeRegistryObject<>(identifier);
 	}
 
 	@MappedMethod
 	public <T extends EntityExtension> EntityTypeRegistryObject<T> registerEntityType(Identifier identifier, BiFunction<EntityType<?>, World, T> function, float width, float height) {
-		modEventBus.ENTITY_TYPES.put(identifier, () -> net.minecraft.world.entity.EntityType.Builder.of(getEntityFactory(function), MobCategory.MISC).sized(width, height).build(identifier.toString()));
+		modEventBus.entityTypes.put(identifier, () -> net.minecraft.world.entity.EntityType.Builder.of(getEntityFactory(function), MobCategory.MISC).sized(width, height).build(identifier.toString()));
 		return new EntityTypeRegistryObject<>(identifier);
 	}
 
@@ -103,26 +103,26 @@ public final class Registry extends DummyClass {
 
 	@MappedMethod
 	public ParticleTypeRegistryObject registerParticleType(Identifier identifier, boolean alwaysSpawn) {
-		modEventBus.PARTICLE_TYPES.put(identifier, () -> new SimpleParticleType(alwaysSpawn));
+		modEventBus.particleTypes.put(identifier, () -> new SimpleParticleType(alwaysSpawn));
 		return new ParticleTypeRegistryObject(identifier);
 	}
 
 	@MappedMethod
 	public CreativeModeTabHolder createCreativeModeTabHolder(Identifier identifier, Supplier<ItemStack> iconSupplier) {
 		final CreativeModeTabHolder creativeModeTabHolder = new CreativeModeTabHolder(identifier.data, iconSupplier);
-		modEventBus.CREATIVE_MODE_TABS.add(creativeModeTabHolder);
+		modEventBus.creativeModeTabs.add(creativeModeTabHolder);
 		return creativeModeTabHolder;
 	}
 
 	@MappedMethod
 	public SoundEventRegistryObject registerSoundEvent(Identifier identifier) {
-		modEventBus.SOUND_EVENTS.put(identifier, () -> SoundEvent.createVariableRangeEvent(identifier));
+		modEventBus.soundEvents.put(identifier, () -> SoundEvent.createVariableRangeEvent(identifier));
 		return new SoundEventRegistryObject(identifier);
 	}
 
 	@MappedMethod
 	public void registerCommand(String command, Consumer<CommandBuilder<?>> buildCommand, String... redirects) {
-		mainEventBus.COMMANDS.add(dispatcher -> {
+		mainEventBus.commands.add(dispatcher -> {
 			final CommandBuilder<LiteralArgumentBuilder<CommandSourceStack>> commandBuilder = new CommandBuilder<>(Commands.literal(command));
 			buildCommand.accept(commandBuilder);
 			final LiteralCommandNode<CommandSourceStack> literalCommandNode = dispatcher.register(commandBuilder.argumentBuilder);

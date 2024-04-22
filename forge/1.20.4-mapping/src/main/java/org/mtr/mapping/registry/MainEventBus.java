@@ -52,7 +52,7 @@ public final class MainEventBus {
 	};
 	BiConsumer<ServerWorld, WorldChunk> chunkUnloadConsumer = (world, chunk) -> {
 	};
-	final List<Consumer<CommandDispatcher<CommandSourceStack>>> COMMANDS = new ArrayList<>();
+	final List<Consumer<CommandDispatcher<CommandSourceStack>>> commands = new ArrayList<>();
 
 	@SubscribeEvent
 	public void serverStarting(ServerStartingEvent event) {
@@ -124,6 +124,6 @@ public final class MainEventBus {
 
 	@SubscribeEvent
 	public void registerCommands(RegisterCommandsEvent event) {
-		COMMANDS.forEach(consumer -> consumer.accept(event.getDispatcher()));
+		commands.forEach(consumer -> consumer.accept(event.getDispatcher()));
 	}
 }

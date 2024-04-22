@@ -50,7 +50,7 @@ public final class MainEventBus {
 	};
 	BiConsumer<ServerWorld, WorldChunk> chunkUnloadConsumer = (world, chunk) -> {
 	};
-	final List<Consumer<CommandDispatcher<CommandSource>>> COMMANDS = new ArrayList<>();
+	final List<Consumer<CommandDispatcher<CommandSource>>> commands = new ArrayList<>();
 
 	@SubscribeEvent
 	public void serverStarting(FMLServerStartingEvent event) {
@@ -132,6 +132,6 @@ public final class MainEventBus {
 
 	@SubscribeEvent
 	public void registerCommands(RegisterCommandsEvent event) {
-		COMMANDS.forEach(consumer -> consumer.accept(event.getDispatcher()));
+		commands.forEach(consumer -> consumer.accept(event.getDispatcher()));
 	}
 }
