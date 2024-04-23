@@ -34,6 +34,8 @@ jobs:
         run: ./gradlew fabric:1.17.1-mapping:build -x test
       - name: Build Fabric 1.18.2
         run: ./gradlew fabric:1.18.2-mapping:build -x test
+      - name: Build Fabric 1.19.2
+        run: ./gradlew fabric:1.19.2-mapping:build -x test
       - name: Build Fabric 1.19.4
         run: ./gradlew fabric:1.19.4-mapping:build -x test
       - name: Build Fabric 1.20.4
@@ -44,6 +46,8 @@ jobs:
         run: ./gradlew forge:1.17.1-mapping:build -x test
       - name: Build Forge 1.18.2
         run: ./gradlew forge:1.18.2-mapping:build -x test
+      - name: Build Forge 1.19.2
+        run: ./gradlew forge:1.19.2-mapping:build -x test
       - name: Build Forge 1.19.4
         run: ./gradlew forge:1.19.4-mapping:build -x test
       - name: Build Forge 1.20.4
