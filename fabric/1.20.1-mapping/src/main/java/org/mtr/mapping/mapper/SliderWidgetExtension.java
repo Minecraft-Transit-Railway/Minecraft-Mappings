@@ -1,8 +1,7 @@
 package org.mtr.mapping.mapper;
 
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import org.mtr.mapping.annotation.MappedMethod;
-import org.mtr.mapping.holder.Identifier;
 import org.mtr.mapping.holder.MutableText;
 import org.mtr.mapping.holder.SliderWidgetAbstractMapping;
 import org.mtr.mapping.holder.Text;
