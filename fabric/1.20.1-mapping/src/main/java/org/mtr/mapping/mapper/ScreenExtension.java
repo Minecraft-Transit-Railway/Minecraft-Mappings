@@ -1,5 +1,6 @@
 package org.mtr.mapping.mapper;
 
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.ClickableWidget;
@@ -29,6 +30,12 @@ public class ScreenExtension extends ScreenAbstractMapping {
 		if (graphicsHolder.drawContext != null) {
 			super.render(graphicsHolder.drawContext, mouseX, mouseY, delta);
 		}
+	}
+
+	@Deprecated
+	@Override
+	public final void render2(DrawContext context, int mouseX, int mouseY, float delta) {
+		GraphicsHolder.createInstanceSafe(context, graphicsHolder -> render(graphicsHolder, mouseX, mouseY, delta));
 	}
 
 	@MappedMethod
