@@ -10,6 +10,9 @@ import org.mtr.mapping.holder.TexturedButtonWidgetAbstractMapping;
 
 public class TexturedButtonWidgetExtension extends TexturedButtonWidgetAbstractMapping {
 
+	private final Identifier normalTexture;
+	private final Identifier highlightedTexture;
+
 	@MappedMethod
 	public TexturedButtonWidgetExtension(int x, int y, int width, int height, Identifier normalTexture, Identifier highlightedTexture, org.mtr.mapping.holder.PressAction onPress) {
 		this(x, y, width, height, normalTexture, highlightedTexture, onPress, "");
@@ -23,13 +26,16 @@ public class TexturedButtonWidgetExtension extends TexturedButtonWidgetAbstractM
 	@MappedMethod
 	public TexturedButtonWidgetExtension(int x, int y, int width, int height, Identifier normalTexture, Identifier highlightedTexture, org.mtr.mapping.holder.PressAction onPress, MutableText message) {
 		super(x, y, width, height, 0, 0, 0, normalTexture, 256, 256, onPress, new Text(message.data));
+		this.normalTexture = normalTexture;
+		this.highlightedTexture = highlightedTexture;
 	}
 
 	@MappedMethod
 	public void render(GraphicsHolder graphicsHolder, int mouseX, int mouseY, float delta) {
-		if (graphicsHolder.drawContext != null) {
-			super.renderWidget2(graphicsHolder.drawContext, mouseX, mouseY, delta);
-		}
+		final GuiDrawing guiDrawing = new GuiDrawing(graphicsHolder);
+		guiDrawing.beginDrawingTexture(isHovered2() ? highlightedTexture : normalTexture);
+		guiDrawing.drawTexture(getX2(), getY2(), getX2() + width, getY2() + height, 0, 0, 1, 1);
+		guiDrawing.finishDrawingTexture();
 	}
 
 	@Deprecated
