@@ -1,6 +1,6 @@
 package org.mtr.mapping.mapper;
 
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.Identifier;
 import org.mtr.mapping.holder.MutableText;
@@ -35,6 +35,12 @@ public class TexturedButtonWidgetExtension extends TexturedButtonWidgetAbstractM
 		guiDrawing.beginDrawingTexture(isHovered2() ? highlightedTexture : normalTexture);
 		guiDrawing.drawTexture(getX2(), getY2(), getX2() + width, getY2() + height, 0, 0, 1, 1);
 		guiDrawing.finishDrawingTexture();
+	}
+
+	@Deprecated
+	@Override
+	public final void renderButton2(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+		GraphicsHolder.createInstanceSafe(drawContext, graphicsHolder -> render(graphicsHolder, mouseX, mouseY, delta));
 	}
 
 	@Deprecated
