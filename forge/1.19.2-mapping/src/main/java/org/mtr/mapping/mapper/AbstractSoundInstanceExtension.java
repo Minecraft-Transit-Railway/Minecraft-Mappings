@@ -39,11 +39,6 @@ public abstract class AbstractSoundInstanceExtension extends AbstractSoundInstan
 	}
 
 	@MappedMethod
-	public static SoundEvent createSoundEvent(Identifier identifier) {
-		return new SoundEvent(identifier);
-	}
-
-	@MappedMethod
 	public static void iterateSoundIds(Consumer<Identifier> consumer) {
 		MinecraftClient.getInstance().getSoundManager().getAvailableSounds().forEach(identifier -> consumer.accept(new Identifier(identifier)));
 	}

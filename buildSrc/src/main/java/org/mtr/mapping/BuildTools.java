@@ -117,6 +117,17 @@ public final class BuildTools {
 		return getJson("https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json").getAsJsonObject().getAsJsonObject("promos").get(minecraftVersion + "-latest").getAsString();
 	}
 
+	public String getNeoForgeVersion() {
+		final JsonArray jsonArray = getJson("https://maven.neoforged.net/api/maven/versions/releases/net/neoforged/neoforge").getAsJsonObject().getAsJsonArray("versions");
+		final String[] latestVersion = {""};
+		jsonArray.forEach(version -> {
+			if (("1." + version.getAsString()).startsWith(minecraftVersion)) {
+				latestVersion[0] = version.getAsString();
+			}
+		});
+		return latestVersion[0];
+	}
+
 	public void copyBuildFile(boolean isDev) throws IOException {
 		if (!isGeneratorProject) {
 			final Path directory = rootPath.resolve("build/release");
