@@ -1,5 +1,6 @@
 package org.mtr.mapping.mapper;
 
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.ButtonWidgetAbstractMapping;
@@ -31,6 +32,12 @@ public class ButtonWidgetExtension extends ButtonWidgetAbstractMapping {
 		if (graphicsHolder.drawContext != null) {
 			super.renderButton(graphicsHolder.drawContext, mouseX, mouseY, delta);
 		}
+	}
+
+	@Deprecated
+	@Override
+	public final void renderButton(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+		GraphicsHolder.createInstanceSafe(drawContext, graphicsHolder -> render(graphicsHolder, mouseX, mouseY, delta));
 	}
 
 	@Deprecated
