@@ -1,6 +1,7 @@
 package org.mtr.mapping.mapper;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
@@ -44,6 +45,12 @@ public class TextFieldWidgetExtension extends TextFieldWidgetAbstractMapping {
 		if (graphicsHolder.drawContext != null) {
 			super.renderButton2(graphicsHolder.drawContext, mouseX, mouseY, delta);
 		}
+	}
+
+	@Deprecated
+	@Override
+	public final void renderButton2(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+		GraphicsHolder.createInstanceSafe(drawContext, graphicsHolder -> render(graphicsHolder, mouseX, mouseY, delta));
 	}
 
 	@Deprecated
