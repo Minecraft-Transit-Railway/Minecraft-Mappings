@@ -34,6 +34,12 @@ public class ClickableWidgetExtension extends ClickableWidgetAbstractMapping {
 		GraphicsHolder.createInstanceSafe(context, graphicsHolder -> render(graphicsHolder, mouseX, mouseY, delta));
 	}
 
+	@Deprecated
+	@Override
+	public final boolean mouseScrolled2(double mouseX, double mouseY, double verticalAmount) {
+		return mouseScrolled3(mouseX, mouseY, verticalAmount);
+	}
+
 	@MappedMethod
 	public boolean mouseScrolled3(double mouseX, double mouseY, double amount) {
 		return super.mouseScrolled2(mouseX, mouseY, amount);
