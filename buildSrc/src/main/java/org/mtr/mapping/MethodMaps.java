@@ -76,8 +76,8 @@ public interface MethodMaps {
 		addMethodMap1.add("ClientWorld|ServerWorld|World", "spawnEntity", "addFreshEntity");
 		addMethodMap1.add("ClientWorld|ServerWorld|World", "updateNeighbors", "updateNeighborsAt");
 		addMethodMap1.add("CompoundTag", "getSize", "size");
-		addMethodMap1.add("Direction", "byId", "from2DDataValue");
-		addMethodMap1.add("Direction", "fromHorizontal", "from3DDataValue");
+		addMethodMap1.add("Direction", "byId", "from3DDataValue");
+		addMethodMap1.add("Direction", "fromHorizontal", "from2DDataValue");
 		addMethodMap1.add("Direction", "getHorizontal", "get2DDataValue");
 		addMethodMap1.add("Direction", "getId", "get3DDataValue");
 		addMethodMap1.add("Direction", "getOffsetX", "getStepX");
