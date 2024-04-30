@@ -7,6 +7,7 @@ import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class BlockExtension extends BlockAbstractMapping implements BlockHelper {
@@ -17,49 +18,49 @@ public class BlockExtension extends BlockAbstractMapping implements BlockHelper 
 	}
 
 	@MappedMethod
-	public void onBreak3(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		super.onBreak2(world, pos, state, player);
+	public void onBreak2(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+		super.onBreak(world.data, pos.data, state.data, player.data);
 	}
 
 	@Deprecated
 	@Override
-	public final BlockState onBreak2(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		onBreak3(world, pos, state, player);
+	public final net.minecraft.block.BlockState onBreak(net.minecraft.world.World world, net.minecraft.util.math.BlockPos pos, net.minecraft.block.BlockState state, net.minecraft.entity.player.PlayerEntity player) {
+		onBreak2(new World(world), new BlockPos(pos), new BlockState(state), new PlayerEntity(player));
 		return state;
 	}
 
 	@Nonnull
 	@MappedMethod
-	public ItemStack getPickStack3(BlockView world, BlockPos pos, BlockState state) {
-		return world.data instanceof WorldView ? super.getPickStack2((WorldView) world.data, pos, state) : ItemStack.getEmptyMapped();
+	public ItemStack getPickStack2(BlockView world, BlockPos pos, BlockState state) {
+		return world.data instanceof WorldView ? new ItemStack(super.getPickStack((WorldView) world.data, pos.data, state.data)) : ItemStack.getEmptyMapped();
 	}
 
 	@Nonnull
 	@Deprecated
 	@Override
-	public final ItemStack getPickStack2(WorldView world, BlockPos pos, BlockState state) {
-		return getPickStack3(new BlockView(world), pos, state);
+	public final net.minecraft.item.ItemStack getPickStack(WorldView world, net.minecraft.util.math.BlockPos pos, net.minecraft.block.BlockState state) {
+		return getPickStack2(new BlockView(world), new BlockPos(pos), new BlockState(state)).data;
 	}
 
 	@Deprecated
 	@Override
-	protected final void appendProperties2(StateManager.Builder<net.minecraft.block.Block, net.minecraft.block.BlockState> builder) {
+	protected final void appendProperties(StateManager.Builder<net.minecraft.block.Block, net.minecraft.block.BlockState> builder) {
 		appendPropertiesHelper(builder);
 	}
 
 	@Deprecated
 	@Override
-	public final void appendTooltip2(ItemStack stack, BlockView world, List<Text> tooltip, TooltipContext options) {
-		appendTooltipHelper(stack, world, tooltip, options);
+	public final void appendTooltip(net.minecraft.item.ItemStack stack, @Nullable net.minecraft.world.BlockView world, List<Text> tooltip, net.minecraft.client.item.TooltipContext options) {
+		appendTooltipHelper(new ItemStack(stack), world == null ? null : new BlockView(world), tooltip, new TooltipContext(options));
 	}
 
 	@MappedMethod
 	public static void scheduleBlockTick(World world, BlockPos pos, Block block, int ticks) {
-		world.scheduleBlockTick(pos, block, ticks);
+		world.data.scheduleBlockTick(pos.data, block.data, ticks);
 	}
 
 	@MappedMethod
 	public static boolean hasScheduledTick(World world, BlockPos pos, Block block) {
-		return world.getBlockTickScheduler().isQueued(pos.data, block.data);
+		return world.data.getBlockTickScheduler().isQueued(pos.data, block.data);
 	}
 }

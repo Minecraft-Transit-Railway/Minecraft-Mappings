@@ -1,7 +1,11 @@
 package org.mtr.mapping.mapper;
 
+import net.minecraft.client.MinecraftClient;
 import org.mtr.mapping.annotation.MappedMethod;
-import org.mtr.mapping.holder.*;
+import org.mtr.mapping.holder.AbstractSoundInstanceAbstractMapping;
+import org.mtr.mapping.holder.Identifier;
+import org.mtr.mapping.holder.SoundCategory;
+import org.mtr.mapping.holder.SoundEvent;
 
 import java.util.function.Consumer;
 
@@ -19,14 +23,14 @@ public abstract class AbstractSoundInstanceExtension extends AbstractSoundInstan
 
 	@MappedMethod
 	@Override
-	public boolean isRelative2() {
-		return super.isRelative2();
+	public boolean isRelative() {
+		return super.isRelative();
 	}
 
 	@MappedMethod
 	@Override
-	public boolean isRepeatable2() {
-		return super.isRepeatable2();
+	public boolean isRepeatable() {
+		return super.isRepeatable();
 	}
 
 	@MappedMethod

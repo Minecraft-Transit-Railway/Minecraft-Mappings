@@ -20,7 +20,7 @@ public abstract class ModelExtension extends ModelAbstractMapping implements Mod
 
 	@Deprecated
 	@Override
-	public final void renderToBuffer2(MatrixStack matrixStack, IVertexBuilder vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+	public final void renderToBuffer(MatrixStack matrixStack, IVertexBuilder vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
 		render3(matrixStack, vertexConsumer, light, overlay, red, green, blue, alpha);
 	}
 

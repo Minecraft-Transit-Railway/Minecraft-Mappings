@@ -17,17 +17,17 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 
 	@Deprecated
 	@Override
-	public final CompoundTag save2(CompoundTag compoundTag) {
-		super.save2(compoundTag);
-		writeCompoundTag(compoundTag);
+	public final CompoundNBT save(CompoundNBT compoundTag) {
+		super.save(compoundTag);
+		writeCompoundTag(new CompoundTag(compoundTag));
 		return compoundTag;
 	}
 
 	@Deprecated
 	@Override
-	public final void load2(BlockState blockState, CompoundTag compoundTag) {
-		super.load2(blockState, compoundTag);
-		readCompoundTag(compoundTag);
+	public final void load(net.minecraft.block.BlockState blockState, CompoundNBT compoundTag) {
+		super.load(blockState, compoundTag);
+		readCompoundTag(new CompoundTag(compoundTag));
 	}
 
 	@MappedMethod
@@ -40,21 +40,21 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 
 	@Deprecated
 	@Override
-	public final CompoundTag getUpdateTag2() {
-		final CompoundTag compoundTag = new CompoundTag();
-		writeCompoundTag(compoundTag);
+	public final CompoundNBT getUpdateTag() {
+		final CompoundNBT compoundTag = new CompoundNBT();
+		writeCompoundTag(new CompoundTag(compoundTag));
 		return compoundTag;
 	}
 
 	@Deprecated
 	@Override
-	public final void handleUpdateTag2(BlockState blockState, CompoundTag compoundTag) {
-		readCompoundTag(compoundTag);
+	public final void handleUpdateTag(net.minecraft.block.BlockState blockState, CompoundNBT compoundTag) {
+		readCompoundTag(new CompoundTag(compoundTag));
 	}
 
 	@Deprecated
 	@Override
-	public final SUpdateTileEntityPacket getUpdatePacket2() {
+	public final SUpdateTileEntityPacket getUpdatePacket() {
 		final CompoundNBT compoundNBT = new CompoundNBT();
 		writeCompoundTag(new CompoundTag(compoundNBT));
 		return new SUpdateTileEntityPacket(worldPosition, -1, compoundNBT);
@@ -62,7 +62,7 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 
 	@Deprecated
 	@Override
-	public final void onDataPacket2(NetworkManager net, SUpdateTileEntityPacket pkt) {
+	public final void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
 		readCompoundTag(new CompoundTag(pkt.getTag()));
 	}
 
@@ -86,13 +86,13 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 	}
 
 	@MappedMethod
-	public double getRenderDistance3() {
-		return super.getViewDistance2();
+	public double getRenderDistance2() {
+		return super.getViewDistance();
 	}
 
 	@Deprecated
 	@Override
-	public final double getViewDistance2() {
-		return getRenderDistance3();
+	public final double getViewDistance() {
+		return getRenderDistance2();
 	}
 }

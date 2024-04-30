@@ -28,7 +28,7 @@ public abstract class EntityModelExtension<T extends EntityAbstractMapping> exte
 
 	@Deprecated
 	@Override
-	public final void render2(MatrixStack matrixStack, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+	public final void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
 		render3(matrixStack, vertexConsumer, light, overlay, red, green, blue, alpha);
 	}
 

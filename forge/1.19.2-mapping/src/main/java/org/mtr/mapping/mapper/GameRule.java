@@ -73,12 +73,12 @@ public enum GameRule {
 
 	@MappedMethod
 	public boolean getBooleanGameRule(MinecraftServer minecraftServer) {
-		return gameRuleBoolean != null && minecraftServer.getGameRules().getBoolean(gameRuleBoolean);
+		return gameRuleBoolean != null && minecraftServer.data.getGameRules().getBoolean(gameRuleBoolean);
 	}
 
 	@MappedMethod
 	public int getIntegerGameRule(MinecraftServer minecraftServer) {
-		return gameRuleInteger == null ? 0 : minecraftServer.getGameRules().getInt(gameRuleInteger);
+		return gameRuleInteger == null ? 0 : minecraftServer.data.getGameRules().getInt(gameRuleInteger);
 	}
 
 	@MappedMethod

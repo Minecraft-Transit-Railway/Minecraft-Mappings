@@ -6,7 +6,6 @@ import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.MutableText;
 import org.mtr.mapping.holder.OrderedText;
 import org.mtr.mapping.holder.Style;
-import org.mtr.mapping.holder.Text;
 import org.mtr.mapping.tool.DummyClass;
 
 public final class TextHelper extends DummyClass {
@@ -23,20 +22,20 @@ public final class TextHelper extends DummyClass {
 
 	@MappedMethod
 	public static MutableText setStyle(MutableText mutableText, Style style) {
-		return mutableText.setStyle(style);
+		return new MutableText(mutableText.data.setStyle(style.data));
 	}
 
 	@MappedMethod
 	public static OrderedText mutableTextToOrderedText(MutableText mutableText) {
-		return mutableText.asOrderedText();
+		return new OrderedText(mutableText.data.asOrderedText());
 	}
 
 	@MappedMethod
 	public static MutableText append(MutableText baseText, MutableText... moreText) {
-		MutableText result = baseText;
+		net.minecraft.text.MutableText result = baseText.data;
 		for (final MutableText mutableText : moreText) {
-			result = result.append(new Text(mutableText.data));
+			result = result.append(mutableText.data);
 		}
-		return result;
+		return new MutableText(result);
 	}
 }

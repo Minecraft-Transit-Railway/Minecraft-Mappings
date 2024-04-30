@@ -1,6 +1,7 @@
 package org.mtr.mapping.mapper;
 
 import net.minecraft.network.chat.numbers.BlankFormat;
+import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.ScoreAccess;
 import net.minecraft.world.scores.ScoreHolder;
 import org.mtr.mapping.annotation.MappedMethod;
@@ -14,12 +15,13 @@ public final class ScoreboardHelper extends DummyClass {
 	@Nullable
 	@MappedMethod
 	public static ScoreboardObjective getScoreboardObjective(Scoreboard scoreboard, String name) {
-		return scoreboard.getObjective(name);
+		final Objective scoreboardObjective = scoreboard.data.getObjective(name);
+		return scoreboardObjective == null ? null : new ScoreboardObjective(scoreboardObjective);
 	}
 
 	@MappedMethod
 	public static ScoreboardObjective addObjective(Scoreboard scoreboard, String name, ScoreboardCriterion scoreboardCriterion, Text displayName, ScoreboardCriterionRenderType scoreboardCriterionRenderType) {
-		return scoreboard.addObjective(name, scoreboardCriterion, displayName, scoreboardCriterionRenderType, true, BlankFormat.INSTANCE);
+		return new ScoreboardObjective(scoreboard.data.addObjective(name, scoreboardCriterion.data, displayName.data, scoreboardCriterionRenderType.data, true, BlankFormat.INSTANCE));
 	}
 
 	@MappedMethod
@@ -38,6 +40,6 @@ public final class ScoreboardHelper extends DummyClass {
 	}
 
 	private static ScoreAccess getOrCreateScore(Scoreboard scoreboard, String playerName, ScoreboardObjective scoreboardObjective) {
-		return scoreboard.getOrCreatePlayerScore(ScoreHolder.forNameOnly(playerName), scoreboardObjective);
+		return scoreboard.data.getOrCreatePlayerScore(ScoreHolder.forNameOnly(playerName), scoreboardObjective.data);
 	}
 }

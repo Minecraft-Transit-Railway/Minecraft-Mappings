@@ -1,5 +1,6 @@
 package org.mtr.mapping.mapper;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
 import net.minecraft.state.StateManager;
@@ -51,12 +52,12 @@ public interface BlockHelper extends DummyInterface {
 
 	@MappedMethod
 	static BlockSettings setLuminance(BlockSettings blockSettings, ToIntFunction<BlockState> luminanceFunction) {
-		return blockSettings.luminance(blockState -> luminanceFunction.applyAsInt(new BlockState(blockState)));
+		return new BlockSettings(blockSettings.data.luminance(blockState -> luminanceFunction.applyAsInt(new BlockState(blockState))));
 	}
 
 	@MappedMethod
 	static BlockSettings createBlockSettings(boolean blockPiston) {
-		return BlockSettings.of(blockPiston ? Material.REPAIR_STATION : Material.METAL);
+		return new BlockSettings(AbstractBlock.Settings.of(blockPiston ? Material.REPAIR_STATION : Material.METAL));
 	}
 
 	@MappedMethod

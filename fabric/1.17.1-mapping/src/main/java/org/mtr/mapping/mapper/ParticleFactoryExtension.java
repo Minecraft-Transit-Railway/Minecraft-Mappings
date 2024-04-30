@@ -35,7 +35,7 @@ public abstract class ParticleFactoryExtension implements ParticleFactory<Defaul
 			return createParticle.create(new ClientWorld(clientWorld), x, y, z, velocityX, velocityY, velocityZ).data;
 		} else if (createSpriteBillboardParticle != null) {
 			final SpriteBillboardParticle spriteBillboardParticle = createSpriteBillboardParticle.create(new ClientWorld(clientWorld), x, y, z, velocityX, velocityY, velocityZ);
-			spriteBillboardParticle.setSprite(spriteProvider);
+			spriteBillboardParticle.data.setSprite(spriteProvider.data);
 			return spriteBillboardParticle.data;
 		} else {
 			final NullPointerException nullPointerException = new NullPointerException("Both createParticle and createSpriteBillboardParticle are null!");

@@ -2,6 +2,7 @@ package org.mtr.mapping.mapper;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.PushReaction;
@@ -51,12 +52,12 @@ public interface BlockHelper extends DummyInterface {
 
 	@MappedMethod
 	static BlockSettings setLuminance(BlockSettings blockSettings, ToIntFunction<BlockState> luminanceFunction) {
-		return blockSettings.lightLevel(blockState -> luminanceFunction.applyAsInt(new BlockState(blockState)));
+		return new BlockSettings(blockSettings.data.lightLevel(blockState -> luminanceFunction.applyAsInt(new BlockState(blockState))));
 	}
 
 	@MappedMethod
 	static BlockSettings createBlockSettings(boolean blockPiston) {
-		return BlockSettings.of().pushReaction(blockPiston ? PushReaction.BLOCK : PushReaction.NORMAL);
+		return new BlockSettings(BlockBehaviour.Properties.of().pushReaction(blockPiston ? PushReaction.BLOCK : PushReaction.NORMAL));
 	}
 
 	@MappedMethod

@@ -1,6 +1,5 @@
 package org.mtr.mapping.mapper;
 
-import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSetType;
 import net.minecraft.state.StateManager;
@@ -9,6 +8,7 @@ import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
 import org.mtr.mapping.tool.HolderBase;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -21,14 +21,14 @@ public class DoorBlockExtension extends DoorBlockAbstractMapping implements Bloc
 
 	@Deprecated
 	@Override
-	protected final void appendProperties2(StateManager.Builder<Block, net.minecraft.block.BlockState> builder) {
+	protected final void appendProperties(StateManager.Builder<Block, net.minecraft.block.BlockState> builder) {
 		appendPropertiesHelper(builder);
 	}
 
 	@Deprecated
 	@Override
-	public final void appendTooltip2(ItemStack stack, BlockView world, List<Text> tooltip, TooltipContext options) {
-		appendTooltipHelper(stack, world, tooltip, options);
+	public final void appendTooltip(net.minecraft.item.ItemStack stack, @Nullable net.minecraft.world.BlockView world, List<Text> tooltip, net.minecraft.client.item.TooltipContext options) {
+		appendTooltipHelper(new ItemStack(stack), world == null ? null : new BlockView(world), tooltip, new TooltipContext(options));
 	}
 
 	@MappedMethod

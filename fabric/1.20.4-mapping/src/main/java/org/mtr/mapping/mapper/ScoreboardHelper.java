@@ -14,12 +14,13 @@ public final class ScoreboardHelper extends DummyClass {
 	@Nullable
 	@MappedMethod
 	public static ScoreboardObjective getScoreboardObjective(Scoreboard scoreboard, String name) {
-		return scoreboard.getNullableObjective(name);
+		final net.minecraft.scoreboard.ScoreboardObjective scoreboardObjective = scoreboard.data.getNullableObjective(name);
+		return scoreboardObjective == null ? null : new ScoreboardObjective(scoreboardObjective);
 	}
 
 	@MappedMethod
 	public static ScoreboardObjective addObjective(Scoreboard scoreboard, String name, ScoreboardCriterion scoreboardCriterion, Text displayName, ScoreboardCriterionRenderType scoreboardCriterionRenderType) {
-		return scoreboard.addObjective(name, scoreboardCriterion, displayName, scoreboardCriterionRenderType, true, BlankNumberFormat.INSTANCE);
+		return new ScoreboardObjective(scoreboard.data.addObjective(name, scoreboardCriterion.data, displayName.data, scoreboardCriterionRenderType.data, true, BlankNumberFormat.INSTANCE));
 	}
 
 	@MappedMethod
@@ -38,6 +39,6 @@ public final class ScoreboardHelper extends DummyClass {
 	}
 
 	private static ScoreAccess getOrCreateScore(Scoreboard scoreboard, String playerName, ScoreboardObjective scoreboardObjective) {
-		return scoreboard.getOrCreateScore(ScoreHolder.fromName(playerName), scoreboardObjective);
+		return scoreboard.data.getOrCreateScore(ScoreHolder.fromName(playerName), scoreboardObjective.data);
 	}
 }

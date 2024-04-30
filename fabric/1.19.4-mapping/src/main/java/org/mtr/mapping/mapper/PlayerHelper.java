@@ -14,11 +14,11 @@ public final class PlayerHelper extends DummyClass {
 	@Nullable
 	@MappedMethod
 	public static PlayerInventory getPlayerInventory(@Nullable PlayerEntity playerEntity) {
-		return playerEntity == null ? null : playerEntity.getInventory();
+		return playerEntity == null ? null : new PlayerInventory(playerEntity.data.getInventory());
 	}
 
 	@MappedMethod
 	public static boolean isHolding(@Nullable PlayerEntity playerEntity, Predicate<Item> predicate) {
-		return playerEntity != null && playerEntity.isHolding(itemStack -> predicate.test(new Item(itemStack.getItem())));
+		return playerEntity != null && playerEntity.data.isHolding(itemStack -> predicate.test(new Item(itemStack.getItem())));
 	}
 }

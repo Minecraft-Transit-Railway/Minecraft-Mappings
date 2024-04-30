@@ -1,5 +1,6 @@
 package org.mtr.mapping.mapper;
 
+import net.minecraft.util.RandomSource;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.MovingSoundInstanceAbstractMapping;
 import org.mtr.mapping.holder.Random;
@@ -20,18 +21,18 @@ public abstract class MovingSoundInstanceExtension extends MovingSoundInstanceAb
 
 	@MappedMethod
 	@Override
-	public boolean isRelative2() {
-		return super.isRelative2();
+	public boolean isRelative() {
+		return super.isRelative();
 	}
 
 	@MappedMethod
-	public boolean isRepeatable2() {
-		return super.isLooping2();
+	public boolean isRepeatable() {
+		return super.isLooping();
 	}
 
 	@MappedMethod
 	protected MovingSoundInstanceExtension(SoundEvent sound, SoundCategory category) {
-		super(sound, category, Random.create());
+		super(sound, category, new Random(RandomSource.create()));
 	}
 
 	@MappedMethod

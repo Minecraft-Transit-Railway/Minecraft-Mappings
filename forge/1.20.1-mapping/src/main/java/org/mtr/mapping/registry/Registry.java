@@ -116,7 +116,7 @@ public final class Registry extends DummyClass {
 
 	@MappedMethod
 	public SoundEventRegistryObject registerSoundEvent(Identifier identifier) {
-		modEventBus.soundEvents.put(identifier, () -> SoundEvent.createVariableRangeEvent(identifier));
+		modEventBus.soundEvents.put(identifier, () -> new SoundEvent(net.minecraft.sounds.SoundEvent.createVariableRangeEvent(identifier.data)));
 		return new SoundEventRegistryObject(identifier);
 	}
 

@@ -45,25 +45,25 @@ public class TextFieldWidgetExtension extends TextFieldWidgetAbstractMapping {
 	@MappedMethod
 	public void render(GraphicsHolder graphicsHolder, int mouseX, int mouseY, float delta) {
 		if (graphicsHolder.drawContext != null) {
-			super.renderWidget2(graphicsHolder.drawContext, mouseX, mouseY, delta);
+			super.renderWidget(graphicsHolder.drawContext, mouseX, mouseY, delta);
 		}
 	}
 
 	@Deprecated
 	@Override
-	public final void renderWidget2(DrawContext context, int mouseX, int mouseY, float delta) {
+	public final void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
 		GraphicsHolder.createInstanceSafe(context, graphicsHolder -> render(graphicsHolder, mouseX, mouseY, delta));
 	}
 
 	@Deprecated
 	@Override
-	public final boolean mouseScrolled2(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
-		return mouseScrolled3(mouseX, mouseY, verticalAmount);
+	public final boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+		return mouseScrolled2(mouseX, mouseY, verticalAmount);
 	}
 
 	@MappedMethod
-	public boolean mouseScrolled3(double mouseX, double mouseY, double amount) {
-		return super.mouseScrolled2(mouseX, mouseY, 0, amount);
+	public boolean mouseScrolled2(double mouseX, double mouseY, double amount) {
+		return super.mouseScrolled(mouseX, mouseY, 0, amount);
 	}
 
 	@MappedMethod
@@ -99,7 +99,7 @@ public class TextFieldWidgetExtension extends TextFieldWidgetAbstractMapping {
 	}
 
 	@MappedMethod
-	public void tick3() {
+	public void tick2() {
 	}
 
 	@Deprecated
@@ -117,15 +117,13 @@ public class TextFieldWidgetExtension extends TextFieldWidgetAbstractMapping {
 	}
 
 	@MappedMethod
-	@Override
 	public final int getX2() {
-		return super.getX2();
+		return super.getX();
 	}
 
 	@MappedMethod
-	@Override
 	public final int getY2() {
-		return super.getY2();
+		return super.getY();
 	}
 
 	@MappedMethod
@@ -135,14 +133,13 @@ public class TextFieldWidgetExtension extends TextFieldWidgetAbstractMapping {
 	}
 
 	@MappedMethod
-	@Override
 	public final void setY2(int y) {
-		super.setY2(y);
+		super.setY(y);
 	}
 
 	@MappedMethod
 	@Override
-	public final boolean isHovered2() {
-		return super.isHovered2();
+	public final boolean isHovered() {
+		return super.isHovered();
 	}
 }

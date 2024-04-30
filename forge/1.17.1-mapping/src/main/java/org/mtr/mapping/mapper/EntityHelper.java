@@ -8,21 +8,21 @@ public final class EntityHelper extends DummyClass {
 
 	@MappedMethod
 	public static float getPitch(Entity entity) {
-		return entity.getXRot();
+		return entity.data.getXRot();
 	}
 
 	@MappedMethod
 	public static float getYaw(Entity entity) {
-		return entity.getYRot();
+		return entity.data.getYRot();
 	}
 
 	@MappedMethod
 	public static void setPitch(Entity entity, float pitch) {
-		entity.setXRot(pitch);
+		entity.data.setXRot(pitch);
 	}
 
 	@MappedMethod
 	public static void setYaw(Entity entity, float yaw) {
-		entity.setYRot(yaw);
+		entity.data.setYRot(yaw);
 	}
 }

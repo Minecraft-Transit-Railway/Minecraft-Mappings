@@ -20,19 +20,19 @@ public abstract class MovingSoundInstanceExtension extends MovingSoundInstanceAb
 
 	@MappedMethod
 	@Override
-	public boolean isRelative2() {
-		return super.isRelative2();
+	public boolean isRelative() {
+		return super.isRelative();
 	}
 
 	@MappedMethod
 	@Override
-	public boolean isRepeatable2() {
-		return super.isRepeatable2();
+	public boolean isRepeatable() {
+		return super.isRepeatable();
 	}
 
 	@MappedMethod
 	protected MovingSoundInstanceExtension(SoundEvent sound, SoundCategory category) {
-		super(sound, category, Random.create());
+		super(sound, category, new Random(net.minecraft.util.math.random.Random.create()));
 	}
 
 	@MappedMethod

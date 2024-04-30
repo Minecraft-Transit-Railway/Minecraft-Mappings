@@ -1,5 +1,6 @@
 package org.mtr.mapping.mapper;
 
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.text.ITextComponent;
 import org.mtr.mapping.annotation.MappedMethod;
@@ -16,15 +17,15 @@ public class ItemExtension extends ItemAbstractMapping implements ItemHelper {
 
 	@Deprecated
 	@Override
-	public final ActionResult<net.minecraft.item.ItemStack> use2(World world, PlayerEntity user, Hand hand) {
-		useWithoutResult(world, user, hand);
-		return super.use2(world, user, hand);
+	public final ActionResult<net.minecraft.item.ItemStack> use(net.minecraft.world.World world, net.minecraft.entity.player.PlayerEntity user, net.minecraft.util.Hand hand) {
+		useWithoutResult(new World(world), new PlayerEntity(user), Hand.convert(hand));
+		return super.use(world, user, hand);
 	}
 
 	@Deprecated
 	@Override
-	public final void appendHoverText2(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, TooltipContext options) {
-		appendTooltipHelper(stack, world, tooltip, options);
+	public final void appendHoverText(net.minecraft.item.ItemStack stack, @Nullable net.minecraft.world.World world, List<ITextComponent> tooltip, ITooltipFlag options) {
+		appendTooltipHelper(new ItemStack(stack), world == null ? null : new World(world), tooltip, new TooltipContext(options));
 	}
 
 	@MappedMethod

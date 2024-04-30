@@ -1,12 +1,12 @@
 package org.mtr.mapping.mapper;
 
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.MutableText;
 import org.mtr.mapping.holder.OrderedText;
 import org.mtr.mapping.holder.Style;
-import org.mtr.mapping.holder.Text;
 import org.mtr.mapping.tool.DummyClass;
 
 public final class TextHelper extends DummyClass {
@@ -23,20 +23,20 @@ public final class TextHelper extends DummyClass {
 
 	@MappedMethod
 	public static MutableText setStyle(MutableText mutableText, Style style) {
-		return mutableText.setStyle(style);
+		return new MutableText(mutableText.data.setStyle(style.data));
 	}
 
 	@MappedMethod
 	public static OrderedText mutableTextToOrderedText(MutableText mutableText) {
-		return mutableText.getVisualOrderText();
+		return new OrderedText(mutableText.data.getVisualOrderText());
 	}
 
 	@MappedMethod
 	public static MutableText append(MutableText baseText, MutableText... moreText) {
-		MutableText result = baseText;
+		IFormattableTextComponent result = baseText.data;
 		for (final MutableText mutableText : moreText) {
-			result = result.append(new Text(mutableText.data));
+			result = result.append(mutableText.data);
 		}
-		return result;
+		return new MutableText(result);
 	}
 }

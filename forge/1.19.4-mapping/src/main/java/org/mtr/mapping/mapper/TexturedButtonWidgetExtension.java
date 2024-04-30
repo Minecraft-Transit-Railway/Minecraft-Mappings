@@ -32,55 +32,51 @@ public class TexturedButtonWidgetExtension extends TexturedButtonWidgetAbstractM
 	@MappedMethod
 	public void render(GraphicsHolder graphicsHolder, int mouseX, int mouseY, float delta) {
 		final GuiDrawing guiDrawing = new GuiDrawing(graphicsHolder);
-		guiDrawing.beginDrawingTexture(isHovered2() ? highlightedTexture : normalTexture);
+		guiDrawing.beginDrawingTexture(isHovered() ? highlightedTexture : normalTexture);
 		guiDrawing.drawTexture(getX2(), getY2(), getX2() + width, getY2() + height, 0, 0, 1, 1);
 		guiDrawing.finishDrawingTexture();
 	}
 
 	@Deprecated
 	@Override
-	public final void renderWidget2(PoseStack matrices, int mouseX, int mouseY, float delta) {
+	public final void renderWidget(PoseStack matrices, int mouseX, int mouseY, float delta) {
 		GraphicsHolder.createInstanceSafe(matrices, null, graphicsHolder -> render(graphicsHolder, mouseX, mouseY, delta));
 	}
 
 	@Deprecated
 	@Override
-	public final boolean mouseScrolled2(double mouseX, double mouseY, double amount) {
-		return mouseScrolled3(mouseX, mouseY, amount);
+	public final boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+		return mouseScrolled2(mouseX, mouseY, amount);
 	}
 
 	@MappedMethod
-	public boolean mouseScrolled3(double mouseX, double mouseY, double amount) {
-		return super.mouseScrolled2(mouseX, mouseY, amount);
+	public boolean mouseScrolled2(double mouseX, double mouseY, double amount) {
+		return super.mouseScrolled(mouseX, mouseY, amount);
 	}
 
 	@MappedMethod
-	@Override
 	public final int getX2() {
-		return super.getX2();
+		return super.getX();
 	}
 
 	@MappedMethod
-	@Override
 	public final int getY2() {
-		return super.getY2();
+		return super.getY();
 	}
 
 	@MappedMethod
-	@Override
 	public final void setX2(int x) {
-		super.setX2(x);
+		super.setX(x);
 	}
 
 	@MappedMethod
-	@Override
 	public final void setY2(int y) {
-		super.setY2(y);
+		super.setY(y);
 	}
 
 	@MappedMethod
 	@Override
-	public final boolean isHovered2() {
-		return super.isHovered2();
+	public final boolean isHovered() {
+		return super.isHovered();
 	}
 }

@@ -1,5 +1,6 @@
 package org.mtr.mapping.mapper;
 
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -15,16 +16,16 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping {
 
 	@Deprecated
 	@Override
-	protected final void writeNbt2(CompoundTag nbt) {
-		super.writeNbt2(nbt);
-		writeCompoundTag(nbt);
+	protected final void writeNbt(NbtCompound nbt) {
+		super.writeNbt(nbt);
+		writeCompoundTag(new CompoundTag(nbt));
 	}
 
 	@Deprecated
 	@Override
-	public final void readNbt2(CompoundTag nbt) {
-		super.readNbt2(nbt);
-		readCompoundTag(nbt);
+	public final void readNbt(NbtCompound nbt) {
+		super.readNbt(nbt);
+		readCompoundTag(new CompoundTag(nbt));
 	}
 
 	@MappedMethod
@@ -37,14 +38,14 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping {
 
 	@Deprecated
 	@Override
-	public final Packet<ClientPlayPacketListener> toUpdatePacket2() {
+	public final Packet<ClientPlayPacketListener> toUpdatePacket() {
 		return BlockEntityUpdateS2CPacket.create(this);
 	}
 
 	@Deprecated
 	@Override
-	public final CompoundTag toInitialChunkDataNbt2() {
-		return new CompoundTag(createNbt());
+	public final NbtCompound toInitialChunkDataNbt() {
+		return createNbt();
 	}
 
 	@MappedMethod
@@ -55,13 +56,14 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping {
 	@Override
 	public void markDirty2() {
 		super.markDirty2();
-		if (world != null && !world.isClient) {
-			world.updateListeners(pos, getCachedState(), getCachedState(), net.minecraft.block.Block.NOTIFY_LISTENERS);
+		final net.minecraft.block.BlockState blockState = getCachedState();
+		if (world != null && !world.isClient && blockState != null) {
+			world.updateListeners(pos, blockState, blockState, net.minecraft.block.Block.NOTIFY_LISTENERS);
 		}
 	}
 
 	@MappedMethod
-	public double getRenderDistance3() {
+	public double getRenderDistance2() {
 		return 0;
 	}
 }

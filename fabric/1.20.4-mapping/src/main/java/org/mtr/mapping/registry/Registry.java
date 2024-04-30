@@ -127,9 +127,9 @@ public final class Registry extends DummyClass {
 
 	@MappedMethod
 	public SoundEventRegistryObject registerSoundEvent(Identifier identifier) {
-		final SoundEvent soundEvent = SoundEvent.of(identifier);
-		objectsToRegister.add(() -> net.minecraft.registry.Registry.register(Registries.SOUND_EVENT, identifier.data, soundEvent.data));
-		return new SoundEventRegistryObject(soundEvent);
+		final net.minecraft.sound.SoundEvent soundEvent = net.minecraft.sound.SoundEvent.of(identifier.data);
+		objectsToRegister.add(() -> net.minecraft.registry.Registry.register(Registries.SOUND_EVENT, identifier.data, soundEvent));
+		return new SoundEventRegistryObject(new SoundEvent(soundEvent));
 	}
 
 	@MappedMethod

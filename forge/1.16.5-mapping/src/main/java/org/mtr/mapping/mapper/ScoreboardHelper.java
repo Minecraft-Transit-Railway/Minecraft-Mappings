@@ -1,5 +1,6 @@
 package org.mtr.mapping.mapper;
 
+import net.minecraft.scoreboard.ScoreObjective;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.*;
 import org.mtr.mapping.tool.DummyClass;
@@ -11,12 +12,13 @@ public final class ScoreboardHelper extends DummyClass {
 	@Nullable
 	@MappedMethod
 	public static ScoreboardObjective getScoreboardObjective(Scoreboard scoreboard, String name) {
-		return scoreboard.getObjective(name);
+		final ScoreObjective scoreboardObjective = scoreboard.data.getObjective(name);
+		return scoreboardObjective == null ? null : new ScoreboardObjective(scoreboardObjective);
 	}
 
 	@MappedMethod
 	public static ScoreboardObjective addObjective(Scoreboard scoreboard, String name, ScoreboardCriterion scoreboardCriterion, Text displayName, ScoreboardCriterionRenderType scoreboardCriterionRenderType) {
-		return scoreboard.addObjective(name, scoreboardCriterion, displayName, scoreboardCriterionRenderType);
+		return new ScoreboardObjective(scoreboard.data.addObjective(name, scoreboardCriterion.data, displayName.data, scoreboardCriterionRenderType.data));
 	}
 
 	@MappedMethod
@@ -31,10 +33,10 @@ public final class ScoreboardHelper extends DummyClass {
 
 	@MappedMethod
 	public static void incrementPlayerScore(Scoreboard scoreboard, String playerName, ScoreboardObjective scoreboardObjective, int amount) {
-		getOrCreateScore(scoreboard, playerName, scoreboardObjective).add(amount);
+		getOrCreateScore(scoreboard, playerName, scoreboardObjective).data.add(amount);
 	}
 
 	private static ScoreboardScore getOrCreateScore(Scoreboard scoreboard, String playerName, ScoreboardObjective scoreboardObjective) {
-		return scoreboard.getOrCreatePlayerScore(playerName, scoreboardObjective);
+		return new ScoreboardScore(scoreboard.data.getOrCreatePlayerScore(playerName, scoreboardObjective.data));
 	}
 }

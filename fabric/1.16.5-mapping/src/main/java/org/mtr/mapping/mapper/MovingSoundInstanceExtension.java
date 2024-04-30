@@ -18,14 +18,14 @@ public abstract class MovingSoundInstanceExtension extends MovingSoundInstanceAb
 	}
 
 	@MappedMethod
-	public boolean isRelative2() {
-		return super.isLooping2();
+	public boolean isRelative() {
+		return super.isLooping();
 	}
 
 	@MappedMethod
 	@Override
-	public boolean isRepeatable2() {
-		return super.isRepeatable2();
+	public boolean isRepeatable() {
+		return super.isRepeatable();
 	}
 
 	@MappedMethod

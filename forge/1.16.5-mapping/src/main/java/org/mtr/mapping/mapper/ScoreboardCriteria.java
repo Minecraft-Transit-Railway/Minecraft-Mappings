@@ -1,6 +1,5 @@
 package org.mtr.mapping.mapper;
 
-
 import net.minecraft.scoreboard.ScoreCriteria;
 import org.mtr.mapping.holder.ScoreboardCriterion;
 import org.mtr.mapping.tool.HolderBase;

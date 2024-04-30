@@ -1,7 +1,7 @@
 package org.mtr.mapping.mapper;
 
+import net.minecraft.nbt.CompoundTag;
 import org.mtr.mapping.annotation.MappedMethod;
-import org.mtr.mapping.holder.CompoundTag;
 import org.mtr.mapping.holder.EntityAbstractMapping;
 import org.mtr.mapping.holder.EntityType;
 import org.mtr.mapping.holder.World;
@@ -15,16 +15,16 @@ public abstract class EntityExtension extends EntityAbstractMapping {
 
 	@Deprecated
 	@Override
-	protected final void readAdditionalSaveData2(CompoundTag arg0) {
+	protected final void readAdditionalSaveData(CompoundTag arg0) {
 	}
 
 	@Deprecated
 	@Override
-	protected final void addAdditionalSaveData2(CompoundTag arg0) {
+	protected final void addAdditionalSaveData(CompoundTag arg0) {
 	}
 
 	@MappedMethod
-	public void setPosition3(double x, double y, double z) {
-		super.setPos2(x, y, z);
+	public void setPosition2(double x, double y, double z) {
+		super.setPos(x, y, z);
 	}
 }

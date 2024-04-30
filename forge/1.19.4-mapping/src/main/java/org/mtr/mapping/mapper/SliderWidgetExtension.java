@@ -26,59 +26,55 @@ public abstract class SliderWidgetExtension extends SliderWidgetAbstractMapping 
 	@MappedMethod
 	public void render(GraphicsHolder graphicsHolder, int mouseX, int mouseY, float delta) {
 		if (graphicsHolder.matrixStack != null) {
-			super.renderWidget2(graphicsHolder.matrixStack, mouseX, mouseY, delta);
+			super.renderWidget(graphicsHolder.matrixStack, mouseX, mouseY, delta);
 		}
 	}
 
 	@Deprecated
 	@Override
-	public final void renderWidget2(PoseStack matrices, int mouseX, int mouseY, float delta) {
+	public final void renderWidget(PoseStack matrices, int mouseX, int mouseY, float delta) {
 		GraphicsHolder.createInstanceSafe(matrices, null, graphicsHolder -> render(graphicsHolder, mouseX, mouseY, delta));
 	}
 
 	@Deprecated
 	@Override
-	public final boolean mouseScrolled2(double mouseX, double mouseY, double amount) {
-		return mouseScrolled3(mouseX, mouseY, amount);
+	public final boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+		return mouseScrolled2(mouseX, mouseY, amount);
 	}
 
 	@MappedMethod
-	public boolean mouseScrolled3(double mouseX, double mouseY, double amount) {
-		return super.mouseScrolled2(mouseX, mouseY, amount);
+	public boolean mouseScrolled2(double mouseX, double mouseY, double amount) {
+		return super.mouseScrolled(mouseX, mouseY, amount);
 	}
 
 	@MappedMethod
-	@Override
 	public final int getX2() {
-		return super.getX2();
+		return super.getX();
 	}
 
 	@MappedMethod
-	@Override
 	public final int getY2() {
-		return super.getY2();
+		return super.getY();
 	}
 
 	@MappedMethod
-	@Override
 	public final void setX2(int x) {
-		super.setX2(x);
+		super.setX(x);
 	}
 
 	@MappedMethod
-	@Override
 	public final void setY2(int y) {
-		super.setY2(y);
+		super.setY(y);
 	}
 
 	@MappedMethod
-	public final void setHeight2(int height) {
-		super.setHeight2(height);
+	public final void setHeight(int height) {
+		super.setHeight(height);
 	}
 
 	@MappedMethod
 	@Override
-	public final boolean isHovered2() {
-		return super.isHovered2();
+	public final boolean isHovered() {
+		return super.isHovered();
 	}
 }

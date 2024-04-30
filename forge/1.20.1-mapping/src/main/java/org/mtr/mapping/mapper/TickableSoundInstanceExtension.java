@@ -7,23 +7,23 @@ public interface TickableSoundInstanceExtension extends TickableSoundInstance {
 
 	@MappedMethod
 	@Override
-	boolean isRelative2();
+	boolean isRelative();
 
 	@MappedMethod
-	boolean isRepeatable2();
+	boolean isRepeatable();
 
 	@Deprecated
 	@Override
-	default boolean isLooping2() {
-		return isRepeatable2();
+	default boolean isLooping() {
+		return isRepeatable();
 	}
 
 	@MappedMethod
-	boolean isDone2();
+	boolean isDone();
 
 	@Deprecated
 	@Override
-	default boolean isStopped2() {
-		return isDone2();
+	default boolean isStopped() {
+		return isDone();
 	}
 }

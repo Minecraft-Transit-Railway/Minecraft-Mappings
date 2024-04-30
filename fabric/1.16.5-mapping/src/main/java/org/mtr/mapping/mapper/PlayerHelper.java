@@ -19,6 +19,6 @@ public final class PlayerHelper extends DummyClass {
 
 	@MappedMethod
 	public static boolean isHolding(@Nullable PlayerEntity playerEntity, Predicate<Item> predicate) {
-		return playerEntity != null && playerEntity.isHolding(item -> predicate.test(new Item(item)));
+		return playerEntity != null && playerEntity.data.isHolding(item -> predicate.test(new Item(item)));
 	}
 }

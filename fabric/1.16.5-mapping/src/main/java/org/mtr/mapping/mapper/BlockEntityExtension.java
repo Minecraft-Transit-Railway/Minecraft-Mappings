@@ -15,17 +15,17 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 
 	@Deprecated
 	@Override
-	public final CompoundTag writeNbt2(CompoundTag nbt) {
-		super.writeNbt2(nbt);
-		writeCompoundTag(nbt);
+	public final NbtCompound writeNbt(NbtCompound nbt) {
+		super.writeNbt(nbt);
+		writeCompoundTag(new CompoundTag(nbt));
 		return nbt;
 	}
 
 	@Deprecated
 	@Override
-	public final void fromTag2(BlockState state, CompoundTag tag) {
-		super.fromTag2(state, tag);
-		readCompoundTag(tag);
+	public final void fromTag(net.minecraft.block.BlockState state, NbtCompound tag) {
+		super.fromTag(state, tag);
+		readCompoundTag(new CompoundTag(tag));
 	}
 
 	@MappedMethod
@@ -66,13 +66,13 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 	}
 
 	@MappedMethod
-	public double getRenderDistance3() {
-		return super.getRenderDistance2();
+	public double getRenderDistance2() {
+		return super.getRenderDistance();
 	}
 
 	@Deprecated
 	@Override
-	public final double getRenderDistance2() {
-		return getRenderDistance3();
+	public final double getRenderDistance() {
+		return getRenderDistance2();
 	}
 }

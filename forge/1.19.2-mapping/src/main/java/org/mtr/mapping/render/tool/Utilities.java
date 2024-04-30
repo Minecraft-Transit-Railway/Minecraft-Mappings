@@ -1,7 +1,7 @@
 package org.mtr.mapping.render.tool;
 
+import com.mojang.math.Matrix3f;
 import com.mojang.math.Vector4f;
-import org.mtr.mapping.holder.Matrix3f;
 import org.mtr.mapping.holder.Matrix4f;
 import org.mtr.mapping.holder.Vector3f;
 
@@ -15,7 +15,7 @@ public final class Utilities {
 
 	public static Matrix4f create() {
 		final Matrix4f matrix4f = new Matrix4f();
-		matrix4f.setIdentity();
+		matrix4f.data.setIdentity();
 		return matrix4f;
 	}
 
@@ -24,7 +24,7 @@ public final class Utilities {
 	}
 
 	public static void store(Matrix4f matrix4f, FloatBuffer buffer) {
-		matrix4f.store(buffer);
+		matrix4f.data.store(buffer);
 	}
 
 	public static Vector3f transformPosition(Matrix4f matrix4f, Vector3f src) {
@@ -35,7 +35,7 @@ public final class Utilities {
 
 	public static Vector3f transformDirection(Matrix4f matrix4f, Vector3f src) {
 		final Vector3f vector3f = copy(src);
-		vector3f.transform(new Matrix3f(matrix4f));
+		vector3f.data.transform(new Matrix3f(matrix4f.data));
 		return vector3f;
 	}
 

@@ -196,7 +196,7 @@ public final class Registry extends DummyClass {
 		if (creativeModeTabHolders.length == 0) {
 			return new ItemSettings();
 		} else {
-			return new ItemSettings().tab(creativeModeTabHolders[0].creativeModeTab);
+			return new ItemSettings(new net.minecraft.item.Item.Properties().tab(creativeModeTabHolders[0].creativeModeTab));
 		}
 	}
 

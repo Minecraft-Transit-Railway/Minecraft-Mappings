@@ -14,17 +14,17 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 
 	@Deprecated
 	@Override
-	public final CompoundTag writeNbt2(CompoundTag nbt) {
-		super.writeNbt2(nbt);
-		writeCompoundTag(nbt);
+	public final NbtCompound writeNbt(NbtCompound nbt) {
+		super.writeNbt(nbt);
+		writeCompoundTag(new CompoundTag(nbt));
 		return nbt;
 	}
 
 	@Deprecated
 	@Override
-	public final void readNbt2(CompoundTag nbt) {
-		super.readNbt2(nbt);
-		readCompoundTag(nbt);
+	public final void readNbt(NbtCompound nbt) {
+		super.readNbt(nbt);
+		readCompoundTag(new CompoundTag(nbt));
 	}
 
 	@MappedMethod
@@ -59,7 +59,7 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 	}
 
 	@MappedMethod
-	public double getRenderDistance3() {
+	public double getRenderDistance2() {
 		return 0;
 	}
 }

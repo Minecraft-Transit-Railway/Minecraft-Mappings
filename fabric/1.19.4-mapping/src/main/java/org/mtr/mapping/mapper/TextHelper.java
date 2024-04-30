@@ -21,20 +21,20 @@ public final class TextHelper extends DummyClass {
 
 	@MappedMethod
 	public static MutableText setStyle(MutableText mutableText, Style style) {
-		return mutableText.setStyle(style);
+		return new MutableText(mutableText.data.setStyle(style.data));
 	}
 
 	@MappedMethod
 	public static OrderedText mutableTextToOrderedText(MutableText mutableText) {
-		return mutableText.asOrderedText();
+		return new OrderedText(mutableText.data.asOrderedText());
 	}
 
 	@MappedMethod
 	public static MutableText append(MutableText baseText, MutableText... moreText) {
-		MutableText result = baseText;
+		net.minecraft.text.MutableText result = baseText.data;
 		for (final MutableText mutableText : moreText) {
-			result = result.append(new org.mtr.mapping.holder.Text(mutableText.data));
+			result = result.append(mutableText.data);
 		}
-		return result;
+		return new MutableText(result);
 	}
 }

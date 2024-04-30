@@ -1,10 +1,8 @@
 package org.mtr.mapping.mapper;
 
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.util.math.MatrixStack;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.ButtonWidgetAbstractMapping;
-import org.mtr.mapping.holder.Identifier;
 import org.mtr.mapping.holder.MutableText;
 import org.mtr.mapping.holder.Text;
 
@@ -42,42 +40,38 @@ public class ButtonWidgetExtension extends ButtonWidgetAbstractMapping {
 
 	@Deprecated
 	@Override
-	public final boolean mouseScrolled2(double mouseX, double mouseY, double amount) {
-		return mouseScrolled3(mouseX, mouseY, amount);
+	public final boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+		return mouseScrolled2(mouseX, mouseY, amount);
 	}
 
 	@MappedMethod
-	public boolean mouseScrolled3(double mouseX, double mouseY, double amount) {
-		return super.mouseScrolled2(mouseX, mouseY, amount);
+	public boolean mouseScrolled2(double mouseX, double mouseY, double amount) {
+		return super.mouseScrolled(mouseX, mouseY, amount);
 	}
 
 	@MappedMethod
-	@Override
 	public final int getX2() {
-		return super.getX2();
+		return super.getX();
 	}
 
 	@MappedMethod
-	@Override
 	public final int getY2() {
-		return super.getY2();
+		return super.getY();
 	}
 
 	@MappedMethod
-	@Override
 	public final void setX2(int x) {
-		super.setX2(x);
+		super.setX(x);
 	}
 
 	@MappedMethod
-	@Override
 	public final void setY2(int y) {
-		super.setY2(y);
+		super.setY(y);
 	}
 
 	@MappedMethod
 	@Override
-	public final boolean isHovered2() {
-		return super.isHovered2();
+	public final boolean isHovered() {
+		return super.isHovered();
 	}
 }

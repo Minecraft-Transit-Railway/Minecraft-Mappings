@@ -227,13 +227,13 @@ public final class RawMesh {
 	}
 
 	public void applyTranslation(float x, float y, float z) {
-		vertices.forEach(vertex -> vertex.position.add(x, y, z));
+		vertices.forEach(vertex -> vertex.position.data.add(x, y, z));
 	}
 
 	public void applyRotation(Vector3f axis, float angle) {
 		vertices.forEach(vertex -> {
-			vertex.position.rotate(axis.getDegreesQuaternion(angle));
-			vertex.normal.rotate(axis.getDegreesQuaternion(angle));
+			vertex.position.data.rotate(axis.data.getDegreesQuaternion(angle));
+			vertex.normal.data.rotate(axis.data.getDegreesQuaternion(angle));
 		});
 	}
 
@@ -246,14 +246,14 @@ public final class RawMesh {
 		final float rz2 = rz * rz;
 		final boolean reverse = x * y * z < 0;
 		vertices.forEach(vertex -> {
-			vertex.position.multiplyComponentwise(x, y, z);
+			vertex.position.data.multiplyComponentwise(x, y, z);
 			final float nx2 = vertex.normal.getX() * vertex.normal.getX();
 			final float ny2 = vertex.normal.getY() * vertex.normal.getY();
 			final float nz2 = vertex.normal.getZ() * vertex.normal.getZ();
 			final float u1 = nx2 * rx2 + ny2 * ry2 + nz2 * rz2;
 			if (u1 != 0) {
 				float u2 = (float) Math.sqrt((nx2 + ny2 + nz2) / u1);
-				vertex.normal.multiplyComponentwise(rx * u2, ry * u2, rz * u2);
+				vertex.normal.data.multiplyComponentwise(rx * u2, ry * u2, rz * u2);
 			}
 		});
 
@@ -264,8 +264,8 @@ public final class RawMesh {
 
 	public void applyMirror(boolean vx, boolean vy, boolean vz, boolean nx, boolean ny, boolean nz) {
 		vertices.forEach(vertex -> {
-			vertex.position.multiplyComponentwise(vx ? -1 : 1, vy ? -1 : 1, vz ? -1 : 1);
-			vertex.normal.multiplyComponentwise(nx ? -1 : 1, ny ? -1 : 1, nz ? -1 : 1);
+			vertex.position.data.multiplyComponentwise(vx ? -1 : 1, vy ? -1 : 1, vz ? -1 : 1);
+			vertex.normal.data.multiplyComponentwise(nx ? -1 : 1, ny ? -1 : 1, nz ? -1 : 1);
 		});
 
 		int numFlips = 0;
@@ -299,13 +299,13 @@ public final class RawMesh {
 		vertices.forEach(vertex -> {
 			final float n1 = ratio * (dir.getX() * vertex.position.getX() + dir.getY() * vertex.position.getY() + dir.getZ() * vertex.position.getZ());
 			final Vector3f offset1 = Utilities.copy(shear);
-			offset1.scale(n1);
-			vertex.position.add(offset1);
+			offset1.data.scale(n1);
+			vertex.position.data.add(offset1.data);
 			if (!vectorIsZero(vertex.normal)) {
 				final float n2 = ratio * (shear.getX() * vertex.normal.getX() + shear.getY() * vertex.normal.getY() + shear.getZ() * vertex.normal.getZ());
 				final Vector3f offset2 = Utilities.copy(dir);
-				offset2.scale(-n2);
-				vertex.normal.add(offset2);
+				offset2.data.scale(-n2);
+				vertex.normal.data.add(offset2.data);
 				vertex.normal.data.normalize();
 			}
 		});

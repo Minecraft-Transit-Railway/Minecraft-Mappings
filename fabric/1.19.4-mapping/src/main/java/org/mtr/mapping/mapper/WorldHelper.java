@@ -10,16 +10,16 @@ public final class WorldHelper extends DummyClass {
 
 	@MappedMethod
 	public static long getTimeOfDay(ServerWorld serverWorld) {
-		return serverWorld.getTimeOfDay();
+		return serverWorld.data.getTimeOfDay();
 	}
 
 	@MappedMethod
 	public static long getTimeOfDay(ClientWorld clientWorld) {
-		return clientWorld.getTimeOfDay();
+		return clientWorld.data.getTimeOfDay();
 	}
 
 	@MappedMethod
 	public static long getTimeOfDay(World world) {
-		return world.getTimeOfDay();
+		return world.data.getTimeOfDay();
 	}
 }

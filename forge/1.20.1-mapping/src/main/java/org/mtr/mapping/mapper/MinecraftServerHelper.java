@@ -11,26 +11,26 @@ public final class MinecraftServerHelper extends DummyClass {
 
 	@MappedMethod
 	public static void iterateWorlds(MinecraftServer minecraftServer, Consumer<ServerWorld> consumer) {
-		minecraftServer.getAllLevels().forEach(serverWorld -> consumer.accept(new ServerWorld(serverWorld)));
+		minecraftServer.data.getAllLevels().forEach(serverWorld -> consumer.accept(new ServerWorld(serverWorld)));
 	}
 
 	@MappedMethod
 	public static void iteratePlayers(MinecraftServer minecraftServer, Consumer<ServerPlayerEntity> consumer) {
-		minecraftServer.getPlayerManager().getPlayers().forEach(serverPlayerEntity -> consumer.accept(new ServerPlayerEntity(serverPlayerEntity)));
+		minecraftServer.data.getPlayerList().getPlayers().forEach(serverPlayerEntity -> consumer.accept(new ServerPlayerEntity(serverPlayerEntity)));
 	}
 
 	@MappedMethod
 	public static void iteratePlayers(ServerWorld serverWorld, Consumer<ServerPlayerEntity> consumer) {
-		serverWorld.players().forEach(serverPlayerEntity -> consumer.accept(new ServerPlayerEntity(serverPlayerEntity)));
+		serverWorld.data.players().forEach(serverPlayerEntity -> consumer.accept(new ServerPlayerEntity(serverPlayerEntity)));
 	}
 
 	@MappedMethod
 	public static void iteratePlayers(ServerWorld serverWorld, Predicate<ServerPlayerEntity> predicate, Consumer<ServerPlayerEntity> consumer) {
-		serverWorld.getPlayers(serverPlayerEntity -> predicate.test(new ServerPlayerEntity(serverPlayerEntity))).forEach(serverPlayerEntity -> consumer.accept(new ServerPlayerEntity(serverPlayerEntity)));
+		serverWorld.data.getPlayers(serverPlayerEntity -> predicate.test(new ServerPlayerEntity(serverPlayerEntity))).forEach(serverPlayerEntity -> consumer.accept(new ServerPlayerEntity(serverPlayerEntity)));
 	}
 
 	@MappedMethod
 	public static Identifier getWorldId(World world) {
-		return new Identifier(world.dimension().location());
+		return new Identifier(world.data.dimension().location());
 	}
 }

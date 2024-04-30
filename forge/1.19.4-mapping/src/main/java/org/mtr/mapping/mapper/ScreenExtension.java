@@ -27,20 +27,20 @@ public class ScreenExtension extends ScreenAbstractMapping {
 	@MappedMethod
 	public void render(GraphicsHolder graphicsHolder, int mouseX, int mouseY, float delta) {
 		if (graphicsHolder.matrixStack != null) {
-			super.render2(graphicsHolder.matrixStack, mouseX, mouseY, delta);
+			super.render(graphicsHolder.matrixStack, mouseX, mouseY, delta);
 		}
 	}
 
 	@Deprecated
 	@Override
-	public final void render2(PoseStack matrices, int mouseX, int mouseY, float delta) {
+	public final void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
 		GraphicsHolder.createInstanceSafe(matrices, null, graphicsHolder -> render(graphicsHolder, mouseX, mouseY, delta));
 	}
 
 	@MappedMethod
 	public final void renderBackground(GraphicsHolder graphicsHolder) {
 		if (graphicsHolder.matrixStack != null) {
-			renderBackground2(graphicsHolder.matrixStack);
+			renderBackground(graphicsHolder.matrixStack);
 		}
 	}
 
@@ -51,12 +51,12 @@ public class ScreenExtension extends ScreenAbstractMapping {
 
 	@Deprecated
 	@Override
-	public final boolean mouseScrolled2(double mouseX, double mouseY, double amount) {
-		return mouseScrolled3(mouseX, mouseY, amount);
+	public final boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+		return mouseScrolled2(mouseX, mouseY, amount);
 	}
 
 	@MappedMethod
-	public boolean mouseScrolled3(double mouseX, double mouseY, double amount) {
-		return super.mouseScrolled2(mouseX, mouseY, amount);
+	public boolean mouseScrolled2(double mouseX, double mouseY, double amount) {
+		return super.mouseScrolled(mouseX, mouseY, amount);
 	}
 }

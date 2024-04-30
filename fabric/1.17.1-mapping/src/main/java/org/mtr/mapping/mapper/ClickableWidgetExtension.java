@@ -4,7 +4,6 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.util.math.MatrixStack;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.ClickableWidgetAbstractMapping;
-import org.mtr.mapping.holder.Identifier;
 import org.mtr.mapping.holder.MutableText;
 import org.mtr.mapping.holder.Text;
 
@@ -28,25 +27,25 @@ public class ClickableWidgetExtension extends ClickableWidgetAbstractMapping {
 	@MappedMethod
 	public void render(GraphicsHolder graphicsHolder, int mouseX, int mouseY, float delta) {
 		if (graphicsHolder.matrixStack != null) {
-			super.renderButton2(graphicsHolder.matrixStack, mouseX, mouseY, delta);
+			super.renderButton(graphicsHolder.matrixStack, mouseX, mouseY, delta);
 		}
 	}
 
 	@Deprecated
 	@Override
-	public final void renderButton2(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public final void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		GraphicsHolder.createInstanceSafe(matrices, null, graphicsHolder -> render(graphicsHolder, mouseX, mouseY, delta));
 	}
 
 	@Deprecated
 	@Override
-	public final boolean mouseScrolled2(double mouseX, double mouseY, double amount) {
-		return mouseScrolled3(mouseX, mouseY, amount);
+	public final boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+		return mouseScrolled2(mouseX, mouseY, amount);
 	}
 
 	@MappedMethod
-	public boolean mouseScrolled3(double mouseX, double mouseY, double amount) {
-		return super.mouseScrolled2(mouseX, mouseY, amount);
+	public boolean mouseScrolled2(double mouseX, double mouseY, double amount) {
+		return super.mouseScrolled(mouseX, mouseY, amount);
 	}
 
 	@MappedMethod
@@ -71,12 +70,12 @@ public class ClickableWidgetExtension extends ClickableWidgetAbstractMapping {
 
 	@MappedMethod
 	@Override
-	public final boolean isHovered2() {
-		return super.isHovered2();
+	public final boolean isHovered() {
+		return super.isHovered();
 	}
 
 	@Deprecated
 	@Override
-	public final void appendNarrations2(NarrationMessageBuilder builder) {
+	public final void appendNarrations(NarrationMessageBuilder builder) {
 	}
 }

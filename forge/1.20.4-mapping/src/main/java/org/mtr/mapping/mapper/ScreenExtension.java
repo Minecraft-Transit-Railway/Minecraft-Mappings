@@ -27,26 +27,26 @@ public class ScreenExtension extends ScreenAbstractMapping {
 	@MappedMethod
 	public void render(GraphicsHolder graphicsHolder, int mouseX, int mouseY, float delta) {
 		if (graphicsHolder.drawContext != null) {
-			super.render2(graphicsHolder.drawContext, mouseX, mouseY, delta);
+			super.render(graphicsHolder.drawContext, mouseX, mouseY, delta);
 		}
 	}
 
 	@Deprecated
 	@Override
-	public final void render2(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
+	public final void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
 		GraphicsHolder.createInstanceSafe(guiGraphics, graphicsHolder -> render(graphicsHolder, mouseX, mouseY, delta));
 	}
 
 	@MappedMethod
 	public final void renderBackground(GraphicsHolder graphicsHolder) {
 		if (graphicsHolder.drawContext != null) {
-			super.renderBackground2(graphicsHolder.drawContext, 0, 0, 0);
+			super.renderBackground(graphicsHolder.drawContext, 0, 0, 0);
 		}
 	}
 
 	@Deprecated
 	@Override
-	public final void renderBackground2(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public final void renderBackground(GuiGraphics context, int mouseX, int mouseY, float delta) {
 	}
 
 	@MappedMethod
@@ -56,12 +56,12 @@ public class ScreenExtension extends ScreenAbstractMapping {
 
 	@Deprecated
 	@Override
-	public final boolean mouseScrolled2(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
-		return mouseScrolled3(mouseX, mouseY, verticalAmount);
+	public final boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+		return mouseScrolled2(mouseX, mouseY, verticalAmount);
 	}
 
 	@MappedMethod
-	public boolean mouseScrolled3(double mouseX, double mouseY, double amount) {
-		return super.mouseScrolled2(mouseX, mouseY, 0, amount);
+	public boolean mouseScrolled2(double mouseX, double mouseY, double amount) {
+		return super.mouseScrolled(mouseX, mouseY, 0, amount);
 	}
 }

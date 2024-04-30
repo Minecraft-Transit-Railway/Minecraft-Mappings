@@ -20,7 +20,7 @@ public abstract class PersistenceStateExtension extends PersistentStateAbstractM
 
 	@MappedMethod
 	public static PersistenceStateExtension register(ServerWorld serverWorld, Supplier<PersistenceStateExtension> supplier, String modId) {
-		return serverWorld.getDataStorage().computeIfAbsent(new Factory<>(supplier, compoundTag -> {
+		return serverWorld.data.getDataStorage().computeIfAbsent(new Factory<>(supplier, compoundTag -> {
 			final PersistenceStateExtension persistenceStateExtension = supplier.get();
 			persistenceStateExtension.readNbt(new CompoundTag(compoundTag));
 			return persistenceStateExtension;

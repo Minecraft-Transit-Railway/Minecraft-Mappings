@@ -26,25 +26,25 @@ public abstract class SliderWidgetExtension extends SliderWidgetAbstractMapping 
 	@MappedMethod
 	public void render(GraphicsHolder graphicsHolder, int mouseX, int mouseY, float delta) {
 		if (graphicsHolder.matrixStack != null) {
-			super.renderButton2(graphicsHolder.matrixStack, mouseX, mouseY, delta);
+			super.renderButton(graphicsHolder.matrixStack, mouseX, mouseY, delta);
 		}
 	}
 
 	@Deprecated
 	@Override
-	public final void renderButton2(PoseStack matrices, int mouseX, int mouseY, float delta) {
+	public final void renderButton(PoseStack matrices, int mouseX, int mouseY, float delta) {
 		GraphicsHolder.createInstanceSafe(matrices, null, graphicsHolder -> render(graphicsHolder, mouseX, mouseY, delta));
 	}
 
 	@Deprecated
 	@Override
-	public final boolean mouseScrolled2(double mouseX, double mouseY, double amount) {
-		return mouseScrolled3(mouseX, mouseY, amount);
+	public final boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+		return mouseScrolled2(mouseX, mouseY, amount);
 	}
 
 	@MappedMethod
-	public boolean mouseScrolled3(double mouseX, double mouseY, double amount) {
-		return super.mouseScrolled2(mouseX, mouseY, amount);
+	public boolean mouseScrolled2(double mouseX, double mouseY, double amount) {
+		return super.mouseScrolled(mouseX, mouseY, amount);
 	}
 
 	@MappedMethod
@@ -68,12 +68,12 @@ public abstract class SliderWidgetExtension extends SliderWidgetAbstractMapping 
 	}
 
 	@MappedMethod
-	public final void setHeight2(int height) {
-		super.setHeight2(height);
+	public final void setHeight(int height) {
+		super.setHeight(height);
 	}
 
 	@MappedMethod
-	public final boolean isHovered2() {
-		return super.isHoveredOrFocused2();
+	public final boolean isHovered() {
+		return super.isHoveredOrFocused();
 	}
 }

@@ -1,7 +1,11 @@
 package org.mtr.mapping.mapper;
 
+import net.minecraft.client.Minecraft;
 import org.mtr.mapping.annotation.MappedMethod;
-import org.mtr.mapping.holder.*;
+import org.mtr.mapping.holder.AbstractSoundInstanceAbstractMapping;
+import org.mtr.mapping.holder.Identifier;
+import org.mtr.mapping.holder.SoundCategory;
+import org.mtr.mapping.holder.SoundEvent;
 
 import java.util.function.Consumer;
 
@@ -19,13 +23,13 @@ public abstract class AbstractSoundInstanceExtension extends AbstractSoundInstan
 
 	@MappedMethod
 	@Override
-	public boolean isRelative2() {
-		return super.isRelative2();
+	public boolean isRelative() {
+		return super.isRelative();
 	}
 
 	@MappedMethod
-	public boolean isRepeatable2() {
-		return super.isLooping2();
+	public boolean isRepeatable() {
+		return super.isLooping();
 	}
 
 	@MappedMethod
@@ -40,6 +44,6 @@ public abstract class AbstractSoundInstanceExtension extends AbstractSoundInstan
 
 	@MappedMethod
 	public static void iterateSoundIds(Consumer<Identifier> consumer) {
-		MinecraftClient.getInstance().getSoundManager().getAvailableSounds().forEach(identifier -> consumer.accept(new Identifier(identifier)));
+		Minecraft.getInstance().getSoundManager().getAvailableSounds().forEach(identifier -> consumer.accept(new Identifier(identifier)));
 	}
 }

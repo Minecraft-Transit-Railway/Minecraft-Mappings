@@ -1,5 +1,6 @@
 package org.mtr.mapping.mapper;
 
+import net.minecraft.nbt.CompoundNBT;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.CompoundTag;
 import org.mtr.mapping.holder.PersistentStateAbstractMapping;
@@ -16,8 +17,8 @@ public abstract class PersistenceStateExtension extends PersistentStateAbstractM
 
 	@Deprecated
 	@Override
-	public final void load2(CompoundTag compoundTag) {
-		readNbt(compoundTag);
+	public final void load(CompoundNBT compoundTag) {
+		readNbt(new CompoundTag(compoundTag));
 	}
 
 	@MappedMethod
@@ -25,6 +26,6 @@ public abstract class PersistenceStateExtension extends PersistentStateAbstractM
 
 	@MappedMethod
 	public static PersistenceStateExtension register(ServerWorld serverWorld, Supplier<PersistenceStateExtension> supplier, String modId) {
-		return serverWorld.getDataStorage().computeIfAbsent(supplier, modId);
+		return serverWorld.data.getDataStorage().computeIfAbsent(supplier, modId);
 	}
 }

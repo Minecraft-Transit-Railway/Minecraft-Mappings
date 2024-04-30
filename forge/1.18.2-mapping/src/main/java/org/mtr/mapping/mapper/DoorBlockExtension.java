@@ -1,6 +1,8 @@
 package org.mtr.mapping.mapper;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.Material;
@@ -21,14 +23,14 @@ public class DoorBlockExtension extends DoorBlockAbstractMapping implements Bloc
 
 	@Deprecated
 	@Override
-	protected final void createBlockStateDefinition2(StateDefinition.Builder<Block, net.minecraft.world.level.block.state.BlockState> builder) {
+	protected final void createBlockStateDefinition(StateDefinition.Builder<Block, net.minecraft.world.level.block.state.BlockState> builder) {
 		createBlockStateDefinitionHelper(builder);
 	}
 
 	@Deprecated
 	@Override
-	public final void appendHoverText2(ItemStack stack, @Nullable BlockView world, List<Component> tooltipList, TooltipContext options) {
-		appendTooltipHelper(stack, world, tooltipList, options);
+	public final void appendHoverText(net.minecraft.world.item.ItemStack stack, @Nullable BlockGetter world, List<Component> tooltipList, TooltipFlag options) {
+		appendTooltipHelper(new ItemStack(stack), world == null ? null : new BlockView(world), tooltipList, new TooltipContext(options));
 	}
 
 	@MappedMethod

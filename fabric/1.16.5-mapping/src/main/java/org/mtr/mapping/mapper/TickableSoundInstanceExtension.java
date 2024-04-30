@@ -6,19 +6,19 @@ import org.mtr.mapping.holder.TickableSoundInstance;
 public interface TickableSoundInstanceExtension extends TickableSoundInstance {
 
 	@MappedMethod
-	boolean isRelative2();
+	boolean isRelative();
 
 	@Deprecated
 	@Override
-	default boolean isLooping2() {
-		return isRelative2();
+	default boolean isLooping() {
+		return isRelative();
 	}
 
 	@MappedMethod
 	@Override
-	boolean isRepeatable2();
+	boolean isRepeatable();
 
 	@MappedMethod
 	@Override
-	boolean isDone2();
+	boolean isDone();
 }
