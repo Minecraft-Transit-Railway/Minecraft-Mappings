@@ -53,6 +53,11 @@ subprojects {
 		testLogging { showStandardStreams = true }
 	}
 
+	tasks.withType(AbstractArchiveTask).configureEach {
+		preserveFileTimestamps = false
+		reproducibleFileOrder = true
+	}
+
 	tasks.withType(Javadoc).tap {
 		configureEach { javadoc.options.addStringOption("Xdoclint:none", "-quiet") }
 	}

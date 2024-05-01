@@ -36,3 +36,8 @@ test {
 	useJUnitPlatform()
 	testLogging { showStandardStreams = true }
 }
+
+tasks.withType(AbstractArchiveTask).configureEach {
+	preserveFileTimestamps = false
+	reproducibleFileOrder = true
+}
