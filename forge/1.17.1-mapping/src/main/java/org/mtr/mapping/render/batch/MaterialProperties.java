@@ -12,6 +12,7 @@ import org.mtr.mapping.mapper.OptimizedModel;
 import org.mtr.mapping.mapper.RenderLayerHelper;
 import org.mtr.mapping.render.vertex.VertexAttributeState;
 
+import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -22,13 +23,13 @@ import java.util.function.Function;
 public final class MaterialProperties {
 
 	/**
+	 * The texture to use. Null disables texture.
+	 */
+	private Identifier texture;
+	/**
 	 * Name of the shader program. Must be loaded in ShaderManager.
 	 */
 	public final OptimizedModel.ShaderType shaderType;
-	/**
-	 * The texture to use. Null disables texture.
-	 */
-	public final Identifier texture;
 	/**
 	 * The vertex attribute values to use for those specified with VertAttrSrc MATERIAL.
 	 */
@@ -68,7 +69,7 @@ public final class MaterialProperties {
 			RenderLayer.getEntityCutout(texture)
 	));
 
-	public MaterialProperties(OptimizedModel.ShaderType shaderType, Identifier texture) {
+	public MaterialProperties(OptimizedModel.ShaderType shaderType, Identifier texture, @Nullable Integer color) {
 		this.shaderType = shaderType;
 		this.texture = texture;
 		switch (shaderType) {
@@ -76,37 +77,37 @@ public final class MaterialProperties {
 				translucent = false;
 				writeDepthBuf = true;
 				cutoutHack = false;
-				vertexAttributeState = new VertexAttributeState();
+				vertexAttributeState = new VertexAttributeState(color, null);
 				break;
 			case TRANSLUCENT:
 				translucent = true;
 				writeDepthBuf = true;
 				cutoutHack = false;
-				vertexAttributeState = new VertexAttributeState();
+				vertexAttributeState = new VertexAttributeState(color, null);
 				break;
 			case CUTOUT_BRIGHT:
 				translucent = false;
 				writeDepthBuf = true;
 				cutoutHack = false;
-				vertexAttributeState = new VertexAttributeState(15 << 4 | 15 << 20);
+				vertexAttributeState = new VertexAttributeState(color, 15 << 4 | 15 << 20);
 				break;
 			case TRANSLUCENT_BRIGHT:
 				translucent = true;
 				writeDepthBuf = true;
 				cutoutHack = false;
-				vertexAttributeState = new VertexAttributeState(15 << 4 | 15 << 20);
+				vertexAttributeState = new VertexAttributeState(color, 15 << 4 | 15 << 20);
 				break;
 			case CUTOUT_GLOWING:
 				translucent = false;
 				writeDepthBuf = true;
 				cutoutHack = true;
-				vertexAttributeState = new VertexAttributeState();
+				vertexAttributeState = new VertexAttributeState(color, null);
 				break;
 			case TRANSLUCENT_GLOWING:
 				translucent = true;
 				writeDepthBuf = false;
 				cutoutHack = false;
-				vertexAttributeState = new VertexAttributeState();
+				vertexAttributeState = new VertexAttributeState(color, null);
 				break;
 		}
 	}
@@ -142,6 +143,14 @@ public final class MaterialProperties {
 			default:
 				return ENTITY_CUTOUT.apply(texture);
 		}
+	}
+
+	public Identifier getTexture() {
+		return texture;
+	}
+
+	public void setTexture(Identifier texture) {
+		this.texture = texture;
 	}
 
 	@Override

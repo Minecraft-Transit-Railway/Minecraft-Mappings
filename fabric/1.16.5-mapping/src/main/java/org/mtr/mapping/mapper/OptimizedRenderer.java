@@ -13,7 +13,7 @@ public final class OptimizedRenderer {
 	}
 
 	@MappedMethod
-	public void queue(OptimizedModel optimizedModel, GraphicsHolder graphicsHolder, int light) {
+	public void queue(OptimizedModel optimizedModel, GraphicsHolder graphicsHolder, int color, int light) {
 	}
 
 	@MappedMethod

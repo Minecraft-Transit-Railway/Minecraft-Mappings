@@ -9,6 +9,7 @@ import org.mtr.mapping.holder.Vector3f;
 import org.mtr.mapping.render.tool.GlStateTracker;
 import org.mtr.mapping.render.tool.Utilities;
 
+import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.Objects;
@@ -23,8 +24,8 @@ public final class VertexAttributeState {
 	private final Vector3f normal;
 	private final Matrix4f matrix4f;
 
-	public VertexAttributeState(int lightmapUV, Matrix4f matrix4f) {
-		color = 0xFFFFFFFF;
+	public VertexAttributeState(int color, int lightmapUV, Matrix4f matrix4f) {
+		this.color = color;
 		this.lightmapUV = Utilities.exchangeLightmapUVBits(lightmapUV);
 		position = null;
 		textureU = null;
@@ -34,20 +35,9 @@ public final class VertexAttributeState {
 		this.matrix4f = matrix4f;
 	}
 
-	public VertexAttributeState(int lightmapUV) {
-		color = null;
+	public VertexAttributeState(@Nullable Integer color, @Nullable Integer lightmapUV) {
+		this.color = color;
 		this.lightmapUV = lightmapUV;
-		position = null;
-		textureU = null;
-		textureV = null;
-		overlayUV = null;
-		normal = null;
-		matrix4f = null;
-	}
-
-	public VertexAttributeState() {
-		color = null;
-		lightmapUV = null;
 		position = null;
 		textureU = null;
 		textureV = null;

@@ -7,12 +7,15 @@ import org.mtr.mapping.holder.Identifier;
 import org.mtr.mapping.holder.OverlayTexture;
 import org.mtr.mapping.render.batch.MaterialProperties;
 import org.mtr.mapping.render.model.RawModel;
+import org.mtr.mapping.render.obj.AtlasManager;
+import org.mtr.mapping.render.obj.ObjModelLoader;
 import org.mtr.mapping.render.object.VertexArray;
 import org.mtr.mapping.render.vertex.CapturingVertexConsumer;
 import org.mtr.mapping.render.vertex.VertexAttributeMapping;
 import org.mtr.mapping.render.vertex.VertexAttributeSource;
 import org.mtr.mapping.render.vertex.VertexAttributeType;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -20,6 +23,7 @@ import java.util.function.Consumer;
 public final class OptimizedModel {
 
 	final List<VertexArray> uploadedParts;
+	private static final AtlasManager ATLAS_MANAGER = new AtlasManager();
 
 	private static final VertexAttributeMapping DEFAULT_MAPPING = new VertexAttributeMapping.Builder()
 			.set(VertexAttributeType.POSITION, VertexAttributeSource.VERTEX_BUFFER)
@@ -47,6 +51,20 @@ public final class OptimizedModel {
 		uploadedParts = parts.upload(DEFAULT_MAPPING);
 	}
 
+	@MappedMethod
+	public OptimizedModel(Identifier objLocation, @Nullable Identifier atlasIndex) {
+		if (atlasIndex != null) {
+			ATLAS_MANAGER.load(atlasIndex);
+		}
+
+		final RawModel rawModel = ObjModelLoader.loadModel(objLocation, ATLAS_MANAGER);
+		if (rawModel == null) {
+			uploadedParts = new ArrayList<>();
+		} else {
+			uploadedParts = rawModel.upload(DEFAULT_MAPPING);
+		}
+	}
+
 	public static final class MaterialGroup {
 
 		private final MaterialProperties materialProperties;
@@ -54,7 +72,7 @@ public final class OptimizedModel {
 
 		@MappedMethod
 		public MaterialGroup(ShaderType shaderType, Identifier texture) {
-			materialProperties = new MaterialProperties(shaderType, texture);
+			materialProperties = new MaterialProperties(shaderType, texture, null);
 		}
 
 		@MappedMethod

@@ -21,8 +21,8 @@ import java.util.stream.IntStream;
 public final class RawMesh {
 
 	public final MaterialProperties materialProperties;
-	private final List<Vertex> vertices = new ArrayList<>();
-	private final List<Face> faces = new ArrayList<>();
+	public final List<Vertex> vertices = new ArrayList<>();
+	public final List<Face> faces = new ArrayList<>();
 
 	public RawMesh(MaterialProperties materialProperties) {
 		this.materialProperties = materialProperties;

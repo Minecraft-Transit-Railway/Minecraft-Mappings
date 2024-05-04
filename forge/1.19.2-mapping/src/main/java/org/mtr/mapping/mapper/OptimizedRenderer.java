@@ -25,9 +25,9 @@ public final class OptimizedRenderer {
 	}
 
 	@MappedMethod
-	public void queue(OptimizedModel optimizedModel, GraphicsHolder graphicsHolder, int light) {
+	public void queue(OptimizedModel optimizedModel, GraphicsHolder graphicsHolder, int color, int light) {
 		if (graphicsHolder.matrixStack != null) {
-			batchManager.queue(optimizedModel.uploadedParts, new VertexAttributeState(light, Utilities.copy(new Matrix4f(graphicsHolder.matrixStack.last().pose()))));
+			batchManager.queue(optimizedModel.uploadedParts, new VertexAttributeState(color, light, Utilities.copy(new Matrix4f(graphicsHolder.matrixStack.last().pose()))));
 		}
 	}
 
