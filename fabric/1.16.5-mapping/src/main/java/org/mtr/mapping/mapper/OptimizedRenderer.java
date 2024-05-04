@@ -1,8 +1,9 @@
 package org.mtr.mapping.mapper;
 
 import org.mtr.mapping.annotation.MappedMethod;
+import org.mtr.mapping.tool.DummyClass;
 
-public final class OptimizedRenderer {
+public final class OptimizedRenderer extends DummyClass {
 
 	@MappedMethod
 	public void beginReload() {

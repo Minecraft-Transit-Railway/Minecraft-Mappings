@@ -2,13 +2,19 @@ package org.mtr.mapping.mapper;
 
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.Identifier;
+import org.mtr.mapping.tool.DummyClass;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
-public final class OptimizedModel {
+public final class OptimizedModel extends DummyClass {
 
 	@MappedMethod
 	public OptimizedModel(List<MaterialGroup> materialGroups) {
+	}
+
+	@MappedMethod
+	public OptimizedModel(Identifier objLocation, @Nullable Identifier atlasIndex) {
 	}
 
 	public static final class MaterialGroup {

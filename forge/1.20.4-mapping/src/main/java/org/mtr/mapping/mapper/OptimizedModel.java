@@ -14,13 +14,14 @@ import org.mtr.mapping.render.vertex.CapturingVertexConsumer;
 import org.mtr.mapping.render.vertex.VertexAttributeMapping;
 import org.mtr.mapping.render.vertex.VertexAttributeSource;
 import org.mtr.mapping.render.vertex.VertexAttributeType;
+import org.mtr.mapping.tool.DummyClass;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public final class OptimizedModel {
+public final class OptimizedModel extends DummyClass {
 
 	final List<VertexArray> uploadedParts;
 	private static final AtlasManager ATLAS_MANAGER = new AtlasManager();

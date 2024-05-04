@@ -7,8 +7,9 @@ import org.mtr.mapping.render.shader.ShaderManager;
 import org.mtr.mapping.render.tool.GlStateTracker;
 import org.mtr.mapping.render.tool.Utilities;
 import org.mtr.mapping.render.vertex.VertexAttributeState;
+import org.mtr.mapping.tool.DummyClass;
 
-public final class OptimizedRenderer {
+public final class OptimizedRenderer extends DummyClass {
 
 	private final BatchManager batchManager = new BatchManager();
 	private final ShaderManager shaderManager = new ShaderManager();
