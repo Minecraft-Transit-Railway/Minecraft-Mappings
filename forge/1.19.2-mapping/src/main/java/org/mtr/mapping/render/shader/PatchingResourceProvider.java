@@ -32,11 +32,13 @@ public final class PatchingResourceProvider implements ResourceProvider {
 		if (resource.isEmpty()) {
 			return Optional.empty();
 		} else {
-			try (final InputStream inputStream = resource.get().open()) {
+			try {
+				final InputStream inputStream = resource.get().open();
 				final String returningContent;
 
 				if (newIdentifier.getPath().endsWith(".json")) {
 					final JsonObject dataObject = JsonParser.parseString(IOUtils.toString(inputStream, StandardCharsets.UTF_8)).getAsJsonObject();
+					inputStream.close();
 					dataObject.addProperty("vertex", dataObject.get("vertex").getAsString() + "_modelmat");
 					final JsonArray attributeArray = dataObject.get("attributes").getAsJsonArray();
 					for (int i = 0; i < 6 - attributeArray.size(); i++) {
@@ -46,6 +48,7 @@ public final class PatchingResourceProvider implements ResourceProvider {
 					returningContent = dataObject.toString();
 				} else if (newIdentifier.getPath().endsWith(".vsh")) {
 					returningContent = patchVertexShaderSource(IOUtils.toString(inputStream, StandardCharsets.UTF_8));
+					inputStream.close();
 				} else {
 					return resource;
 				}

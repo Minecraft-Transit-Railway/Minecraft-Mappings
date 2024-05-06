@@ -10,7 +10,6 @@ import net.minecraft.util.Identifier;
 import org.apache.commons.io.IOUtils;
 import org.mtr.mapping.holder.ResourceManager;
 import org.mtr.mapping.render.tool.GlStateTracker;
-import org.mtr.mapping.tool.DummyClass;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -33,29 +32,27 @@ public final class PatchingResourceProvider implements ResourceFactory {
 		if (resource == null) {
 			throw new IOException();
 		} else {
-			try (final InputStream inputStream = resource.getInputStream()) {
-				final String returningContent;
+			final InputStream inputStream = resource.getInputStream();
+			final String returningContent;
 
-				if (newIdentifier.getPath().endsWith(".json")) {
-					final JsonObject dataObject = new JsonParser().parse(IOUtils.toString(inputStream, StandardCharsets.UTF_8)).getAsJsonObject();
-					dataObject.addProperty("vertex", dataObject.get("vertex").getAsString() + "_modelmat");
-					final JsonArray attributeArray = dataObject.get("attributes").getAsJsonArray();
-					for (int i = 0; i < 6 - attributeArray.size(); i++) {
-						attributeArray.add("Dummy" + i);
-					}
-					attributeArray.add("ModelMat");
-					returningContent = dataObject.toString();
-				} else if (newIdentifier.getPath().endsWith(".vsh")) {
-					returningContent = patchVertexShaderSource(IOUtils.toString(inputStream, StandardCharsets.UTF_8));
-				} else {
-					return resource;
+			if (newIdentifier.getPath().endsWith(".json")) {
+				final JsonObject dataObject = new JsonParser().parse(IOUtils.toString(inputStream, StandardCharsets.UTF_8)).getAsJsonObject();
+				inputStream.close();
+				dataObject.addProperty("vertex", dataObject.get("vertex").getAsString() + "_modelmat");
+				final JsonArray attributeArray = dataObject.get("attributes").getAsJsonArray();
+				for (int i = 0; i < 6 - attributeArray.size(); i++) {
+					attributeArray.add("Dummy" + i);
 				}
-
-				return new ResourceImpl(resource.getResourcePackName(), identifier, new ByteArrayInputStream(returningContent.getBytes(StandardCharsets.UTF_8)), null);
-			} catch (Exception e) {
-				DummyClass.logException(e);
-				throw e;
+				attributeArray.add("ModelMat");
+				returningContent = dataObject.toString();
+			} else if (newIdentifier.getPath().endsWith(".vsh")) {
+				returningContent = patchVertexShaderSource(IOUtils.toString(inputStream, StandardCharsets.UTF_8));
+				inputStream.close();
+			} else {
+				return resource;
 			}
+
+			return new ResourceImpl(resource.getResourcePackName(), identifier, new ByteArrayInputStream(returningContent.getBytes(StandardCharsets.UTF_8)), null);
 		}
 	}
 
