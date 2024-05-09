@@ -53,7 +53,7 @@ public final class OptimizedModel extends DummyClass {
 	}
 
 	@MappedMethod
-	public OptimizedModel(Identifier objLocation, @Nullable Identifier atlasIndex) {
+	public OptimizedModel(Identifier objLocation, @Nullable Identifier atlasIndex, boolean flipTextureV) {
 		if (atlasIndex != null) {
 			ATLAS_MANAGER.load(atlasIndex);
 		}
@@ -62,6 +62,9 @@ public final class OptimizedModel extends DummyClass {
 		if (rawModel == null) {
 			uploadedParts = new ArrayList<>();
 		} else {
+			if (flipTextureV) {
+				rawModel.applyUVMirror(false, true);
+			}
 			uploadedParts = rawModel.upload(DEFAULT_MAPPING);
 		}
 	}

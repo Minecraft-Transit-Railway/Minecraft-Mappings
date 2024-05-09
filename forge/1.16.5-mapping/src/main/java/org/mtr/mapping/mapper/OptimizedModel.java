@@ -14,7 +14,7 @@ public final class OptimizedModel extends DummyClass {
 	}
 
 	@MappedMethod
-	public OptimizedModel(Identifier objLocation, @Nullable Identifier atlasIndex) {
+	public OptimizedModel(Identifier objLocation, @Nullable Identifier atlasIndex, boolean flipTextureV) {
 	}
 
 	public static final class MaterialGroup {

@@ -10,6 +10,7 @@ import org.mtr.mapping.tool.DummyClass;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public final class ResourceManagerHelper extends DummyClass {
@@ -41,6 +42,17 @@ public final class ResourceManagerHelper extends DummyClass {
 	public static void readAllResources(Identifier identifier, Consumer<InputStream> consumer) {
 		try {
 			MinecraftClient.getInstance().getResourceManager().getAllResources(identifier.data).forEach(resource -> readResource(resource, consumer));
+		} catch (Exception e) {
+			logException(e);
+		}
+	}
+
+	@MappedMethod
+	public static void readDirectory(String path, BiConsumer<Identifier, InputStream> consumer) {
+		try {
+			MinecraftClient.getInstance().getResourceManager()
+					.findAllResources(path, identifier -> true)
+					.forEach((identifier, resources) -> resources.forEach(resource -> readResource(resource, inputStream -> consumer.accept(new Identifier(identifier), inputStream))));
 		} catch (Exception e) {
 			logException(e);
 		}

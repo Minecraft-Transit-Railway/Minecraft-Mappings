@@ -63,7 +63,7 @@ public final class ObjModelLoader {
 				final Map<String, String> materialOptions = splitMaterialOptions(key);
 				final String materialGroupName = materialOptions.get("");
 				final OptimizedModel.ShaderType shaderType = OptimizedModel.ShaderType.valueOf(materialOptions.getOrDefault("#", "cutout").toUpperCase(Locale.ENGLISH));
-				final boolean flipV = materialOptions.getOrDefault("flipv", "0").equals("1");
+				final boolean flipTextureV = materialOptions.getOrDefault("flipv", "0").equals("1");
 				final Identifier texture;
 				final Integer color;
 
@@ -79,7 +79,7 @@ public final class ObjModelLoader {
 							texture = resolveRelativePath(objLocation, objMaterial.getMapKd(), ".png");
 						}
 						final FloatTuple kd = objMaterial.getKd();
-						color = mergeColor((int) (kd.getX() * 0xFF), (int) (kd.getY() * 0xFF), (int) (kd.getZ() * 0xFF), (int) (objMaterial.getD() * 0xFF));
+						color = kd == null ? mergeColor(0xFF, 0xFF, 0xFF, 0xFF) : mergeColor((int) (kd.getX() * 0xFF), (int) (kd.getY() * 0xFF), (int) (kd.getZ() * 0xFF), (int) (objMaterial.getD() * 0xFF));
 					}
 				} else if (objLocation != null) {
 					texture = materialGroupName.equals("_") ? new Identifier("") : resolveRelativePath(objLocation, materialGroupName, ".png");
@@ -110,7 +110,7 @@ public final class ObjModelLoader {
 					seVertex.position = new Vector3f(pos.getX(), pos.getY(), pos.getZ());
 					seVertex.normal = new Vector3f(normal.getX(), normal.getY(), normal.getZ());
 					seVertex.u = uv.getX();
-					seVertex.v = flipV ? 1 - uv.getY() : uv.getY();
+					seVertex.v = flipTextureV ? 1 - uv.getY() : uv.getY();
 					mesh.vertices.add(seVertex);
 				}
 
