@@ -25,6 +25,15 @@ public final class EnumHelper {
 		return SIGNATURES.contains(quickSerialize(executable));
 	}
 
+	@MappedMethod
+	public static <T extends Enum<T>> T valueOf(T defaultValue, String name) {
+		try {
+			return Enum.valueOf(defaultValue.getDeclaringClass(), name);
+		} catch (Exception e) {
+			return defaultValue;
+		}
+	}
+
 	private static String quickSerialize(Executable executable) {
 		final Type[] types = executable.getGenericParameterTypes();
 		final String[] typesString = new String[types.length];

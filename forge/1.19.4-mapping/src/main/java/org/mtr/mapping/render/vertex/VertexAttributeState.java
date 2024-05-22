@@ -16,13 +16,13 @@ import java.util.Objects;
 
 public final class VertexAttributeState {
 
-	private final Integer color;
-	private final Integer lightmapUV;
-	private final Vector3f position;
-	private final Float textureU, textureV;
-	private final Integer overlayUV;
-	private final Vector3f normal;
-	private final Matrix4f matrix4f;
+	public final Integer color;
+	public final Integer lightmapUV;
+	public final Vector3f position;
+	public final Float textureU, textureV;
+	public final Integer overlayUV;
+	public final Vector3f normal;
+	public final Matrix4f matrix4f;
 
 	public VertexAttributeState(int color, int lightmapUV, Matrix4f matrix4f) {
 		this.color = color;

@@ -1,6 +1,7 @@
 package org.mtr.mapping.render.obj;
 
 import de.javagl.obj.*;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mtr.mapping.holder.Identifier;
 import org.mtr.mapping.holder.Vector3f;
@@ -9,44 +10,39 @@ import org.mtr.mapping.mapper.ResourceManagerHelper;
 import org.mtr.mapping.render.batch.MaterialProperties;
 import org.mtr.mapping.render.model.Face;
 import org.mtr.mapping.render.model.RawMesh;
-import org.mtr.mapping.render.model.RawModel;
 import org.mtr.mapping.render.vertex.Vertex;
 import org.mtr.mapping.tool.DummyClass;
+import org.mtr.mapping.tool.EnumHelper;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 public final class ObjModelLoader {
 
-	@Nullable
-	public static RawModel loadModel(Identifier objLocation, AtlasManager atlasManager) {
-		final RawModel[] rawModel = {null};
+	public static Map<String, List<RawMesh>> loadModel(Identifier objLocation, AtlasManager atlasManager, boolean splitModel) {
+		final Map<String, List<RawMesh>> result = new HashMap<>();
 
 		ResourceManagerHelper.readResource(objLocation, inputStream -> {
+			final StringBuilder stringBuilder = new StringBuilder();
+
 			try {
-				final Obj sourceObj = ObjReader.read(inputStream);
-				final Map<String, Mtl> materials = loadMaterials(sourceObj, objLocation);
-				rawModel[0] = loadModel(sourceObj, objLocation, materials, atlasManager);
+				IOUtils.readLines(inputStream, StandardCharsets.UTF_8).forEach(line -> stringBuilder.append(line.replaceFirst("^o ", "g ")).append("\n"));
 			} catch (Exception e) {
 				DummyClass.logException(e);
 			}
-		});
 
-		return rawModel[0];
-	}
-
-	public static Map<String, RawModel> loadModels(Identifier objLocation, AtlasManager atlasManager) {
-		final Map<String, RawModel> result = new HashMap<>();
-
-		ResourceManagerHelper.readResource(objLocation, inputStream -> {
-			try {
-				final Obj sourceObj = ObjReader.read(inputStream);
+			try (final InputStream inputStreamNew = IOUtils.toInputStream(stringBuilder.toString(), StandardCharsets.UTF_8)) {
+				final Obj sourceObj = ObjReader.read(inputStreamNew);
 				final Map<String, Mtl> materials = loadMaterials(sourceObj, objLocation);
-				ObjSplitting.splitByGroups(sourceObj).forEach((key, obj) -> result.put(key, loadModel(obj, objLocation, materials, atlasManager)));
+				if (splitModel) {
+					ObjSplitting.splitByGroups(sourceObj).forEach((key, obj) -> result.put(key, loadModel(obj, objLocation, materials, atlasManager)));
+				} else {
+					result.put("", loadModel(sourceObj, objLocation, materials, atlasManager));
+				}
 			} catch (Exception e) {
 				DummyClass.logException(e);
 			}
@@ -55,14 +51,14 @@ public final class ObjModelLoader {
 		return result;
 	}
 
-	private static RawModel loadModel(Obj sourceObj, @Nullable Identifier objLocation, @Nullable Map<String, Mtl> materials, @Nullable AtlasManager atlasManager) {
-		final RawModel model = new RawModel();
+	private static List<RawMesh> loadModel(Obj sourceObj, @Nullable Identifier objLocation, @Nullable Map<String, Mtl> materials, @Nullable AtlasManager atlasManager) {
+		final List<RawMesh> rawMeshes = new ArrayList<>();
 
 		ObjSplitting.splitByMaterialGroups(sourceObj).forEach((key, obj) -> {
 			if (obj.getNumFaces() > 0) {
 				final Map<String, String> materialOptions = splitMaterialOptions(key);
 				final String materialGroupName = materialOptions.get("");
-				final OptimizedModel.ShaderType shaderType = OptimizedModel.ShaderType.valueOf(materialOptions.getOrDefault("#", "cutout").toUpperCase(Locale.ENGLISH));
+				final OptimizedModel.ShaderType shaderType = EnumHelper.valueOf(OptimizedModel.ShaderType.CUTOUT, materialOptions.getOrDefault("#", "").toUpperCase(Locale.ENGLISH));
 				final boolean flipTextureV = materialOptions.getOrDefault("flipv", "0").equals("1");
 				final Identifier texture;
 				final Integer color;
@@ -124,13 +120,11 @@ public final class ObjModelLoader {
 				}
 
 				mesh.validateVertexIndex();
-				model.append(mesh);
+				rawMeshes.add(mesh);
 			}
 		});
 
-		model.generateNormals();
-		model.distinct();
-		return model;
+		return rawMeshes;
 	}
 
 	private static Map<String, Mtl> loadMaterials(Obj sourceObj, Identifier objLocation) throws IOException {

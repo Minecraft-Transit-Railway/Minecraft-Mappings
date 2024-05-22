@@ -5,16 +5,24 @@ import org.mtr.mapping.holder.Identifier;
 import org.mtr.mapping.tool.DummyClass;
 
 import javax.annotation.Nullable;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class OptimizedModel extends DummyClass {
 
 	@MappedMethod
-	public OptimizedModel(List<MaterialGroup> materialGroups) {
+	public static OptimizedModel fromMaterialGroups(Collection<MaterialGroup> materialGroups) {
+		return new OptimizedModel();
 	}
 
 	@MappedMethod
-	public OptimizedModel(Identifier objLocation, @Nullable Identifier atlasIndex, boolean flipTextureV) {
+	public static OptimizedModel fromObjModels(Collection<ObjModel> objModels) {
+		return new OptimizedModel();
+	}
+
+	@MappedMethod
+	public OptimizedModel(OptimizedModel... optimizedModels) {
 	}
 
 	public static final class MaterialGroup {
@@ -25,6 +33,18 @@ public final class OptimizedModel extends DummyClass {
 
 		@MappedMethod
 		public void addCube(ModelPartExtension modelPart, double x, double y, double z, boolean flipped, int light) {
+		}
+	}
+
+	public static final class ObjModel {
+
+		@MappedMethod
+		public static Map<String, ObjModel> loadModel(Identifier objLocation, @Nullable Identifier atlasIndex, boolean splitModel, boolean flipTextureV) {
+			return new HashMap<>();
+		}
+
+		@MappedMethod
+		public void addTransformation(ShaderType shaderType, double x, double y, double z, boolean flipped) {
 		}
 	}
 
