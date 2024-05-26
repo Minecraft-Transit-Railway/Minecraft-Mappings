@@ -102,12 +102,12 @@ public final class OptimizedModel extends DummyClass {
 
 	public static final class ObjModel {
 
-		public float minX;
-		public float minY;
-		public float minZ;
-		public float maxX;
-		public float maxY;
-		public float maxZ;
+		private final float minX;
+		private final float minY;
+		private final float minZ;
+		private final float maxX;
+		private final float maxY;
+		private final float maxZ;
 		private final List<RawMesh> rawMeshes;
 		private final RawModel rawModel = new RawModel();
 
@@ -167,6 +167,36 @@ public final class OptimizedModel extends DummyClass {
 				}
 				rawModel.append(newRawMesh);
 			});
+		}
+
+		@MappedMethod
+		public float getMinX() {
+			return minX;
+		}
+
+		@MappedMethod
+		public float getMinY() {
+			return minY;
+		}
+
+		@MappedMethod
+		public float getMinZ() {
+			return minZ;
+		}
+
+		@MappedMethod
+		public float getMaxX() {
+			return maxX;
+		}
+
+		@MappedMethod
+		public float getMaxY() {
+			return maxY;
+		}
+
+		@MappedMethod
+		public float getMaxZ() {
+			return maxZ;
 		}
 	}
 

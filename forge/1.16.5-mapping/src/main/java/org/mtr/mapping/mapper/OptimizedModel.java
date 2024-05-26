@@ -46,6 +46,36 @@ public final class OptimizedModel extends DummyClass {
 		@MappedMethod
 		public void addTransformation(ShaderType shaderType, double x, double y, double z, boolean flipped) {
 		}
+
+		@MappedMethod
+		public float getMinX() {
+			return 0;
+		}
+
+		@MappedMethod
+		public float getMinY() {
+			return 0;
+		}
+
+		@MappedMethod
+		public float getMinZ() {
+			return 0;
+		}
+
+		@MappedMethod
+		public float getMaxX() {
+			return 0;
+		}
+
+		@MappedMethod
+		public float getMaxY() {
+			return 0;
+		}
+
+		@MappedMethod
+		public float getMaxZ() {
+			return 0;
+		}
 	}
 
 	public enum ShaderType {
