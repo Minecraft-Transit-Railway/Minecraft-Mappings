@@ -47,6 +47,7 @@ public class HalfDoorBlockExtension extends DoorBlockAbstractMapping implements 
 		return blockSettings;
 	}
 
+	@MappedMethod
 	@Override
 	public void onPlaced2(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
 
