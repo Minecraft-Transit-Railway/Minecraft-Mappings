@@ -1,0 +1,56 @@
+package org.mtr.mapping.mapper;
+
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.material.Material;
+import org.mtr.mapping.annotation.MappedMethod;
+import org.mtr.mapping.holder.*;
+import org.mtr.mapping.tool.HolderBase;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.function.Consumer;
+
+public class HalfDoorBlockExtension extends DoorBlockAbstractMapping implements BlockHelper {
+
+	@MappedMethod
+	public HalfDoorBlockExtension(boolean canOpenByHand, Consumer<BlockSettings> consumer) {
+		super(getBlockSettings(canOpenByHand, consumer));
+	}
+
+	@Deprecated
+	@Override
+	protected final void createBlockStateDefinition(StateDefinition.Builder<Block, net.minecraft.world.level.block.state.BlockState> builder) {
+		createBlockStateDefinitionHelper(builder);
+	}
+
+	@Deprecated
+	@Override
+	public final void appendHoverText(net.minecraft.world.item.ItemStack stack, @Nullable BlockGetter world, List<Component> tooltipList, TooltipFlag options) {
+		appendTooltipHelper(new ItemStack(stack), world == null ? null : new BlockView(world), tooltipList, new TooltipContext(options));
+	}
+
+	@MappedMethod
+	@Override
+	public void addBlockProperties(List<HolderBase<?>> properties) {
+		properties.add(new Property<>(FACING));
+		properties.add(new Property<>(OPEN));
+		properties.add(new Property<>(HINGE));
+		properties.add(new Property<>(POWERED));
+		properties.add(new Property<>(HALF));
+	}
+
+	private static BlockSettings getBlockSettings(boolean canOpenWithHand, Consumer<BlockSettings> consumer) {
+		final BlockSettings blockSettings = new BlockSettings(Properties.of(canOpenWithHand ? Material.WOOD : Material.METAL));
+		consumer.accept(blockSettings);
+		return blockSettings;
+	}
+
+	@Override
+	public void onPlaced2(World arg0, BlockPos arg1, BlockState arg2, LivingEntity arg3, ItemStack arg4) {
+
+	}
+}
