@@ -4,6 +4,8 @@ plugins {
 	id "java"
 }
 
+final BuildTools buildTools = new BuildTools(project, "")
+
 repositories {
 	mavenCentral()
 }
@@ -28,7 +30,7 @@ java {
 
 build {
 	doLast {
-		new BuildTools(project, "").copyBuildFile(false)
+		buildTools.copyBuildFile(false)
 	}
 }
 

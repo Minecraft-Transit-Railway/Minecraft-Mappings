@@ -22,7 +22,6 @@ subprojects {
 	dependencies {
 		implementation project(":common")
 		minecraft "net.minecraftforge:forge:${minecraftVersion}-${buildTools.getForgeVersion()}"
-		implementation "de.javagl:obj:+"
 		testImplementation "org.junit.jupiter:junit-jupiter-api:+"
 		testImplementation "com.google.code.gson:gson:+"
 		testImplementation "org.reflections:reflections:+"

@@ -3,6 +3,7 @@ package org.mtr.mapping.render.model;
 import org.lwjgl.opengl.GL11;
 import org.mtr.mapping.holder.Matrix4f;
 import org.mtr.mapping.holder.Vector3f;
+import org.mtr.mapping.mapper.OptimizedModel;
 import org.mtr.mapping.render.batch.MaterialProperties;
 import org.mtr.mapping.render.object.IndexBuffer;
 import org.mtr.mapping.render.object.VertexBuffer;
@@ -26,6 +27,16 @@ public final class RawMesh {
 
 	public RawMesh(MaterialProperties materialProperties) {
 		this.materialProperties = materialProperties;
+	}
+
+	public RawMesh(OptimizedModel.ShaderType shaderType, RawMesh rawMesh) {
+		if (rawMesh.materialProperties.shaderType == OptimizedModel.ShaderType.CUTOUT) {
+			materialProperties = new MaterialProperties(shaderType, rawMesh.materialProperties.getTexture(), rawMesh.materialProperties.vertexAttributeState.color);
+		} else {
+			materialProperties = rawMesh.materialProperties;
+		}
+		rawMesh.vertices.forEach(vertex -> vertices.add(new Vertex(vertex)));
+		rawMesh.faces.forEach(face -> faces.add(new Face(face)));
 	}
 
 	public void append(RawMesh nextMesh) {

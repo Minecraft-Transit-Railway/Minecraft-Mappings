@@ -20,6 +20,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public final class BuildTools {
 
@@ -93,6 +95,48 @@ public final class BuildTools {
 						}
 					}
 				});
+			}
+		}
+
+		if (isCommon) {
+			final Path libraryPath = path.resolve("src/main/java/de/javagl/obj");
+			try {
+				FileUtils.copyURLToFile(new URL("https://github.com/javagl/Obj/archive/refs/heads/master.zip"), libraryPath.resolve("master.zip").toFile());
+				try (final ZipInputStream zipInputStream = new ZipInputStream(Files.newInputStream(libraryPath.resolve("master.zip")))) {
+					ZipEntry zipEntry = zipInputStream.getNextEntry();
+					while (zipEntry != null) {
+						final Path zipPath = Paths.get(zipEntry.getName());
+						if (!zipEntry.isDirectory() && zipPath.startsWith("Obj-master/src/main/java/de/javagl/obj")) {
+							final String fileName = zipPath.getFileName().toString();
+							final String content = IOUtils.toString(zipInputStream, StandardCharsets.UTF_8);
+							final String newContent;
+							switch (fileName) {
+								case "DefaultObj.java":
+									newContent = appendAfter(
+											content,
+											"startedGroupNames.put(face, nextActiveGroupNames);", "startedMaterialGroupNames.put(face, activeMaterialGroupName);"
+									);
+									break;
+								case "ObjReader.java":
+									newContent = appendAfter(
+											content,
+											"ObjFaceParser objFaceParser = new ObjFaceParser();", "String groupOrObject = \"\";",
+											"case \"g\":", "case \"o\": if (!groupOrObject.equals(identifier) && !groupOrObject.isEmpty()) break;",
+											"output.setActiveGroupNames(Arrays.asList(groupNames));", "groupOrObject = identifier;"
+									);
+									break;
+								default:
+									newContent = content;
+									break;
+							}
+							Files.write(libraryPath.resolve(fileName), newContent.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+						}
+						zipEntry = zipInputStream.getNextEntry();
+					}
+					zipInputStream.closeEntry();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -380,6 +424,14 @@ public final class BuildTools {
 		final List<List<MethodInfo>> additionalMethodGroups = new ArrayList<>();
 		additionalMethodNameGroups.forEach(additionalMethodNameGroup -> additionalMethodGroups.add(methods.stream().filter(method -> additionalMethodNameGroup.contains(method.name)).collect(Collectors.toList())));
 		return additionalMethodGroups;
+	}
+
+	private static String appendAfter(String string, String... replacements) {
+		String newString = string;
+		for (int i = 1; i < replacements.length; i += 2) {
+			newString = newString.replace(replacements[i - 1], replacements[i - 1] + replacements[i]);
+		}
+		return newString;
 	}
 
 	@FunctionalInterface

@@ -102,13 +102,29 @@ public final class OptimizedModel extends DummyClass {
 
 	public static final class ObjModel {
 
+		public float minX;
+		public float minY;
+		public float minZ;
+		public float maxX;
+		public float maxY;
+		public float maxZ;
 		private final List<RawMesh> rawMeshes;
 		private final RawModel rawModel = new RawModel();
 
-		private ObjModel(List<RawMesh> rawMeshes, boolean flipTextureV) {
+		private ObjModel(
+				List<RawMesh> rawMeshes, boolean flipTextureV,
+				float minX, float minY, float minZ,
+				float maxX, float maxY, float maxZ
+		) {
 			if (flipTextureV) {
 				rawMeshes.forEach(rawMesh -> rawMesh.applyUVMirror(false, true));
 			}
+			this.minX = minX;
+			this.minY = minY;
+			this.minZ = minZ;
+			this.maxX = maxX;
+			this.maxY = maxY;
+			this.maxZ = maxZ;
 			this.rawMeshes = rawMeshes;
 		}
 
@@ -120,17 +136,31 @@ public final class OptimizedModel extends DummyClass {
 
 			final Map<String, ObjModel> objModels = new HashMap<>();
 			ObjModelLoader.loadModel(objLocation, ATLAS_MANAGER, splitModel).forEach((key, rawMeshes) -> {
-				rawMeshes.forEach(rawMesh -> rawMesh.applyRotation(new Vector3f(1, 0, 0), 180));
-				objModels.put(key, new ObjModel(rawMeshes, flipTextureV));
+				final float[] bounds = {Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE};
+				rawMeshes.forEach(rawMesh -> {
+					rawMesh.applyRotation(new Vector3f(1, 0, 0), 180);
+					rawMesh.vertices.forEach(vertex -> {
+						final float x = vertex.position.getX();
+						final float y = vertex.position.getY();
+						final float z = vertex.position.getZ();
+						bounds[0] = Math.min(bounds[0], x);
+						bounds[1] = Math.min(bounds[1], y);
+						bounds[2] = Math.min(bounds[2], z);
+						bounds[3] = Math.max(bounds[3], x);
+						bounds[4] = Math.max(bounds[4], y);
+						bounds[5] = Math.max(bounds[5], z);
+					});
+				});
+				objModels.put(key, new ObjModel(rawMeshes, flipTextureV, bounds[0], bounds[1], bounds[2], bounds[3], bounds[4], bounds[5]));
 			});
+
 			return objModels;
 		}
 
 		@MappedMethod
 		public void addTransformation(ShaderType shaderType, double x, double y, double z, boolean flipped) {
 			rawMeshes.forEach(rawMesh -> {
-				final RawMesh newRawMesh = new RawMesh(new MaterialProperties(shaderType, rawMesh.materialProperties.getTexture(), rawMesh.materialProperties.vertexAttributeState.color));
-				newRawMesh.append(rawMesh);
+				final RawMesh newRawMesh = new RawMesh(shaderType, rawMesh);
 				newRawMesh.applyTranslation((float) x, (float) y, (float) z);
 				if (flipped) {
 					newRawMesh.applyRotation(new Vector3f(0, 1, 0), 180);

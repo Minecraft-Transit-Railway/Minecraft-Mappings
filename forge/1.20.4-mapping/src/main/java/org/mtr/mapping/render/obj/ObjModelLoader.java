@@ -1,7 +1,6 @@
 package org.mtr.mapping.render.obj;
 
 import de.javagl.obj.*;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mtr.mapping.holder.Identifier;
 import org.mtr.mapping.holder.Vector3f;
@@ -12,12 +11,9 @@ import org.mtr.mapping.render.model.Face;
 import org.mtr.mapping.render.model.RawMesh;
 import org.mtr.mapping.render.vertex.Vertex;
 import org.mtr.mapping.tool.DummyClass;
-import org.mtr.mapping.tool.EnumHelper;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.util.*;
 
@@ -27,16 +23,8 @@ public final class ObjModelLoader {
 		final Map<String, List<RawMesh>> result = new HashMap<>();
 
 		ResourceManagerHelper.readResource(objLocation, inputStream -> {
-			final StringBuilder stringBuilder = new StringBuilder();
-
 			try {
-				IOUtils.readLines(inputStream, StandardCharsets.UTF_8).forEach(line -> stringBuilder.append(line.replaceFirst("^o ", "g ")).append("\n"));
-			} catch (Exception e) {
-				DummyClass.logException(e);
-			}
-
-			try (final InputStream inputStreamNew = IOUtils.toInputStream(stringBuilder.toString(), StandardCharsets.UTF_8)) {
-				final Obj sourceObj = ObjReader.read(inputStreamNew);
+				final Obj sourceObj = ObjReader.read(inputStream);
 				final Map<String, Mtl> materials = loadMaterials(sourceObj, objLocation);
 				if (splitModel) {
 					ObjSplitting.splitByGroups(sourceObj).forEach((key, obj) -> result.put(key, loadModel(obj, objLocation, materials, atlasManager)));
@@ -58,7 +46,7 @@ public final class ObjModelLoader {
 			if (obj.getNumFaces() > 0) {
 				final Map<String, String> materialOptions = splitMaterialOptions(key);
 				final String materialGroupName = materialOptions.get("");
-				final OptimizedModel.ShaderType shaderType = EnumHelper.valueOf(OptimizedModel.ShaderType.CUTOUT, materialOptions.getOrDefault("#", "").toUpperCase(Locale.ENGLISH));
+				final OptimizedModel.ShaderType shaderType = legacyMapping(materialOptions.getOrDefault("#", ""));
 				final boolean flipTextureV = materialOptions.getOrDefault("flipv", "0").equals("1");
 				final Identifier texture;
 				final Integer color;
@@ -181,6 +169,21 @@ public final class ObjModelLoader {
 		}
 
 		return new Identifier(baseFile.getNamespace(), FileSystems.getDefault().getPath(baseFile.getPath()).getParent().resolve(result).normalize().toString().replace('\\', '/'));
+	}
+
+	private static OptimizedModel.ShaderType legacyMapping(String type) {
+		switch (type.toLowerCase(Locale.ENGLISH)) {
+			case "light":
+				return OptimizedModel.ShaderType.CUTOUT_GLOWING;
+			case "always_on_light":
+				return OptimizedModel.ShaderType.TRANSLUCENT_GLOWING;
+			case "interior":
+				return OptimizedModel.ShaderType.CUTOUT_BRIGHT;
+			case "interior_translucent":
+				return OptimizedModel.ShaderType.TRANSLUCENT_BRIGHT;
+			default:
+				return OptimizedModel.ShaderType.CUTOUT;
+		}
 	}
 
 	private static class ZeroFloatTuple implements FloatTuple {
