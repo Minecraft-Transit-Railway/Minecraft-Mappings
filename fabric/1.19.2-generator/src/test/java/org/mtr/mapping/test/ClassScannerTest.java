@@ -1,5 +1,6 @@
 package org.mtr.mapping.test;
 
+import net.minecraft.MinecraftVersion;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -162,6 +163,7 @@ public final class ClassScannerTest {
 		scanner.put("Matrix4f", Matrix4f.class);
 		scanner.put("MinecraftClient", MinecraftClient.class, "ask", "askFallible");
 		scanner.put("MinecraftServer", MinecraftServer.class, "ask", "askFallible");
+		scanner.put("MinecraftVersion", MinecraftVersion.class);
 		scanner.put("Mirror", BlockMirror.class);
 		scanner.put("ModelPart", ModelPart.class);
 		scanner.put("MutableText", MutableText.class);

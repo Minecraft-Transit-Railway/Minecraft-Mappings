@@ -1,7 +1,9 @@
 package org.mtr.mapping.mapper;
 
+import net.minecraft.MinecraftVersion;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.Resource;
+import net.minecraft.resource.ResourceType;
 import org.apache.commons.io.IOUtils;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.Identifier;
@@ -64,5 +66,15 @@ public final class ResourceManagerHelper extends DummyClass {
 		} catch (Exception e) {
 			logException(e);
 		}
+	}
+
+	@MappedMethod
+	public static int getResourcePackVersion() {
+		return MinecraftVersion.create().getResourceVersion(ResourceType.CLIENT_RESOURCES);
+	}
+
+	@MappedMethod
+	public static int getDataPackVersion() {
+		return MinecraftVersion.create().getResourceVersion(ResourceType.SERVER_DATA);
 	}
 }

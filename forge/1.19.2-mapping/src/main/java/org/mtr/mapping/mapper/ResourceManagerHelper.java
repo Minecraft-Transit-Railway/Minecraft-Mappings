@@ -1,5 +1,7 @@
 package org.mtr.mapping.mapper;
 
+import com.mojang.bridge.game.PackType;
+import net.minecraft.DetectedVersion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.Resource;
 import org.apache.commons.io.IOUtils;
@@ -64,5 +66,15 @@ public final class ResourceManagerHelper extends DummyClass {
 		} catch (Exception e) {
 			logException(e);
 		}
+	}
+
+	@MappedMethod
+	public static int getResourcePackVersion() {
+		return DetectedVersion.tryDetectVersion().getPackVersion(PackType.RESOURCE);
+	}
+
+	@MappedMethod
+	public static int getDataPackVersion() {
+		return DetectedVersion.tryDetectVersion().getPackVersion(PackType.DATA);
 	}
 }

@@ -7,6 +7,7 @@ import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 import net.minecraft.ChatFormatting;
+import net.minecraft.DetectedVersion;
 import net.minecraft.Util;
 import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
@@ -198,6 +199,7 @@ public final class ClassScannerTest {
 		scanner.put("Matrix4f", Matrix4f.class);
 		scanner.put("MinecraftClient", Minecraft.class, "ask", "askEither");
 		scanner.put("MinecraftServer", MinecraftServer.class, "ask", "askEither");
+		scanner.put("MinecraftVersion", DetectedVersion.class);
 		scanner.put("Mirror", Mirror.class);
 		scanner.put("ModelPart", ModelPart.class);
 		scanner.put("MutableText", MutableComponent.class);

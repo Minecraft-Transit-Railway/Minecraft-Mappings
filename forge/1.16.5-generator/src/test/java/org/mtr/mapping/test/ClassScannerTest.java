@@ -170,6 +170,7 @@ public final class ClassScannerTest {
 		scanner.put("Matrix4f", Matrix4f.class);
 		scanner.put("MinecraftClient", Minecraft.class, "ask", "askEither");
 		scanner.put("MinecraftServer", MinecraftServer.class, "ask", "askEither");
+		scanner.put("MinecraftVersion", MinecraftVersion.class);
 		scanner.put("Mirror", Mirror.class);
 		scanner.put("ModelPart", ModelRenderer.class);
 		scanner.put("MutableText", IFormattableTextComponent.class);
