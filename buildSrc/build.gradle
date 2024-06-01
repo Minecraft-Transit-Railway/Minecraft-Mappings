@@ -1,12 +1,12 @@
 repositories {
 	mavenCentral()
-	maven { url "https://jitpack.io" }
+	flatDir { dirs "../libs" }
 }
 
 dependencies {
 	implementation "com.google.code.gson:gson:+"
 	implementation "commons-io:commons-io:+"
-	implementation "com.github.jonafanho:Minecraft-Mod-API-Tools:master-SNAPSHOT"
+	implementation "org.mtr:Minecraft-Mod-API-Tools:0.0.1"
 }
 
 java {
