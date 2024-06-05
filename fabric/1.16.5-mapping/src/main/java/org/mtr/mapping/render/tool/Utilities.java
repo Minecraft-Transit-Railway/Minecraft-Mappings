@@ -25,6 +25,30 @@ public final class Utilities {
         return matrix4f;
     }
 
+    public static Matrix4f create(float m00, float m01, float m02, float m03,
+                                  float m10, float m11, float m12, float m13,
+                                  float m20, float m21, float m22, float m23,
+                                  float m30, float m31, float m32, float m33) {
+        Matrix4f matrix4f = new Matrix4f();
+        matrix4f.data.a00 = m00;
+        matrix4f.data.a01 = m10;
+        matrix4f.data.a02 = m20;
+        matrix4f.data.a03 = m30;
+        matrix4f.data.a10 = m01;
+        matrix4f.data.a11 = m11;
+        matrix4f.data.a12 = m21;
+        matrix4f.data.a13 = m31;
+        matrix4f.data.a20 = m02;
+        matrix4f.data.a21 = m12;
+        matrix4f.data.a22 = m22;
+        matrix4f.data.a23 = m32;
+        matrix4f.data.a30 = m03;
+        matrix4f.data.a31 = m13;
+        matrix4f.data.a32 = m23;
+        matrix4f.data.a33 = m33;
+        return matrix4f;
+    }
+
     public static org.mtr.mapping.holder.Matrix3f create(Matrix4f src){
         return new org.mtr.mapping.holder.Matrix3f(new Matrix3f(src.data));
     }

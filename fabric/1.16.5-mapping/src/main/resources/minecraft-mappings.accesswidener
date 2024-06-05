@@ -1,3 +1,19 @@
 accessWidener v2 named
 transitive-accessible method net/minecraft/client/render/RenderLayer of (Ljava/lang/String;Lnet/minecraft/client/render/VertexFormat;IIZZLnet/minecraft/client/render/RenderLayer$MultiPhaseParameters;)Lnet/minecraft/client/render/RenderLayer$MultiPhase;
 transitive-accessible field net/minecraft/client/render/RenderLayer$MultiPhase phases Lnet/minecraft/client/render/RenderLayer$MultiPhaseParameters;
+transitive-accessible field net/minecraft/util/math/Matrix4f a00 F
+transitive-accessible field net/minecraft/util/math/Matrix4f a01 F
+transitive-accessible field net/minecraft/util/math/Matrix4f a02 F
+transitive-accessible field net/minecraft/util/math/Matrix4f a03 F
+transitive-accessible field net/minecraft/util/math/Matrix4f a10 F
+transitive-accessible field net/minecraft/util/math/Matrix4f a11 F
+transitive-accessible field net/minecraft/util/math/Matrix4f a12 F
+transitive-accessible field net/minecraft/util/math/Matrix4f a13 F
+transitive-accessible field net/minecraft/util/math/Matrix4f a20 F
+transitive-accessible field net/minecraft/util/math/Matrix4f a21 F
+transitive-accessible field net/minecraft/util/math/Matrix4f a22 F
+transitive-accessible field net/minecraft/util/math/Matrix4f a23 F
+transitive-accessible field net/minecraft/util/math/Matrix4f a30 F
+transitive-accessible field net/minecraft/util/math/Matrix4f a31 F
+transitive-accessible field net/minecraft/util/math/Matrix4f a32 F
+transitive-accessible field net/minecraft/util/math/Matrix4f a33 F
