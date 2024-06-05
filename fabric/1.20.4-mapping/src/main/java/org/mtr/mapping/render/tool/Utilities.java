@@ -1,5 +1,6 @@
 package org.mtr.mapping.render.tool;
 
+import org.joml.Matrix3f;
 import org.mtr.mapping.holder.Matrix4f;
 import org.mtr.mapping.holder.Vector3f;
 
@@ -15,6 +16,14 @@ public final class Utilities {
 		final Matrix4f matrix4f = new Matrix4f();
 		matrix4f.data.identity();
 		return matrix4f;
+	}
+
+	public static org.mtr.mapping.holder.Matrix3f create(Matrix4f src){
+		return new org.mtr.mapping.holder.Matrix3f(new Matrix3f(src.data));
+	}
+
+	public static org.mtr.mapping.holder.Matrix3f copy(org.mtr.mapping.holder.Matrix3f src){
+		return new org.mtr.mapping.holder.Matrix3f(new Matrix3f(src.data));
 	}
 
 	public static Matrix4f copy(Matrix4f matrix4f) {
@@ -55,5 +64,17 @@ public final class Utilities {
 
 	public static boolean canUseCustomShader() {
 		return !GlStateTracker.isGl4ES(); // TODO and if shader pack is not in use
+	}
+
+	public static void mul(org.mtr.mapping.holder.Matrix3f src, org.mtr.mapping.holder.Matrix3f dest){
+		src.data.mul(dest.data);
+	}
+
+	public static void mul(Matrix4f src, Matrix4f dest){
+		src.data.mul(dest.data);
+	}
+
+	public static void mul(org.mtr.mapping.holder.Vector4f src, Matrix4f dest){
+		src.data.mul(dest.data);
 	}
 }

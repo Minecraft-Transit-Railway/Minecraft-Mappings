@@ -19,6 +19,14 @@ public final class Utilities {
 		return matrix4f;
 	}
 
+	public static org.mtr.mapping.holder.Matrix3f create(Matrix4f src){
+		return new org.mtr.mapping.holder.Matrix3f(new Matrix3f(src.data));
+	}
+
+	public static org.mtr.mapping.holder.Matrix3f copy(org.mtr.mapping.holder.Matrix3f src){
+		return new org.mtr.mapping.holder.Matrix3f(new Matrix3f(src.data));
+	}
+
 	public static Matrix4f copy(Matrix4f matrix4f) {
 		return new Matrix4f(new net.minecraft.util.math.Matrix4f(matrix4f.data));
 	}
@@ -45,5 +53,17 @@ public final class Utilities {
 
 	public static boolean canUseCustomShader() {
 		return !GlStateTracker.isGl4ES(); // TODO and if shader pack is not in use
+	}
+
+	public static void mul(org.mtr.mapping.holder.Matrix3f src, org.mtr.mapping.holder.Matrix3f dest){
+		src.data.multiply(dest.data);
+	}
+
+	public static void mul(Matrix4f src, Matrix4f dest){
+		src.data.multiply(dest.data);
+	}
+
+	public static void mul(org.mtr.mapping.holder.Vector4f src, Matrix4f dest){
+		src.data.transform(dest.data);
 	}
 }
