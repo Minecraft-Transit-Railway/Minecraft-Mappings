@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
+import com.mojang.math.Vector4f;
 import net.minecraft.ChatFormatting;
 import net.minecraft.DetectedVersion;
 import net.minecraft.Util;
@@ -253,6 +254,7 @@ public final class ClassScannerTest {
 		scanner.put("Vector3d", Vec3.class);
 		scanner.put("Vector3f", Vector3f.class);
 		scanner.put("Vector3i", Vec3i.class);
+		scanner.put("Vector4f", Vector4f.class);
 		scanner.put("VertexFormat", VertexFormat.class);
 		scanner.put("VertexFormatElement", VertexFormatElement.class);
 		scanner.put("VertexFormats", DefaultVertexFormat.class, "VertexFormats");

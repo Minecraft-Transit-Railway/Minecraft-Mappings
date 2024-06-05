@@ -84,6 +84,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.junit.jupiter.api.Test;
 
 public final class ClassScannerTest {
@@ -221,6 +222,7 @@ public final class ClassScannerTest {
 		scanner.put("Vector3d", Vec3d.class);
 		scanner.put("Vector3f", Vector3f.class);
 		scanner.put("Vector3i", Vec3i.class);
+		scanner.put("Vector4f", Vector4f.class);
 		scanner.put("VertexFormat", VertexFormat.class);
 		scanner.put("VertexFormatElement", VertexFormatElement.class);
 		scanner.put("VertexFormats", VertexFormats.class, "VertexFormats");

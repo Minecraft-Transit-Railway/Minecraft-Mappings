@@ -219,6 +219,7 @@ public final class ClassScannerTest {
 		scanner.put("Vector3d", Vec3d.class);
 		scanner.put("Vector3f", Vec3f.class);
 		scanner.put("Vector3i", Vec3i.class);
+		scanner.put("Vector4f", Vector4f.class);
 		scanner.put("VertexFormat", VertexFormat.class);
 		scanner.put("VertexFormatElement", VertexFormatElement.class);
 		scanner.put("VertexFormats", VertexFormats.class, "VertexFormats");
