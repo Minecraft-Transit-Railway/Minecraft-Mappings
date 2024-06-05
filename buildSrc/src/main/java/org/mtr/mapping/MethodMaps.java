@@ -75,6 +75,8 @@ public interface MethodMaps {
 		addMethodMap1.add("ClientWorld|ServerWorld|World", "isWater", "isWaterAt");
 		addMethodMap1.add("ClientWorld|ServerWorld|World", "spawnEntity", "addFreshEntity");
 		addMethodMap1.add("ClientWorld|ServerWorld|World", "updateNeighbors", "updateNeighborsAt");
+		addMethodMap1.add("World", "canSetBlock","isLoaded");
+		addMethodMap1.add("World", "isReceivingRedstonePower", "hasNeighborSignal");
 		addMethodMap1.add("CompoundTag", "getSize", "size");
 		addMethodMap1.add("Direction", "byId", "from3DDataValue");
 		addMethodMap1.add("Direction", "fromHorizontal", "from2DDataValue");
