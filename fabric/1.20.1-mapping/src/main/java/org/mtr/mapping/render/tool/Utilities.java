@@ -12,6 +12,12 @@ public final class Utilities {
 		return (light >>> 16) | (((short) light) << 16);
 	}
 
+	public static org.mtr.mapping.holder.Matrix3f createMatrix3f() {
+		final org.mtr.mapping.holder.Matrix3f matrix3f = new org.mtr.mapping.holder.Matrix3f();
+		matrix3f.data.identity();
+		return matrix3f;
+	}
+
 	public static Matrix4f create() {
 		final Matrix4f matrix4f = new Matrix4f();
 		matrix4f.data.identity();
