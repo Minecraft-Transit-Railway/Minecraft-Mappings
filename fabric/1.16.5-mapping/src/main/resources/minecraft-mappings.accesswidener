@@ -17,3 +17,5 @@ transitive-accessible field net/minecraft/util/math/Matrix4f a30 F
 transitive-accessible field net/minecraft/util/math/Matrix4f a31 F
 transitive-accessible field net/minecraft/util/math/Matrix4f a32 F
 transitive-accessible field net/minecraft/util/math/Matrix4f a33 F
+transitive-extendable class net/minecraft/client/render/RenderLayer$MultiPhase
+transitive-accessible method net/minecraft/client/render/RenderLayer$MultiPhase <init> (Ljava/lang/String;Lnet/minecraft/client/render/VertexFormat;IIZZLnet/minecraft/client/render/RenderLayer$MultiPhaseParameters;)V

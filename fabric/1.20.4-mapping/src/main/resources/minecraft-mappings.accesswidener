@@ -2,3 +2,5 @@ accessWidener v2 named
 transitive-accessible method net/minecraft/client/gui/widget/CheckboxWidget <init> (IILnet/minecraft/text/Text;Lnet/minecraft/client/font/TextRenderer;ZLnet/minecraft/client/gui/widget/CheckboxWidget$Callback;)V
 transitive-accessible method net/minecraft/client/render/RenderLayer of (Ljava/lang/String;Lnet/minecraft/client/render/VertexFormat;Lnet/minecraft/client/render/VertexFormat$DrawMode;IZZLnet/minecraft/client/render/RenderLayer$MultiPhaseParameters;)Lnet/minecraft/client/render/RenderLayer$MultiPhase;
 transitive-accessible field net/minecraft/client/render/RenderLayer$MultiPhase phases Lnet/minecraft/client/render/RenderLayer$MultiPhaseParameters;
+transitive-extendable class net/minecraft/client/render/RenderLayer$MultiPhase
+transitive-accessible method net/minecraft/client/render/RenderLayer$MultiPhase <init> (Ljava/lang/String;Lnet/minecraft/client/render/VertexFormat;Lnet/minecraft/client/render/VertexFormat$DrawMode;IZZLnet/minecraft/client/render/RenderLayer$MultiPhaseParameters;)V
