@@ -1,7 +1,9 @@
 package org.mtr.mapping.test;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.IRenderCall;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.advancements.FunctionManager;
 import net.minecraft.block.*;
 import net.minecraft.block.material.MaterialColor;
@@ -272,6 +274,9 @@ public final class ClassScannerTest {
 		scanner.putInterface("PressAction", Button.IPressable.class);
 		scanner.putInterface("StringIdentifiable", IStringSerializable.class);
 		scanner.putInterface("TickableSoundInstance", ITickableSound.class);
+		scanner.putInterface("VertexConsumer", IVertexBuilder.class);
+		scanner.putInterface("VertexConsumerProvider", IRenderTypeBuffer.class);
+		scanner.putInterface("RenderCall", IRenderCall.class);
 		scanner.generate();
 	}
 }

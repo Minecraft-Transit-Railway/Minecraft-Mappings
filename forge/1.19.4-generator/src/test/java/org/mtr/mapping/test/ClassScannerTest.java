@@ -1,5 +1,6 @@
 package org.mtr.mapping.test;
 
+import com.mojang.blaze3d.pipeline.RenderCall;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
@@ -301,6 +302,9 @@ public final class ClassScannerTest {
 		scanner.putInterface("PressAction", Button.OnPress.class);
 		scanner.putInterface("StringIdentifiable", StringRepresentable.class);
 		scanner.putInterface("TickableSoundInstance", TickableSoundInstance.class);
+		scanner.putInterface("VertexConsumer", VertexConsumer.class);
+		scanner.putInterface("VertexConsumerProvider", MultiBufferSource.class);
+		scanner.putInterface("RenderCall", RenderCall.class);
 		scanner.generate();
 	}
 }
