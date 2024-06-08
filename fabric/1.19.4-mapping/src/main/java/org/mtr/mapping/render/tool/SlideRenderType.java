@@ -1,4 +1,4 @@
-package org.mtr.mapping.mapper;
+package org.mtr.mapping.render.tool;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.render.RenderLayer;
@@ -12,7 +12,7 @@ public final class SlideRenderType extends RenderLayer.MultiPhase {
         super(modId, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL,
                 VertexFormat.DrawMode.QUADS, 256, false, true,
                 MultiPhaseParameters.builder()
-                        .shader(TRANSPARENT_TEXT_SHADER)
+                        .program(TRANSPARENT_TEXT_PROGRAM)
                         .transparency(TRANSLUCENT_TRANSPARENCY)
                         .depthTest(LEQUAL_DEPTH_TEST)
                         .cull(ENABLE_CULLING)
@@ -36,7 +36,7 @@ public final class SlideRenderType extends RenderLayer.MultiPhase {
         super(modId + "_icon", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL,
                 VertexFormat.DrawMode.QUADS, 256, false, true,
                 MultiPhaseParameters.builder()
-                        .shader(TRANSPARENT_TEXT_SHADER)
+                        .program(TRANSPARENT_TEXT_PROGRAM)
                         .transparency(TRANSLUCENT_TRANSPARENCY)
                         .depthTest(LEQUAL_DEPTH_TEST)
                         .cull(ENABLE_CULLING)

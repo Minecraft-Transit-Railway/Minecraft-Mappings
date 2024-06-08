@@ -1,4 +1,4 @@
-package org.mtr.mapping.mapper;
+package org.mtr.mapping.render.tool;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
