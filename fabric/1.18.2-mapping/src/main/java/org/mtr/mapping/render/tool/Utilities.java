@@ -4,6 +4,7 @@ import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Vector4f;
 import org.mtr.mapping.holder.Matrix4f;
 import org.mtr.mapping.holder.Vector3f;
+import org.mtr.mapping.render.shader.ModShaderHandler;
 
 import java.nio.FloatBuffer;
 
@@ -44,6 +45,6 @@ public final class Utilities {
 	}
 
 	public static boolean canUseCustomShader() {
-		return !GlStateTracker.isGl4ES(); // TODO and if shader pack is not in use
+		return ModShaderHandler.getInternalHandler().noShaderPackInUse() && !GlStateTracker.isGl4ES();
 	}
 }

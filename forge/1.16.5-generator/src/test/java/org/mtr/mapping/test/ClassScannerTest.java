@@ -28,6 +28,7 @@ import net.minecraft.client.particle.TexturedParticle;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.client.renderer.color.IItemColor;
+import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.model.Model;
@@ -142,6 +143,7 @@ public final class ClassScannerTest {
 		scanner.put("EnumProperty", EnumProperty.class);
 		scanner.put("Explosion", Explosion.class);
 		scanner.put("FluidState", FluidState.class);
+		scanner.put("Frustum", ClippingHelper.class);
 		scanner.put("GameMode", GameType.class);
 		scanner.put("GameOptions", GameSettings.class);
 		scanner.put("GameRenderer", GameRenderer.class);

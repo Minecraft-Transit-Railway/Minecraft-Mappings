@@ -138,6 +138,7 @@ public final class ClassScannerTest {
 		scanner.put("EnumProperty", EnumProperty.class);
 		scanner.put("Explosion", Explosion.class);
 		scanner.put("FluidState", FluidState.class);
+		scanner.put("Frustum", Frustum.class);
 		scanner.put("GameMode", GameMode.class);
 		scanner.put("GameOptions", GameOptions.class);
 		scanner.put("GameRenderer", GameRenderer.class);

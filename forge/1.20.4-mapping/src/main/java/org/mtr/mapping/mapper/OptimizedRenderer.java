@@ -3,6 +3,7 @@ package org.mtr.mapping.mapper;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.Matrix4f;
 import org.mtr.mapping.render.batch.BatchManager;
+import org.mtr.mapping.render.shader.ModShaderHandler;
 import org.mtr.mapping.render.shader.ShaderManager;
 import org.mtr.mapping.render.tool.GlStateTracker;
 import org.mtr.mapping.render.tool.Utilities;
@@ -39,6 +40,11 @@ public final class OptimizedRenderer extends DummyClass {
 			batchManager.drawAll(shaderManager, renderTranslucent);
 			GlStateTracker.restore();
 		}
+	}
+
+	@MappedMethod
+	public static boolean renderingShadows() {
+		return ModShaderHandler.renderingShadows();
 	}
 
 	/**

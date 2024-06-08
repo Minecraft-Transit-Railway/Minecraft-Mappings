@@ -28,6 +28,7 @@ import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -170,6 +171,7 @@ public final class ClassScannerTest {
 		scanner.put("EnumProperty", EnumProperty.class);
 		scanner.put("Explosion", Explosion.class);
 		scanner.put("FluidState", FluidState.class);
+		scanner.put("Frustum", Frustum.class);
 		scanner.put("GameMode", GameType.class);
 		scanner.put("GameOptions", Options.class);
 		scanner.put("GameRenderer", GameRenderer.class);

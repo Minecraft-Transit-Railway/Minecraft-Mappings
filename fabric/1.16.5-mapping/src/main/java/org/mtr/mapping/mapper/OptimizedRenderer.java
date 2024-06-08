@@ -21,6 +21,11 @@ public final class OptimizedRenderer extends DummyClass {
 	public void render(boolean renderTranslucent) {
 	}
 
+	@MappedMethod
+	public static boolean renderingShadows() {
+		return false;
+	}
+
 	/**
 	 * @return {@code true} for 1.17+, {@code false} otherwise
 	 */
