@@ -7,6 +7,8 @@ import net.minecraft.client.render.VertexFormats;
 import org.mtr.mapping.holder.Identifier;
 
 public final class SlideRenderType extends RenderLayer.MultiPhase {
+
+    @Deprecated
     public SlideRenderType(String modId, int texture) {
         super(modId, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL,
                 VertexFormat.DrawMode.QUADS, 256, false, true,
@@ -30,6 +32,7 @@ public final class SlideRenderType extends RenderLayer.MultiPhase {
         };
     }
 
+    @Deprecated
     public SlideRenderType(String modId, Identifier texture) {
         super(modId + "_icon", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL,
                 VertexFormat.DrawMode.QUADS, 256, false, true,

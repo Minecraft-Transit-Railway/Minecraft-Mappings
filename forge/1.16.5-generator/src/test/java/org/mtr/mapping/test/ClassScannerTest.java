@@ -1,5 +1,7 @@
 package org.mtr.mapping.test;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.advancements.FunctionManager;
 import net.minecraft.block.*;
 import net.minecraft.block.material.MaterialColor;
@@ -237,6 +239,8 @@ public final class ClassScannerTest {
 		scanner.put("WorldChunk", Chunk.class);
 		scanner.put("WorldRenderer", WorldRenderer.class);
 		scanner.put("WorldSavePath", FolderName.class);
+		scanner.put("GlStateManager", GlStateManager.class);
+		scanner.put("RenderSystem", RenderSystem.class);
 		scanner.putAbstract("AbstractSoundInstance", LocatableSound.class);
 		scanner.putAbstract("Block", Block.class, "canCreatureSpawn", "getBedSpawnPosition", "getRespawnPosition");
 		scanner.putAbstract("BillboardParticle", TexturedParticle.class);

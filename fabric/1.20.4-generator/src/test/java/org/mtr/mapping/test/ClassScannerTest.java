@@ -1,5 +1,7 @@
 package org.mtr.mapping.test;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.MinecraftVersion;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
@@ -234,6 +236,8 @@ public final class ClassScannerTest {
 		scanner.put("WorldChunk", WorldChunk.class);
 		scanner.put("WorldRenderer", WorldRenderer.class);
 		scanner.put("WorldSavePath", WorldSavePath.class);
+		scanner.put("GlStateManager", GlStateManager.class);
+		scanner.put("RenderSystem", RenderSystem.class);
 		scanner.putAbstract("AbstractSoundInstance", AbstractSoundInstance.class);
 		scanner.putAbstract("BillboardParticle", BillboardParticle.class);
 		scanner.putAbstract("Block", Block.class);

@@ -1,7 +1,9 @@
 package org.mtr.mapping.test;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
@@ -266,6 +268,8 @@ public final class ClassScannerTest {
 		scanner.put("WorldChunk", LevelChunk.class);
 		scanner.put("WorldRenderer", LevelRenderer.class);
 		scanner.put("WorldSavePath", LevelResource.class);
+		scanner.put("GlStateManager", GlStateManager.class);
+		scanner.put("RenderSystem", RenderSystem.class);
 		scanner.putAbstract("AbstractSoundInstance", AbstractSoundInstance.class);
 		scanner.putAbstract("BillboardParticle", SingleQuadParticle.class);
 		scanner.putAbstract("Block", Block.class, "getRespawnPosition", "isValidSpawn");

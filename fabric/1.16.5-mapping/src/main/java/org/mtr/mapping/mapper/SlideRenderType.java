@@ -35,6 +35,7 @@ public final class SlideRenderType extends RenderLayer {
 
     private final int mHashCode;
 
+    @Deprecated
     public SlideRenderType(String modId, int texture) {
         super(modId, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL,
                 GL11.GL_QUADS, 256, false, true,
@@ -47,6 +48,7 @@ public final class SlideRenderType extends RenderLayer {
         mHashCode = Objects.hash(super.hashCode(), GENERAL_STATES, texture);
     }
 
+    @Deprecated
     public SlideRenderType(String modId, Identifier texture) {
         super(modId, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL,
                 GL11.GL_QUADS, 256, false, true,
