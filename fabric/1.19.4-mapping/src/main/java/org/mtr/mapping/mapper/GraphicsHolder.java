@@ -248,4 +248,14 @@ public final class GraphicsHolder extends DummyClass {
 			getInstance().getEntityRenderDispatcher().render(entity.data, x, y, z, yaw, tickDelta, matrixStack, vertexConsumerProvider, light);
 		}
 	}
+
+	@MappedMethod
+	public org.mtr.mapping.holder.Matrix4f getPose() {
+		return new org.mtr.mapping.holder.Matrix4f(this.matrixStack.peek().getPositionMatrix());
+	}
+
+	@MappedMethod
+	public org.mtr.mapping.holder.Matrix3f getNormal() {
+		return new org.mtr.mapping.holder.Matrix3f(this.matrixStack.peek().getNormalMatrix());
+	}
 }
