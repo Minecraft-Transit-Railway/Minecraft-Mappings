@@ -84,4 +84,16 @@ public final class Utilities {
 	public static void mul(org.mtr.mapping.holder.Vector4f src, Matrix4f dest){
 		src.data.transform(dest.data);
 	}
+
+	public static void mul(Matrix4f src, float dest) {
+		src.data.multiply(dest);
+	}
+
+	public static void mul(org.mtr.mapping.holder.Matrix3f src, float dest){
+		src.data.mul(dest);
+	}
+
+	public static Matrix4f createScaleMatrix(float x, float y, float z) {
+		return new Matrix4f(com.mojang.math.Matrix4f.createScaleMatrix(x,y,z));
+	}
 }

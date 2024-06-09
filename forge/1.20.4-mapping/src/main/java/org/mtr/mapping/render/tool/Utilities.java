@@ -90,4 +90,18 @@ public final class Utilities {
 	public static void mul(org.mtr.mapping.holder.Vector4f src, Matrix4f dest){
 		src.data.mul(dest.data);
 	}
+
+	public static void mul(Matrix4f src, float dest) {
+		src.data.scale(dest);
+	}
+
+	public static void mul(org.mtr.mapping.holder.Matrix3f src, float dest){
+		src.data.scale(dest);
+	}
+
+	public static Matrix4f createScaleMatrix(float x, float y, float z) {
+		Matrix4f matrix4f = create();
+		matrix4f.data.scale(x,y,z);
+		return matrix4f;
+	}
 }
