@@ -39,12 +39,28 @@ public final class OptimizedModel extends DummyClass {
 	public static final class ObjModel {
 
 		@MappedMethod
-		public static Map<String, ObjModel> loadModel(Identifier objLocation, @Nullable Identifier atlasIndex, boolean splitModel, boolean flipTextureV) {
+		public static Map<String, ObjModel> loadModel(Identifier objLocation, Identifier defaultTexture, @Nullable Identifier atlasIndex, boolean splitModel, boolean flipTextureV) {
 			return new HashMap<>();
 		}
 
 		@MappedMethod
 		public void addTransformation(ShaderType shaderType, double x, double y, double z, boolean flipped) {
+		}
+
+		@MappedMethod
+		public void applyTranslation(double x, double y, double z) {
+		}
+
+		@MappedMethod
+		public void applyRotation(double x, double y, double z) {
+		}
+
+		@MappedMethod
+		public void applyScale(double x, double y, double z) {
+		}
+
+		@MappedMethod
+		public void applyMirror(boolean x, boolean y, boolean z) {
 		}
 
 		@MappedMethod

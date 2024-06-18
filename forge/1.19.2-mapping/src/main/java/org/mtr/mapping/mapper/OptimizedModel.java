@@ -129,13 +129,13 @@ public final class OptimizedModel extends DummyClass {
 		}
 
 		@MappedMethod
-		public static Map<String, ObjModel> loadModel(Identifier objLocation, @Nullable Identifier atlasIndex, boolean splitModel, boolean flipTextureV) {
+		public static Map<String, ObjModel> loadModel(Identifier objLocation, Identifier defaultTexture, @Nullable Identifier atlasIndex, boolean splitModel, boolean flipTextureV) {
 			if (atlasIndex != null) {
 				ATLAS_MANAGER.load(atlasIndex);
 			}
 
 			final Map<String, ObjModel> objModels = new HashMap<>();
-			ObjModelLoader.loadModel(objLocation, ATLAS_MANAGER, splitModel).forEach((key, rawMeshes) -> {
+			ObjModelLoader.loadModel(objLocation, defaultTexture, ATLAS_MANAGER, splitModel).forEach((key, rawMeshes) -> {
 				final float[] bounds = {Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE};
 				rawMeshes.forEach(rawMesh -> {
 					rawMesh.applyRotation(new Vector3f(1, 0, 0), 180);
@@ -167,6 +167,30 @@ public final class OptimizedModel extends DummyClass {
 				}
 				rawModel.append(newRawMesh);
 			});
+		}
+
+		@MappedMethod
+		public void applyTranslation(double x, double y, double z) {
+			rawMeshes.forEach(rawMesh -> rawMesh.applyTranslation((float) x, (float) y, (float) z));
+		}
+
+		@MappedMethod
+		public void applyRotation(double x, double y, double z) {
+			rawMeshes.forEach(rawMesh -> {
+				rawMesh.applyRotation(new Vector3f(1, 0, 0), (float) x);
+				rawMesh.applyRotation(new Vector3f(0, 1, 0), (float) y);
+				rawMesh.applyRotation(new Vector3f(0, 0, 1), (float) z);
+			});
+		}
+
+		@MappedMethod
+		public void applyScale(double x, double y, double z) {
+			rawMeshes.forEach(rawMesh -> rawMesh.applyScale((float) x, (float) y, (float) z));
+		}
+
+		@MappedMethod
+		public void applyMirror(boolean x, boolean y, boolean z) {
+			rawMeshes.forEach(rawMesh -> rawMesh.applyMirror(x, y, z, x, y, z));
 		}
 
 		@MappedMethod

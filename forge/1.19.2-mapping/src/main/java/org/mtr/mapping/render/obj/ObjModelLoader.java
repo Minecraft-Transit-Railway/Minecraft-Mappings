@@ -19,7 +19,7 @@ import java.util.*;
 
 public final class ObjModelLoader {
 
-	public static Map<String, List<RawMesh>> loadModel(Identifier objLocation, AtlasManager atlasManager, boolean splitModel) {
+	public static Map<String, List<RawMesh>> loadModel(Identifier objLocation, Identifier defaultTexture, AtlasManager atlasManager, boolean splitModel) {
 		final Map<String, List<RawMesh>> result = new HashMap<>();
 
 		ResourceManagerHelper.readResource(objLocation, inputStream -> {
@@ -27,9 +27,9 @@ public final class ObjModelLoader {
 				final Obj sourceObj = ObjReader.read(inputStream);
 				final Map<String, Mtl> materials = loadMaterials(sourceObj, objLocation);
 				if (splitModel) {
-					ObjSplitting.splitByGroups(sourceObj).forEach((key, obj) -> result.put(key, loadModel(obj, objLocation, materials, atlasManager)));
+					ObjSplitting.splitByGroups(sourceObj).forEach((key, obj) -> result.put(key, loadModel(obj, objLocation, defaultTexture, materials, atlasManager)));
 				} else {
-					result.put("", loadModel(sourceObj, objLocation, materials, atlasManager));
+					result.put("", loadModel(sourceObj, objLocation, defaultTexture, materials, atlasManager));
 				}
 			} catch (Exception e) {
 				DummyClass.logException(e);
@@ -39,7 +39,7 @@ public final class ObjModelLoader {
 		return result;
 	}
 
-	private static List<RawMesh> loadModel(Obj sourceObj, @Nullable Identifier objLocation, @Nullable Map<String, Mtl> materials, @Nullable AtlasManager atlasManager) {
+	private static List<RawMesh> loadModel(Obj sourceObj, @Nullable Identifier objLocation, Identifier defaultTexture, @Nullable Map<String, Mtl> materials, @Nullable AtlasManager atlasManager) {
 		final List<RawMesh> rawMeshes = new ArrayList<>();
 
 		ObjSplitting.splitByMaterialGroups(sourceObj).forEach((key, obj) -> {
@@ -54,11 +54,11 @@ public final class ObjModelLoader {
 				if (materials != null && !materials.isEmpty() && objLocation != null) {
 					final Mtl objMaterial = materials.getOrDefault(key, null);
 					if (objMaterial == null) {
-						texture = new Identifier("");
+						texture = defaultTexture;
 						color = null;
 					} else {
 						if (StringUtils.isEmpty(objMaterial.getMapKd())) {
-							texture = new Identifier("");
+							texture = defaultTexture;
 						} else {
 							texture = resolveRelativePath(objLocation, objMaterial.getMapKd(), ".png");
 						}
@@ -66,10 +66,10 @@ public final class ObjModelLoader {
 						color = kd == null ? mergeColor(0xFF, 0xFF, 0xFF, 0xFF) : mergeColor((int) (kd.getX() * 0xFF), (int) (kd.getY() * 0xFF), (int) (kd.getZ() * 0xFF), (int) (objMaterial.getD() * 0xFF));
 					}
 				} else if (objLocation != null) {
-					texture = materialGroupName.equals("_") ? new Identifier("") : resolveRelativePath(objLocation, materialGroupName, ".png");
+					texture = materialGroupName.equals("_") ? defaultTexture : resolveRelativePath(objLocation, materialGroupName, ".png");
 					color = mergeColor(0xFF, 0xFF, 0xFF, 0xFF);
 				} else {
-					texture = new Identifier("");
+					texture = defaultTexture;
 					color = mergeColor(0xFF, 0xFF, 0xFF, 0xFF);
 				}
 
