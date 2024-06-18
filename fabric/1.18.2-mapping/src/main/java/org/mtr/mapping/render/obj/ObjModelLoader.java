@@ -63,7 +63,7 @@ public final class ObjModelLoader {
 							texture = resolveRelativePath(objLocation, objMaterial.getMapKd(), ".png");
 						}
 						final FloatTuple kd = objMaterial.getKd();
-						color = kd == null ? mergeColor(0xFF, 0xFF, 0xFF, 0xFF) : mergeColor((int) (kd.getX() * 0xFF), (int) (kd.getY() * 0xFF), (int) (kd.getZ() * 0xFF), (int) (objMaterial.getD() * 0xFF));
+						color = kd == null ? mergeColor(0xFF, 0xFF, 0xFF, 0xFF) : mergeColor((int) (kd.getX() * 0xFF), (int) (kd.getY() * 0xFF), (int) (kd.getZ() * 0xFF), objMaterial.getD() == null ? 0xFF : (int) (objMaterial.getD() * 0xFF));
 					}
 				} else if (objLocation != null) {
 					texture = materialGroupName.equals("_") ? defaultTexture : resolveRelativePath(objLocation, materialGroupName, ".png");
