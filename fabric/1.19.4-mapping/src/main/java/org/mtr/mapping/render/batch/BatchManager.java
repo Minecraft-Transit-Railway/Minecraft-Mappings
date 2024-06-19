@@ -4,13 +4,16 @@ import org.mtr.mapping.render.object.VertexArray;
 import org.mtr.mapping.render.shader.ShaderManager;
 import org.mtr.mapping.render.vertex.VertexAttributeState;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public final class BatchManager {
 
-	private final Map<MaterialProperties, Set<RenderCall>> opaqueBatches = new HashMap<>();
-	private final Map<MaterialProperties, Set<RenderCall>> cutoutBatches = new HashMap<>();
-	private final Map<MaterialProperties, Set<RenderCall>> translucentBatches = new HashMap<>();
+	private final Map<MaterialProperties, List<RenderCall>> opaqueBatches = new HashMap<>();
+	private final Map<MaterialProperties, List<RenderCall>> cutoutBatches = new HashMap<>();
+	private final Map<MaterialProperties, List<RenderCall>> translucentBatches = new HashMap<>();
 
 	public void queue(List<VertexArray> vertexArrays, VertexAttributeState vertexAttributeState) {
 		vertexArrays.forEach(vertexArray -> queue(vertexArray, vertexAttributeState));
@@ -18,7 +21,7 @@ public final class BatchManager {
 
 	public void queue(VertexArray vertexArray, VertexAttributeState vertexAttributeState) {
 		final MaterialProperties materialProperties = vertexArray.materialProperties;
-		(materialProperties.translucent ? translucentBatches : materialProperties.cutoutHack ? cutoutBatches : opaqueBatches).computeIfAbsent(materialProperties, key -> new HashSet<>()).add(new RenderCall(vertexArray, vertexAttributeState));
+		(materialProperties.translucent ? translucentBatches : materialProperties.cutoutHack ? cutoutBatches : opaqueBatches).computeIfAbsent(materialProperties, key -> new ArrayList<>()).add(new RenderCall(vertexArray, vertexAttributeState));
 	}
 
 	public void drawAll(ShaderManager shaderManager, boolean renderTranslucent) {
@@ -29,7 +32,7 @@ public final class BatchManager {
 		}
 	}
 
-	private static void drawBatch(Map<MaterialProperties, Set<RenderCall>> batches, ShaderManager shaderManager) {
+	private static void drawBatch(Map<MaterialProperties, List<RenderCall>> batches, ShaderManager shaderManager) {
 		batches.forEach((materialProperties, renderCalls) -> {
 			shaderManager.setupShaderBatchState(materialProperties);
 			renderCalls.forEach(RenderCall::draw);
