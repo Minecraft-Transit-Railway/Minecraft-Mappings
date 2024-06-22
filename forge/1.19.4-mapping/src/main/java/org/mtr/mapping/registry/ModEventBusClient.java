@@ -57,7 +57,7 @@ public final class ModEventBusClient {
 	}
 
 	@SubscribeEvent
-	public void resourceReload(TextureStitchEvent event) {
+	public void resourceReload(TextureStitchEvent.Post event) {
 		if (event.getAtlas().location().getPath().endsWith("blocks.png")) {
 			resourceReloadRunnable.run();
 		}
