@@ -10,19 +10,19 @@ import org.mtr.mapping.holder.*;
 
 public class BlockItemExtension extends BlockItemAbstractMapping {
 
-	@MappedMethod
-	public BlockItemExtension(Block block, ItemSettings itemSettings) {
-		super(block, itemSettings);
-	}
+    @MappedMethod
+    public BlockItemExtension(Block block, ItemSettings itemSettings) {
+        super(block, itemSettings);
+    }
 
-	@Deprecated
-	@Override
-	public final InteractionResultHolder<ItemStack> use(Level world, Player playerEntity, InteractionHand hand) {
-		useWithoutResult(new World(world), new PlayerEntity(playerEntity), Hand.convert(hand));
-		return super.use(world, playerEntity, hand);
-	}
+    @Deprecated
+    @Override
+    public final InteractionResultHolder<ItemStack> use(Level world, Player playerEntity, InteractionHand hand) {
+        useWithoutResult(new World(world), new PlayerEntity(playerEntity), Hand.convert(hand));
+        return super.use(world, playerEntity, hand);
+    }
 
-	@MappedMethod
-	public void useWithoutResult(World world, PlayerEntity user, Hand hand) {
-	}
+    @MappedMethod
+    public void useWithoutResult(World world, PlayerEntity user, Hand hand) {
+    }
 }
