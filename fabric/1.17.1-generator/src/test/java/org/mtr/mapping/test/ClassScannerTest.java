@@ -242,6 +242,7 @@ public final class ClassScannerTest {
 		scanner.putAbstract("DoorBlock", DoorBlock.class);
 		scanner.putAbstract("Entity", Entity.class, "getType");
 		scanner.putAbstract("EntityModel", EntityModel.class);
+		scanner.putAbstract("FenceBlock", FenceBlock.class);
 		scanner.putAbstract("Item", Item.class);
 		scanner.putAbstract("Model", Model.class);
 		scanner.putAbstract("MovingSoundInstance", MovingSoundInstance.class);
