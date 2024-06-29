@@ -5,11 +5,13 @@ import net.minecraft.state.StateManager;
 import net.minecraft.text.Text;
 import org.mtr.mapping.holder.*;
 import org.mtr.mapping.tool.HolderBase;
+import org.mtr.mapping.annotation.MappedMethod;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class FenceBlockExtension extends FenceBlockAbstractMapping implements BlockHelper {
+    @MappedMethod
     public FenceBlockExtension(BlockSettings settings) {
         super(settings);
     }
@@ -27,6 +29,7 @@ public class FenceBlockExtension extends FenceBlockAbstractMapping implements Bl
     }
 
     @Override
+    @MappedMethod
     public void addBlockProperties(List<HolderBase<?>> properties) {
         properties.add(new Property<>(NORTH));
         properties.add(new Property<>(EAST));
