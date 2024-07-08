@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class FenceBlockExtension extends FenceBlockAbstractMapping implements BlockHelper {
+
 	@MappedMethod
 	public FenceBlockExtension(BlockSettings settings) {
 		super(settings);

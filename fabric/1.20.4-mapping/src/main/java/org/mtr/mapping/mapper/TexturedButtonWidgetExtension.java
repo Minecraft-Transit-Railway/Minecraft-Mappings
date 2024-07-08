@@ -11,18 +11,18 @@ import org.mtr.mapping.holder.TexturedButtonWidgetAbstractMapping;
 public class TexturedButtonWidgetExtension extends TexturedButtonWidgetAbstractMapping {
 
 	@MappedMethod
-	public TexturedButtonWidgetExtension(int x, int y, int width, int height, Identifier normalTexture, Identifier highlightedTexture, org.mtr.mapping.holder.PressAction onPress) {
-		this(x, y, width, height, normalTexture, highlightedTexture, onPress, "");
+	public TexturedButtonWidgetExtension(int x, int y, int width, int height, Identifier normalTexture, Identifier highlightedTexture, Identifier disabledTexture, org.mtr.mapping.holder.PressAction onPress) {
+		this(x, y, width, height, normalTexture, highlightedTexture, disabledTexture, onPress, "");
 	}
 
 	@MappedMethod
-	public TexturedButtonWidgetExtension(int x, int y, int width, int height, Identifier normalTexture, Identifier highlightedTexture, org.mtr.mapping.holder.PressAction onPress, String message) {
-		this(x, y, width, height, normalTexture, highlightedTexture, onPress, TextHelper.literal(message));
+	public TexturedButtonWidgetExtension(int x, int y, int width, int height, Identifier normalTexture, Identifier highlightedTexture, Identifier disabledTexture, org.mtr.mapping.holder.PressAction onPress, String message) {
+		this(x, y, width, height, normalTexture, highlightedTexture, disabledTexture, onPress, TextHelper.literal(message));
 	}
 
 	@MappedMethod
-	public TexturedButtonWidgetExtension(int x, int y, int width, int height, Identifier normalTexture, Identifier highlightedTexture, org.mtr.mapping.holder.PressAction onPress, MutableText message) {
-		super(x, y, width, height, new ButtonTextures(formatIdentifier(normalTexture), formatIdentifier(highlightedTexture)), onPress, new Text(message.data));
+	public TexturedButtonWidgetExtension(int x, int y, int width, int height, Identifier normalTexture, Identifier highlightedTexture, Identifier disabledTexture, org.mtr.mapping.holder.PressAction onPress, MutableText message) {
+		super(x, y, width, height, new ButtonTextures(formatIdentifier(normalTexture), formatIdentifier(disabledTexture), formatIdentifier(highlightedTexture)), onPress, new Text(message.data));
 	}
 
 	@MappedMethod

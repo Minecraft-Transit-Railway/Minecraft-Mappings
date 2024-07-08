@@ -11,28 +11,30 @@ public class TexturedButtonWidgetExtension extends TexturedButtonWidgetAbstractM
 
 	private final Identifier normalTexture;
 	private final Identifier highlightedTexture;
+	private final Identifier disabledTexture;
 
 	@MappedMethod
-	public TexturedButtonWidgetExtension(int x, int y, int width, int height, Identifier normalTexture, Identifier highlightedTexture, org.mtr.mapping.holder.PressAction onPress) {
-		this(x, y, width, height, normalTexture, highlightedTexture, onPress, "");
+	public TexturedButtonWidgetExtension(int x, int y, int width, int height, Identifier normalTexture, Identifier highlightedTexture, Identifier disabledTexture, org.mtr.mapping.holder.PressAction onPress) {
+		this(x, y, width, height, normalTexture, highlightedTexture, disabledTexture, onPress, "");
 	}
 
 	@MappedMethod
-	public TexturedButtonWidgetExtension(int x, int y, int width, int height, Identifier normalTexture, Identifier highlightedTexture, org.mtr.mapping.holder.PressAction onPress, String message) {
-		this(x, y, width, height, normalTexture, highlightedTexture, onPress, TextHelper.literal(message));
+	public TexturedButtonWidgetExtension(int x, int y, int width, int height, Identifier normalTexture, Identifier highlightedTexture, Identifier disabledTexture, org.mtr.mapping.holder.PressAction onPress, String message) {
+		this(x, y, width, height, normalTexture, highlightedTexture, disabledTexture, onPress, TextHelper.literal(message));
 	}
 
 	@MappedMethod
-	public TexturedButtonWidgetExtension(int x, int y, int width, int height, Identifier normalTexture, Identifier highlightedTexture, org.mtr.mapping.holder.PressAction onPress, MutableText message) {
+	public TexturedButtonWidgetExtension(int x, int y, int width, int height, Identifier normalTexture, Identifier highlightedTexture, Identifier disabledTexture, org.mtr.mapping.holder.PressAction onPress, MutableText message) {
 		super(x, y, width, height, 0, 0, 0, normalTexture, 256, 256, onPress, new Text(message.data));
 		this.normalTexture = normalTexture;
 		this.highlightedTexture = highlightedTexture;
+		this.disabledTexture = disabledTexture;
 	}
 
 	@MappedMethod
 	public void render(GraphicsHolder graphicsHolder, int mouseX, int mouseY, float delta) {
 		final GuiDrawing guiDrawing = new GuiDrawing(graphicsHolder);
-		guiDrawing.beginDrawingTexture(isHovered() ? highlightedTexture : normalTexture);
+		guiDrawing.beginDrawingTexture(getActiveMapped() ? isHovered() ? highlightedTexture : normalTexture : disabledTexture);
 		guiDrawing.drawTexture(getX2(), getY2(), getX2() + width, getY2() + height, 0, 0, 1, 1);
 		guiDrawing.finishDrawingTexture();
 	}
