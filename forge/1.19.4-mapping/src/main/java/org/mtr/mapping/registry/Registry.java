@@ -137,6 +137,7 @@ public final class Registry extends DummyClass {
 		simpleChannel = NetworkRegistry.newSimpleChannel(identifier.data, () -> PROTOCOL_VERSION, Registry::validProtocol, Registry::validProtocol);
 		simpleChannel.registerMessage(0, PacketObject.class, (packetObject, packetBuffer) -> packetBuffer.writeBytes(packetObject.byteBuf), packetBuffer -> new PacketObject(packetBuffer.readBytes(packetBuffer.readableBytes())), (packetObject, contextSupplier) -> {
 			final NetworkEvent.Context context = contextSupplier.get();
+			context.setPacketHandled(true);
 			PacketBufferReceiver.receive(packetObject.byteBuf, packetBufferReceiver -> {
 				final Function<PacketBufferReceiver, ? extends PacketHandler> getPacketInstance = packets.get(packetBufferReceiver.readString());
 				if (getPacketInstance != null) {
