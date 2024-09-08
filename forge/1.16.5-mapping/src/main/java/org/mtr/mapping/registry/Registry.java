@@ -106,7 +106,7 @@ public final class Registry extends DummyClass {
 			entityType.setRegistryName(identifier.data);
 			return entityType;
 		});
-		return new EntityTypeRegistryObject<>(identiffier);
+		return new EntityTypeRegistryObject<>(identifier);
 	}
 
 	private <T extends EntityExtension> net.minecraft.entity.EntityType.IFactory<T> getEntityFactory(BiFunction<EntityType<?>, World, T> function) {
