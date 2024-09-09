@@ -164,7 +164,7 @@ public final class Registry extends DummyClass {
 			PacketBufferReceiver.receive(packetObject.byteBuf, packetBufferReceiver -> {
 				final Function<PacketBufferReceiver, ? extends PacketHandler> getPacketInstance = packets.get(packetBufferReceiver.readString());
 				if (getPacketInstance != null) {
-					final PacketHandler packetHandler = getPacketInstance.apply(packetBufferReceiver);	
+					final PacketHandler packetHandler = getPacketInstance.apply(packetBufferReceiver);
 					if (context.getDirection().getReceptionSide().isClient()) {
 						packetHandler.runClient();
 					} else {
