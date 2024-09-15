@@ -3,6 +3,7 @@ package org.mtr.mapping.mapper;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
+import org.joml.Matrix4f;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.Identifier;
 import org.mtr.mapping.tool.ColorHelper;
@@ -13,6 +14,7 @@ public final class GuiDrawing extends DummyClass {
 	private VertexConsumer vertexConsumer;
 	private DrawContext drawContext;
 	private BufferBuilder bufferBuilder;
+	private Matrix4f matrix;
 	private final GraphicsHolder graphicsHolder;
 
 	@MappedMethod
@@ -22,31 +24,33 @@ public final class GuiDrawing extends DummyClass {
 
 	@MappedMethod
 	public void beginDrawingRectangle() {
+		matrix = graphicsHolder.matrixStack == null ? null : graphicsHolder.matrixStack.peek().getPositionMatrix();
 		vertexConsumer = graphicsHolder.vertexConsumerProvider == null ? null : graphicsHolder.vertexConsumerProvider.getBuffer(net.minecraft.client.render.RenderLayer.getGui());
 		drawContext = graphicsHolder.drawContext;
 	}
 
 	@MappedMethod
 	public void drawRectangle(double x1, double y1, double x2, double y2, int color) {
-		if (vertexConsumer != null && drawContext != null) {
+		if (matrix != null && vertexConsumer != null && drawContext != null) {
 			ColorHelper.unpackColor(color, (a, r, g, b) -> {
-				vertexConsumer.vertex(x1, y1, 0).color(r, g, b, a).next();
-				vertexConsumer.vertex(x1, y2, 0).color(r, g, b, a).next();
-				vertexConsumer.vertex(x2, y2, 0).color(r, g, b, a).next();
-				vertexConsumer.vertex(x2, y1, 0).color(r, g, b, a).next();
+				vertexConsumer.vertex(matrix, (float)x1, (float)y1, 0).color(r, g, b, a).next();
+				vertexConsumer.vertex(matrix, (float)x1, (float)y2, 0).color(r, g, b, a).next();
+				vertexConsumer.vertex(matrix, (float)x2, (float)y2, 0).color(r, g, b, a).next();
+				vertexConsumer.vertex(matrix, (float)x2, (float)y1, 0).color(r, g, b, a).next();
 			});
 		}
 	}
 
 	@MappedMethod
 	public void finishDrawingRectangle() {
-		if (vertexConsumer != null && drawContext != null) {
+		if (matrix != null && vertexConsumer != null && drawContext != null) {
 			drawContext.draw();
 		}
 	}
 
 	@MappedMethod
 	public void beginDrawingTexture(Identifier identifier) {
+		matrix = graphicsHolder.matrixStack == null ? null : graphicsHolder.matrixStack.peek().getPositionMatrix();
 		bufferBuilder = Tessellator.getInstance().getBuffer();
 		RenderSystem.setShaderTexture(0, identifier.data);
 		RenderSystem.enableDepthTest();
@@ -56,11 +60,11 @@ public final class GuiDrawing extends DummyClass {
 
 	@MappedMethod
 	public void drawTexture(double x1, double y1, double x2, double y2, float u1, float v1, float u2, float v2) {
-		if (bufferBuilder != null) {
-			bufferBuilder.vertex(x1, y1, 0).texture(u1, v1).next();
-			bufferBuilder.vertex(x1, y2, 0).texture(u1, v2).next();
-			bufferBuilder.vertex(x2, y2, 0).texture(u2, v2).next();
-			bufferBuilder.vertex(x2, y1, 0).texture(u2, v1).next();
+		if (matrix != null && bufferBuilder != null) {
+			bufferBuilder.vertex(matrix, (float)x1, (float)y1, 0).texture(u1, v1).next();
+			bufferBuilder.vertex(matrix, (float)x1, (float)y2, 0).texture(u1, v2).next();
+			bufferBuilder.vertex(matrix, (float)x2, (float)y2, 0).texture(u2, v2).next();
+			bufferBuilder.vertex(matrix, (float)x2, (float)y1, 0).texture(u2, v1).next();
 		}
 	}
 
