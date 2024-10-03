@@ -53,6 +53,11 @@ public class ScreenExtension extends ScreenAbstractMapping {
 		addDrawableChild(child.data);
 	}
 
+	@MappedMethod
+	public final void addSelectableChild(ClickableWidget child) {
+		addSelectableChild(child.data);
+	}
+
 	@Deprecated
 	public final boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
 		return mouseScrolled2(mouseX, mouseY, verticalAmount);

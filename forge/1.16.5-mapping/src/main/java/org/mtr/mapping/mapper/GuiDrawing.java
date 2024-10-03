@@ -5,6 +5,7 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.math.vector.Matrix4f;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.Identifier;
 import org.mtr.mapping.holder.MinecraftClient;
@@ -14,13 +15,17 @@ import org.mtr.mapping.tool.DummyClass;
 public final class GuiDrawing extends DummyClass {
 
 	private BufferBuilder bufferBuilder;
+	private Matrix4f matrix;
+	private final GraphicsHolder graphicsHolder;
 
 	@MappedMethod
 	public GuiDrawing(GraphicsHolder graphicsHolder) {
+		this.graphicsHolder = graphicsHolder;
 	}
 
 	@MappedMethod
 	public void beginDrawingRectangle() {
+		matrix = graphicsHolder.matrixStack == null ? null : graphicsHolder.matrixStack.last().pose();
 		bufferBuilder = Tessellator.getInstance().getBuilder();
 		RenderSystem.enableBlend();
 		RenderSystem.disableTexture();
@@ -30,12 +35,12 @@ public final class GuiDrawing extends DummyClass {
 
 	@MappedMethod
 	public void drawRectangle(double x1, double y1, double x2, double y2, int color) {
-		if (bufferBuilder != null) {
+		if (matrix != null && bufferBuilder != null) {
 			ColorHelper.unpackColor(color, (a, r, g, b) -> {
-				bufferBuilder.vertex(x1, y1, 0).color(r, g, b, a).endVertex();
-				bufferBuilder.vertex(x1, y2, 0).color(r, g, b, a).endVertex();
-				bufferBuilder.vertex(x2, y2, 0).color(r, g, b, a).endVertex();
-				bufferBuilder.vertex(x2, y1, 0).color(r, g, b, a).endVertex();
+				bufferBuilder.vertex(matrix, (float)x1, (float)y1, 0).color(r, g, b, a).endVertex();
+				bufferBuilder.vertex(matrix, (float)x1, (float)y2, 0).color(r, g, b, a).endVertex();
+				bufferBuilder.vertex(matrix, (float)x2, (float)y2, 0).color(r, g, b, a).endVertex();
+				bufferBuilder.vertex(matrix, (float)x2, (float)y1, 0).color(r, g, b, a).endVertex();
 			});
 		}
 	}
@@ -52,6 +57,7 @@ public final class GuiDrawing extends DummyClass {
 
 	@MappedMethod
 	public void beginDrawingTexture(Identifier identifier) {
+		matrix = graphicsHolder.matrixStack == null ? null : graphicsHolder.matrixStack.last().pose();
 		bufferBuilder = Tessellator.getInstance().getBuilder();
 		MinecraftClient.getInstance().getTextureManager().bindTexture(identifier);
 		RenderSystem.color4f(1, 1, 1, 1);
@@ -63,11 +69,11 @@ public final class GuiDrawing extends DummyClass {
 
 	@MappedMethod
 	public void drawTexture(double x1, double y1, double x2, double y2, float u1, float v1, float u2, float v2) {
-		if (bufferBuilder != null) {
-			bufferBuilder.vertex(x1, y1, 0).uv(u1, v1).endVertex();
-			bufferBuilder.vertex(x1, y2, 0).uv(u1, v2).endVertex();
-			bufferBuilder.vertex(x2, y2, 0).uv(u2, v2).endVertex();
-			bufferBuilder.vertex(x2, y1, 0).uv(u2, v1).endVertex();
+		if (matrix != null && bufferBuilder != null) {
+			bufferBuilder.vertex(matrix, (float)x1, (float)y1, 0).uv(u1, v1).endVertex();
+			bufferBuilder.vertex(matrix, (float)x1, (float)y2, 0).uv(u1, v2).endVertex();
+			bufferBuilder.vertex(matrix, (float)x2, (float)y2, 0).uv(u2, v2).endVertex();
+			bufferBuilder.vertex(matrix, (float)x2, (float)y1, 0).uv(u2, v1).endVertex();
 		}
 	}
 
