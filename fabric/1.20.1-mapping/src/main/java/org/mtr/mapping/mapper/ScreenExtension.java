@@ -59,8 +59,9 @@ public class ScreenExtension extends ScreenAbstractMapping {
 	}
 
 	@Deprecated
-	public final boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
-		return mouseScrolled2(mouseX, mouseY, verticalAmount);
+	@Override
+	public final boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+		return mouseScrolled2(mouseX, mouseY, amount);
 	}
 
 	@MappedMethod
