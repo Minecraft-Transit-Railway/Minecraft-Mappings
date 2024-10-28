@@ -54,6 +54,7 @@ public interface MethodMaps {
 		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "getSwimHeight", "getFluidJumpThreshold", "method_29241");
 		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "getUuidAsString", "getStringUUID");
 		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "isSneaking", "isShiftKeyDown");
+		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "noClip", "noPhysics");
 		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "setBodyYaw", "setYBodyRot");
 		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "setHeadYaw", "setYHeadRot");
 		addMethodMap1.add("ClientPlayerEntity|Entity|LivingEntity|PlayerEntity|ServerPlayerEntity", "setVelocity", "setDeltaMovement");
