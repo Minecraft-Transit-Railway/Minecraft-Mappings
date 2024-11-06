@@ -20,6 +20,7 @@ import org.mtr.mapping.tool.DummyClass;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public final class OptimizedModel extends DummyClass {
 
@@ -129,13 +130,13 @@ public final class OptimizedModel extends DummyClass {
 		}
 
 		@MappedMethod
-		public static Map<String, ObjModel> loadModel(Identifier objLocation, Identifier defaultTexture, @Nullable Identifier atlasIndex, boolean splitModel, boolean flipTextureV) {
+		public static Map<String, ObjModel> loadModel(String objString, Function<String, String> mtlResolver, Function<String, Identifier> textureResolver, @Nullable Identifier atlasIndex, boolean splitModel, boolean flipTextureV) {
 			if (atlasIndex != null) {
 				ATLAS_MANAGER.load(atlasIndex);
 			}
 
 			final Map<String, ObjModel> objModels = new HashMap<>();
-			ObjModelLoader.loadModel(objLocation, defaultTexture, ATLAS_MANAGER, splitModel).forEach((key, rawMeshes) -> {
+			ObjModelLoader.loadModel(objString, mtlResolver, textureResolver, ATLAS_MANAGER, splitModel).forEach((key, rawMeshes) -> {
 				final float[] bounds = {Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE};
 				rawMeshes.forEach(rawMesh -> {
 					rawMesh.applyRotation(new Vector3f(1, 0, 0), 180);

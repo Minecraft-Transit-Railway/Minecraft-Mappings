@@ -1,11 +1,11 @@
 package org.mtr.mapping.render.obj;
 
 import de.javagl.obj.*;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mtr.mapping.holder.Identifier;
 import org.mtr.mapping.holder.Vector3f;
 import org.mtr.mapping.mapper.OptimizedModel;
-import org.mtr.mapping.mapper.ResourceManagerHelper;
 import org.mtr.mapping.render.batch.MaterialProperties;
 import org.mtr.mapping.render.model.Face;
 import org.mtr.mapping.render.model.RawMesh;
@@ -13,33 +13,41 @@ import org.mtr.mapping.render.vertex.Vertex;
 import org.mtr.mapping.tool.DummyClass;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.util.*;
+import java.util.function.Function;
 
 public final class ObjModelLoader {
 
-	public static Map<String, List<RawMesh>> loadModel(Identifier objLocation, Identifier defaultTexture, AtlasManager atlasManager, boolean splitModel) {
+	public static Map<String, List<RawMesh>> loadModel(String objString, Function<String, String> mtlResolver, Function<String, Identifier> textureResolver, AtlasManager atlasManager, boolean splitModel) {
 		final Map<String, List<RawMesh>> result = new HashMap<>();
 
-		ResourceManagerHelper.readResource(objLocation, inputStream -> {
-			try {
-				final Obj sourceObj = ObjReader.read(inputStream);
-				final Map<String, Mtl> materials = loadMaterials(sourceObj, objLocation);
-				if (splitModel) {
-					ObjSplitting.splitByGroups(sourceObj).forEach((key, obj) -> result.put(key, loadModel(obj, objLocation, defaultTexture, materials, atlasManager)));
-				} else {
-					result.put("", loadModel(sourceObj, objLocation, defaultTexture, materials, atlasManager));
+		try {
+			final Obj sourceObj = ObjReader.read(IOUtils.toInputStream(objString, StandardCharsets.UTF_8));
+
+			final Map<String, Mtl> materials = new HashMap<>();
+			sourceObj.getMtlFileNames().forEach(mtlFileName -> {
+				try {
+					MtlReader.read(IOUtils.toInputStream(mtlResolver.apply(mtlFileName.replace("\\\\", "/").replace("\\", "/")), StandardCharsets.UTF_8)).forEach(mtl -> materials.put(mtl.getName(), mtl));
+				} catch (Exception e) {
+					DummyClass.logException(e);
 				}
-			} catch (Exception e) {
-				DummyClass.logException(e);
+			});
+
+			if (splitModel) {
+				ObjSplitting.splitByGroups(sourceObj).forEach((key, obj) -> result.put(key, loadModel(obj, materials, textureResolver, atlasManager)));
+			} else {
+				result.put("", loadModel(sourceObj, materials, textureResolver, atlasManager));
 			}
-		});
+		} catch (Exception e) {
+			DummyClass.logException(e);
+		}
 
 		return result;
 	}
 
-	private static List<RawMesh> loadModel(Obj sourceObj, @Nullable Identifier objLocation, Identifier defaultTexture, @Nullable Map<String, Mtl> materials, @Nullable AtlasManager atlasManager) {
+	private static List<RawMesh> loadModel(Obj sourceObj, Map<String, Mtl> materials, Function<String, Identifier> textureResolver, AtlasManager atlasManager) {
 		final List<RawMesh> rawMeshes = new ArrayList<>();
 
 		ObjSplitting.splitByMaterialGroups(sourceObj).forEach((key, obj) -> {
@@ -48,33 +56,30 @@ public final class ObjModelLoader {
 				final String materialGroupName = materialOptions.get("");
 				final OptimizedModel.ShaderType shaderType = legacyMapping(materialOptions.getOrDefault("#", ""));
 				final boolean flipTextureV = materialOptions.getOrDefault("flipv", "0").equals("1");
-				final Identifier texture;
+				final String texture;
 				final Integer color;
 
-				if (materials != null && !materials.isEmpty() && objLocation != null) {
+				if (!materials.isEmpty()) {
 					final Mtl objMaterial = materials.getOrDefault(key, null);
 					if (objMaterial == null) {
-						texture = defaultTexture;
+						texture = "";
 						color = null;
 					} else {
 						if (StringUtils.isEmpty(objMaterial.getMapKd())) {
-							texture = defaultTexture;
+							texture = "";
 						} else {
-							texture = resolveRelativePath(objLocation, objMaterial.getMapKd(), ".png");
+							texture = objMaterial.getMapKd();
 						}
 						final FloatTuple kd = objMaterial.getKd();
 						color = kd == null ? mergeColor(0xFF, 0xFF, 0xFF, 0xFF) : mergeColor((int) (kd.getX() * 0xFF), (int) (kd.getY() * 0xFF), (int) (kd.getZ() * 0xFF), objMaterial.getD() == null ? 0xFF : (int) (objMaterial.getD() * 0xFF));
 					}
-				} else if (objLocation != null) {
-					texture = materialGroupName.equals("_") ? defaultTexture : resolveRelativePath(objLocation, materialGroupName, ".png");
-					color = mergeColor(0xFF, 0xFF, 0xFF, 0xFF);
 				} else {
-					texture = defaultTexture;
+					texture = materialGroupName.equals("_") ? "" : materialGroupName;
 					color = mergeColor(0xFF, 0xFF, 0xFF, 0xFF);
 				}
 
 				final Obj renderObjMesh = ObjUtils.convertToRenderable(obj);
-				final RawMesh mesh = new RawMesh(new MaterialProperties(shaderType, texture, color));
+				final RawMesh mesh = new RawMesh(new MaterialProperties(shaderType, textureResolver.apply(texture.replace("\\\\", "/").replace("\\", "/")), color));
 
 				for (int i = 0; i < renderObjMesh.getNumVertices(); i++) {
 					final FloatTuple pos = renderObjMesh.getVertex(i);
@@ -103,28 +108,13 @@ public final class ObjModelLoader {
 					mesh.faces.add(new Face(new int[]{face.getVertexIndex(0), face.getVertexIndex(1), face.getVertexIndex(2)}));
 				}
 
-				if (atlasManager != null) {
-					atlasManager.applyToMesh(mesh);
-				}
-
+				atlasManager.applyToMesh(mesh);
 				mesh.validateVertexIndex();
 				rawMeshes.add(mesh);
 			}
 		});
 
 		return rawMeshes;
-	}
-
-	private static Map<String, Mtl> loadMaterials(Obj sourceObj, Identifier objLocation) throws IOException {
-		final Map<String, Mtl> materials = new HashMap<>();
-		sourceObj.getMtlFileNames().forEach(mtlFileName -> ResourceManagerHelper.readResource(resolveRelativePath(objLocation, mtlFileName, ".mtl"), inputStream -> {
-			try {
-				MtlReader.read(inputStream).forEach(mtl -> materials.put(mtl.getName(), mtl));
-			} catch (Exception e) {
-				DummyClass.logException(e);
-			}
-		}));
-		return materials;
 	}
 
 	private static Map<String, String> splitMaterialOptions(String source) {

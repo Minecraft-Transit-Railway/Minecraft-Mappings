@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 public final class OptimizedModel extends DummyClass {
 
@@ -39,7 +40,7 @@ public final class OptimizedModel extends DummyClass {
 	public static final class ObjModel {
 
 		@MappedMethod
-		public static Map<String, ObjModel> loadModel(Identifier objLocation, Identifier defaultTexture, @Nullable Identifier atlasIndex, boolean splitModel, boolean flipTextureV) {
+		public static Map<String, ObjModel> loadModel(String objString, Function<String, String> mtlResolver, Function<String, Identifier> textureResolver, @Nullable Identifier atlasIndex, boolean splitModel, boolean flipTextureV) {
 			return new HashMap<>();
 		}
 
