@@ -34,7 +34,7 @@ public final class MinecraftClientHelper extends DummyClass {
 	public static void addEntity(EntityAbstractMapping entity) {
 		final ClientWorld clientWorld = MinecraftClient.getInstance().world;
 		if (clientWorld != null) {
-			clientWorld.spawnEntity(entity);
+			clientWorld.addEntity(entity.getId(), entity);
 		}
 	}
 }
