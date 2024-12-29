@@ -34,9 +34,11 @@ public final class BatchManager {
 
 	private static void drawBatch(Map<MaterialProperties, List<RenderCall>> batches, ShaderManager shaderManager) {
 		batches.forEach((materialProperties, renderCalls) -> {
-			shaderManager.setupShaderBatchState(materialProperties);
-			renderCalls.forEach(RenderCall::draw);
-			shaderManager.cleanupShaderBatchState();
+			if (renderCalls != null) {
+				shaderManager.setupShaderBatchState(materialProperties);
+				renderCalls.forEach(RenderCall::draw);
+				shaderManager.cleanupShaderBatchState();
+			}
 		});
 		batches.clear();
 	}
