@@ -42,7 +42,7 @@ public class DoorBlockExtension extends DoorBlockAbstractMapping implements Bloc
 	}
 
 	private static BlockSettings getBlockSettings(Consumer<BlockSettings> consumer) {
-		final BlockSettings blockSettings = BlockHelper.createBlockSettings(true);
+		final BlockSettings blockSettings = BlockHelper.createBlockSettings(true, true);
 		consumer.accept(blockSettings);
 		return blockSettings;
 	}

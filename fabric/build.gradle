@@ -23,6 +23,7 @@ subprojects {
 		modImplementation "net.fabricmc.fabric-api:fabric-api:${buildTools.getFabricApiVersion()}"
 		compileOnly "com.google.code.findbugs:jsr305:+"
 		testImplementation "org.junit.jupiter:junit-jupiter-api:+"
+		testImplementation "org.junit.platform:junit-platform-launcher:+"
 		testImplementation "com.google.code.gson:gson:+"
 		testImplementation "org.reflections:reflections:+"
 		testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:+"

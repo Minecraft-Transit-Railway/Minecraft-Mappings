@@ -23,6 +23,7 @@ subprojects {
 		implementation project(":common")
 		minecraft "net.minecraftforge:forge:${minecraftVersion}-${buildTools.getForgeVersion()}"
 		testImplementation "org.junit.jupiter:junit-jupiter-api:+"
+		testImplementation "org.junit.platform:junit-platform-launcher:+"
 		testImplementation "com.google.code.gson:gson:+"
 		testImplementation "org.reflections:reflections:+"
 		testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:+"

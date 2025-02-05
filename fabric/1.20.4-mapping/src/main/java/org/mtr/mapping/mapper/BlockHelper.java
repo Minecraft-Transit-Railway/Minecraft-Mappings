@@ -56,18 +56,14 @@ public interface BlockHelper extends DummyInterface {
 	}
 
 	@MappedMethod
-	static BlockSettings createBlockSettings(boolean blockPiston) {
-		return new BlockSettings(AbstractBlock.Settings.create().pistonBehavior(blockPiston ? PistonBehavior.BLOCK : PistonBehavior.NORMAL));
+	static BlockSettings createBlockSettings(boolean blockPiston, boolean forceSolid) {
+		final AbstractBlock.Settings settings = AbstractBlock.Settings.create().pistonBehavior(blockPiston ? PistonBehavior.BLOCK : PistonBehavior.NORMAL);
+		return new BlockSettings(forceSolid ? settings.solid() : settings);
 	}
 
 	@MappedMethod
-	static BlockSettings createBlockSettings(ToIntFunction<BlockState> luminanceFunction) {
-		return setLuminance(createBlockSettings(false), luminanceFunction);
-	}
-
-	@MappedMethod
-	static BlockSettings createBlockSettings(boolean blockPiston, ToIntFunction<BlockState> luminanceFunction) {
-		return setLuminance(createBlockSettings(blockPiston), luminanceFunction);
+	static BlockSettings createBlockSettings(boolean blockPiston, boolean forceSolid, ToIntFunction<BlockState> luminanceFunction) {
+		return setLuminance(createBlockSettings(blockPiston, forceSolid), luminanceFunction);
 	}
 
 	@MappedMethod
