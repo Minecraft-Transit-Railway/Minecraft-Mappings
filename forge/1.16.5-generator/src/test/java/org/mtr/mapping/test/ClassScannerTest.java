@@ -48,7 +48,10 @@ import net.minecraft.entity.Pose;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.fluid.FlowingFluid;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
@@ -142,6 +145,8 @@ public final class ClassScannerTest {
 		scanner.put("EntityType", EntityType.class);
 		scanner.put("EnumProperty", EnumProperty.class);
 		scanner.put("Explosion", Explosion.class);
+		scanner.put("FlowableFluid", FlowingFluid.class);
+		scanner.put("Fluids", Fluids.class);
 		scanner.put("FluidState", FluidState.class);
 		scanner.put("Frustum", ClippingHelper.class);
 		scanner.put("GameMode", GameType.class);
@@ -250,6 +255,7 @@ public final class ClassScannerTest {
 		scanner.putAbstract("Entity", Entity.class, "getType");
 		scanner.putAbstract("EntityModel", EntityModel.class, "andThen");
 		scanner.putAbstract("FenceBlock", FenceBlock.class);
+		scanner.putAbstract("Fluid", Fluid.class);
 		scanner.putAbstract("Item", Item.class);
 		scanner.putAbstract("Model", Model.class);
 		scanner.putAbstract("MovingSoundInstance", TickableSound.class);
@@ -270,6 +276,7 @@ public final class ClassScannerTest {
 		scanner.putInterface("PressAction", Button.IPressable.class);
 		scanner.putInterface("StringIdentifiable", IStringSerializable.class);
 		scanner.putInterface("TickableSoundInstance", ITickableSound.class);
+		scanner.putInterface("Waterloggable", IWaterLoggable.class);
 		scanner.generate();
 	}
 }

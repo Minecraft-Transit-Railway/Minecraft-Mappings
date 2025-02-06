@@ -62,7 +62,17 @@ public class BlockExtension extends BlockAbstractMapping implements BlockHelper 
 	}
 
 	@MappedMethod
-	public static boolean hasScheduledTick(World world, BlockPos pos, Block block) {
+	public static boolean hasScheduledBlockTick(World world, BlockPos pos, Block block) {
 		return world.data.getBlockTicks().hasScheduledTick(pos.data, block.data);
+	}
+
+	@MappedMethod
+	public static void scheduleFluidTick(World world, BlockPos pos, Fluid fluid, int ticks) {
+		world.data.scheduleTick(pos.data, fluid.data, ticks);
+	}
+
+	@MappedMethod
+	public static boolean hasScheduledFluidTick(World world, BlockPos pos, Fluid fluid) {
+		return world.data.getFluidTicks().hasScheduledTick(pos.data, fluid.data);
 	}
 }

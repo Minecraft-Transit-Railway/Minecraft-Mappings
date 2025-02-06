@@ -85,6 +85,10 @@ public interface MethodMaps {
 		addMethodMap1.add("Direction", "getOffsetY", "getStepY");
 		addMethodMap1.add("Direction", "getOffsetZ", "getStepZ");
 		addMethodMap1.add("Direction", "pointsTo", "isFacingAngle", "method_30928");
+		addMethodMap1.add("FluidState", "getFluid", "getType");
+		addMethodMap1.add("FluidState", "getHeight", "getOwnHeight");
+		addMethodMap1.add("FluidState", "hasRandomTicks", "isRandomlyTicking");
+		addMethodMap1.add("FluidState", "isStill", "isSource");
 		addMethodMap1.add("GameOptions", "advancementsKey", "keyAdvancements");
 		addMethodMap1.add("GameOptions", "attackKey", "keyAttack");
 		addMethodMap1.add("GameOptions", "backKey", "keyBack", "keyDown");

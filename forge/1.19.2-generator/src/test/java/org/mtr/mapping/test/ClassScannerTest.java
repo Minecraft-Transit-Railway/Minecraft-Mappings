@@ -98,8 +98,7 @@ import net.minecraft.world.level.chunk.*;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.material.*;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.CommandStorage;
 import net.minecraft.world.level.storage.LevelResource;
@@ -170,6 +169,8 @@ public final class ClassScannerTest {
 		scanner.put("EntityType", EntityType.class);
 		scanner.put("EnumProperty", EnumProperty.class);
 		scanner.put("Explosion", Explosion.class);
+		scanner.put("FlowableFluid", FlowingFluid.class);
+		scanner.put("Fluids", Fluids.class);
 		scanner.put("FluidState", FluidState.class);
 		scanner.put("Frustum", Frustum.class);
 		scanner.put("GameMode", GameType.class);
@@ -278,6 +279,7 @@ public final class ClassScannerTest {
 		scanner.putAbstract("Entity", Entity.class, "getType");
 		scanner.putAbstract("EntityModel", EntityModel.class);
 		scanner.putAbstract("FenceBlock", FenceBlock.class);
+		scanner.putAbstract("Fluid", Fluid.class);
 		scanner.putAbstract("Item", Item.class);
 		scanner.putAbstract("Model", Model.class);
 		scanner.putAbstract("MovingSoundInstance", AbstractTickableSoundInstance.class);
@@ -298,6 +300,7 @@ public final class ClassScannerTest {
 		scanner.putInterface("PressAction", Button.OnPress.class);
 		scanner.putInterface("StringIdentifiable", StringRepresentable.class);
 		scanner.putInterface("TickableSoundInstance", TickableSoundInstance.class);
+		scanner.putInterface("Waterloggable", SimpleWaterloggedBlock.class);
 		scanner.generate();
 	}
 }
