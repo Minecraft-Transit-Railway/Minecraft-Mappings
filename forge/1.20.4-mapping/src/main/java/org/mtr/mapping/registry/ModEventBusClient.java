@@ -6,6 +6,7 @@ import net.minecraftforge.client.event.*;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.mtr.mapping.holder.SpriteProvider;
+import org.mtr.mapping.mapper.GraphicsHolder;
 import org.mtr.mapping.mapper.ParticleFactoryExtension;
 
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ import java.util.function.Function;
 public final class ModEventBusClient {
 
 	Runnable resourceReloadRunnable = () -> {
+	};
+	Consumer<GraphicsHolder> guiRenderingConsumers = graphicsHolder -> {
 	};
 	final List<Runnable> clientObjectsToRegister = new ArrayList<>();
 	final List<Runnable> clientObjectsToRegisterQueued = new ArrayList<>();
@@ -54,6 +57,11 @@ public final class ModEventBusClient {
 	@SubscribeEvent
 	public void registerParticleFactories(RegisterParticleProvidersEvent event) {
 		particleFactories.forEach(tuple -> Minecraft.getInstance().particleEngine.register(tuple.getA().get().data, spriteProvider -> tuple.getB().apply(new SpriteProvider(spriteProvider))));
+	}
+
+	@SubscribeEvent
+	public void guiRendering(RenderGuiOverlayEvent event) {
+		GraphicsHolder.createInstanceSafe(event.getGuiGraphics(), guiRenderingConsumers);
 	}
 
 	@SubscribeEvent

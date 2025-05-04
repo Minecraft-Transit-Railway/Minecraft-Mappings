@@ -3,14 +3,17 @@ package org.mtr.mapping.registry;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.ClientWorld;
 import org.mtr.mapping.holder.WorldChunk;
+import org.mtr.mapping.mapper.GraphicsHolder;
 import org.mtr.mapping.tool.DummyClass;
 
 import java.util.Random;
@@ -57,6 +60,11 @@ public class EventRegistryClient extends DummyClass {
 	@MappedMethod
 	public void registerChunkUnload(BiConsumer<ClientWorld, WorldChunk> consumer) {
 		ClientChunkEvents.CHUNK_UNLOAD.register((clientWorld, worldChunk) -> consumer.accept(new ClientWorld(clientWorld), new WorldChunk(worldChunk)));
+	}
+
+	@MappedMethod
+	public void registerGuiRendering(Consumer<GraphicsHolder> consumer) {
+		HudRenderCallback.EVENT.register((matrixStack, tickDelta) -> GraphicsHolder.createInstanceSafe(matrixStack, MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers(), consumer));
 	}
 
 	@MappedMethod

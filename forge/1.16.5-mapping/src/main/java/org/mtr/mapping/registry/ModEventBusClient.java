@@ -4,10 +4,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.Tuple;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.mtr.mapping.holder.SpriteProvider;
+import org.mtr.mapping.mapper.GraphicsHolder;
 import org.mtr.mapping.mapper.ParticleFactoryExtension;
 
 import java.util.ArrayList;
@@ -18,6 +20,8 @@ import java.util.function.Function;
 public final class ModEventBusClient {
 
 	Runnable resourceReloadRunnable = () -> {
+	};
+	Consumer<GraphicsHolder> guiRenderingConsumers = graphicsHolder -> {
 	};
 	final List<Runnable> clientObjectsToRegister = new ArrayList<>();
 	final List<Runnable> clientObjectsToRegisterQueued = new ArrayList<>();
@@ -44,6 +48,11 @@ public final class ModEventBusClient {
 	@SubscribeEvent
 	public void registerParticleFactories(ParticleFactoryRegisterEvent event) {
 		particleFactories.forEach(tuple -> Minecraft.getInstance().particleEngine.register(tuple.getA().get().data, spriteProvider -> tuple.getB().apply(new SpriteProvider(spriteProvider))));
+	}
+
+	@SubscribeEvent
+	public void guiRendering(RenderGameOverlayEvent event) {
+		GraphicsHolder.createInstanceSafe(event.getMatrixStack(), Minecraft.getInstance().renderBuffers().bufferSource(), guiRenderingConsumers);
 	}
 
 	@SubscribeEvent

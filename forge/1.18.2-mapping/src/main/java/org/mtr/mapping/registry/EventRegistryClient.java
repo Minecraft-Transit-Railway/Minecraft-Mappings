@@ -3,6 +3,7 @@ package org.mtr.mapping.registry;
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.ClientWorld;
 import org.mtr.mapping.holder.WorldChunk;
+import org.mtr.mapping.mapper.GraphicsHolder;
 import org.mtr.mapping.tool.DummyClass;
 
 import java.util.function.BiConsumer;
@@ -57,6 +58,11 @@ public class EventRegistryClient extends DummyClass {
 	@MappedMethod
 	public void registerChunkUnload(BiConsumer<ClientWorld, WorldChunk> consumer) {
 		mainEventBusClient.chunkUnloadConsumer = consumer;
+	}
+
+	@MappedMethod
+	public void registerGuiRendering(Consumer<GraphicsHolder> consumer) {
+		modEventBusClient.guiRenderingConsumers = consumer;
 	}
 
 	@MappedMethod
