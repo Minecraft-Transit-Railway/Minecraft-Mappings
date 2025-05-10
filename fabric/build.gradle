@@ -2,7 +2,7 @@ import org.mtr.mapping.BuildTools
 
 plugins {
 	id "java"
-	id "fabric-loom" version "+" apply false
+	id "fabric-loom" version "1.10-SNAPSHOT" apply false
 }
 
 subprojects {
