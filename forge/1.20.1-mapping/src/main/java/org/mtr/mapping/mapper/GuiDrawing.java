@@ -35,10 +35,22 @@ public final class GuiDrawing extends DummyClass {
 	public void drawRectangle(double x1, double y1, double x2, double y2, int color) {
 		if (matrix != null && vertexConsumer != null && drawContext != null) {
 			ColorHelper.unpackColor(color, (a, r, g, b) -> {
-				vertexConsumer.vertex(matrix, (float)x1, (float)y1, 0).color(r, g, b, a).endVertex();
-				vertexConsumer.vertex(matrix, (float)x1, (float)y2, 0).color(r, g, b, a).endVertex();
-				vertexConsumer.vertex(matrix, (float)x2, (float)y2, 0).color(r, g, b, a).endVertex();
-				vertexConsumer.vertex(matrix, (float)x2, (float)y1, 0).color(r, g, b, a).endVertex();
+				vertexConsumer.vertex(matrix, (float) x1, (float) y1, 0).color(r, g, b, a).endVertex();
+				vertexConsumer.vertex(matrix, (float) x1, (float) y2, 0).color(r, g, b, a).endVertex();
+				vertexConsumer.vertex(matrix, (float) x2, (float) y2, 0).color(r, g, b, a).endVertex();
+				vertexConsumer.vertex(matrix, (float) x2, (float) y1, 0).color(r, g, b, a).endVertex();
+			});
+		}
+	}
+
+	@MappedMethod
+	public void drawRectangle(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4, int color) {
+		if (matrix != null && vertexConsumer != null && drawContext != null) {
+			ColorHelper.unpackColor(color, (a, r, g, b) -> {
+				vertexConsumer.vertex(matrix, (float) x1, (float) y1, 0).color(r, g, b, a).endVertex();
+				vertexConsumer.vertex(matrix, (float) x2, (float) y2, 0).color(r, g, b, a).endVertex();
+				vertexConsumer.vertex(matrix, (float) x3, (float) y3, 0).color(r, g, b, a).endVertex();
+				vertexConsumer.vertex(matrix, (float) x4, (float) y4, 0).color(r, g, b, a).endVertex();
 			});
 		}
 	}
@@ -63,10 +75,10 @@ public final class GuiDrawing extends DummyClass {
 	@MappedMethod
 	public void drawTexture(double x1, double y1, double x2, double y2, float u1, float v1, float u2, float v2) {
 		if (matrix != null && bufferBuilder != null) {
-			bufferBuilder.vertex(matrix, (float)x1, (float)y1, 0).uv(u1, v1).endVertex();
-			bufferBuilder.vertex(matrix, (float)x1, (float)y2, 0).uv(u1, v2).endVertex();
-			bufferBuilder.vertex(matrix, (float)x2, (float)y2, 0).uv(u2, v2).endVertex();
-			bufferBuilder.vertex(matrix, (float)x2, (float)y1, 0).uv(u2, v1).endVertex();
+			bufferBuilder.vertex(matrix, (float) x1, (float) y1, 0).uv(u1, v1).endVertex();
+			bufferBuilder.vertex(matrix, (float) x1, (float) y2, 0).uv(u1, v2).endVertex();
+			bufferBuilder.vertex(matrix, (float) x2, (float) y2, 0).uv(u2, v2).endVertex();
+			bufferBuilder.vertex(matrix, (float) x2, (float) y1, 0).uv(u2, v1).endVertex();
 		}
 	}
 
