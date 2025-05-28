@@ -62,7 +62,7 @@ public class EventRegistryClient extends DummyClass {
 
 	@MappedMethod
 	public void registerGuiRendering(Consumer<GraphicsHolder> consumer) {
-		modEventBusClient.guiRenderingConsumers = consumer;
+		mainEventBusClient.guiRenderingConsumers = consumer;
 	}
 
 	@MappedMethod

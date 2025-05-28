@@ -1,14 +1,17 @@
 package org.mtr.mapping.registry;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import org.mtr.mapping.holder.ClientWorld;
 import org.mtr.mapping.holder.WorldChunk;
+import org.mtr.mapping.mapper.GraphicsHolder;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -30,6 +33,8 @@ public final class MainEventBusClient {
 	BiConsumer<ClientWorld, WorldChunk> chunkLoadConsumer = (world, chunk) -> {
 	};
 	BiConsumer<ClientWorld, WorldChunk> chunkUnloadConsumer = (world, chunk) -> {
+	};
+	Consumer<GraphicsHolder> guiRenderingConsumers = graphicsHolder -> {
 	};
 
 	@SubscribeEvent
@@ -72,5 +77,10 @@ public final class MainEventBusClient {
 		if (event.getWorld() instanceof ClientLevel && event.getChunk() instanceof LevelChunk) {
 			chunkUnloadConsumer.accept(new ClientWorld((ClientLevel) event.getWorld()), new WorldChunk((LevelChunk) event.getChunk()));
 		}
+	}
+
+	@SubscribeEvent
+	public void guiRendering(RenderGameOverlayEvent.Post event) {
+		GraphicsHolder.createInstanceSafe(event.getMatrixStack(), Minecraft.getInstance().renderBuffers().bufferSource(), guiRenderingConsumers);
 	}
 }
