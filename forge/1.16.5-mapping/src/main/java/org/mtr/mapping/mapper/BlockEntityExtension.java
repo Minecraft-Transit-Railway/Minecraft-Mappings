@@ -41,7 +41,7 @@ public abstract class BlockEntityExtension extends BlockEntityAbstractMapping im
 	@Deprecated
 	@Override
 	public final CompoundNBT getUpdateTag() {
-		final CompoundNBT compoundTag = new CompoundNBT();
+		final CompoundNBT compoundTag = super.getUpdateTag();
 		writeCompoundTag(new CompoundTag(compoundTag));
 		return compoundTag;
 	}
