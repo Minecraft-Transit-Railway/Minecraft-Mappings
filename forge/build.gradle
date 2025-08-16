@@ -2,7 +2,7 @@ import org.mtr.mapping.BuildTools
 
 plugins {
 	id "java"
-	id "net.minecraftforge.gradle" version "+" apply false
+	id "net.minecraftforge.gradle" version "6.+" apply false
 }
 
 subprojects {
@@ -22,11 +22,12 @@ subprojects {
 	dependencies {
 		implementation project(":common")
 		minecraft "net.minecraftforge:forge:${minecraftVersion}-${buildTools.getForgeVersion()}"
-		testImplementation "org.junit.jupiter:junit-jupiter-api:+"
-		testImplementation "org.junit.platform:junit-platform-launcher:+"
+		compileOnly "com.google.code.findbugs:jsr305:+"
+		testImplementation "org.junit.jupiter:junit-jupiter-api:5.+"
+		testImplementation "org.junit.platform:junit-platform-launcher:1.+"
 		testImplementation "com.google.code.gson:gson:+"
 		testImplementation "org.reflections:reflections:+"
-		testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:+"
+		testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.+"
 	}
 
 	java {

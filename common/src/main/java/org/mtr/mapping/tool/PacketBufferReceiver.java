@@ -80,6 +80,9 @@ public final class PacketBufferReceiver extends DummyClass {
 		receivedCount++;
 		if (receivedCount == count) {
 			onComplete.accept(this);
+			for (final ByteBuf currentByteBuf : byteBufArray) {
+				currentByteBuf.release();
+			}
 			return true;
 		} else {
 			return false;
