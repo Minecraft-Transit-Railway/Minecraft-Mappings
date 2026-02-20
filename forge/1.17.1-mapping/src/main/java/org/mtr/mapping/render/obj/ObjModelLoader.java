@@ -163,13 +163,15 @@ public final class ObjModelLoader {
 
 	private static OptimizedModel.ShaderType legacyMapping(String type) {
 		switch (type.toLowerCase(Locale.ENGLISH)) {
+			case "exteriortranslucent":
+				return OptimizedModel.ShaderType.TRANSLUCENT;
 			case "light":
 				return OptimizedModel.ShaderType.CUTOUT_GLOWING;
-			case "always_on_light":
+			case "lighttranslucent":
 				return OptimizedModel.ShaderType.TRANSLUCENT_GLOWING;
 			case "interior":
 				return OptimizedModel.ShaderType.CUTOUT_BRIGHT;
-			case "interior_translucent":
+			case "interiortranslucent":
 				return OptimizedModel.ShaderType.TRANSLUCENT_BRIGHT;
 			default:
 				return OptimizedModel.ShaderType.CUTOUT;
