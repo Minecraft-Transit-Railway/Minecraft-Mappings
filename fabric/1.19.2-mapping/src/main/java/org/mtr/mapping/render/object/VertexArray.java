@@ -27,6 +27,13 @@ public final class VertexArray implements Closeable {
 		mesh.indexBuffer.bind(GL33.GL_ELEMENT_ARRAY_BUFFER);
 		unbind();
 	}
+	
+	public VertexArray(VertexArray other, MaterialProperties materialProperties) {
+		this.id = other.id;
+		this.materialProperties = materialProperties;
+		this.indexBuffer = other.indexBuffer;
+		this.mapping = other.mapping;
+	}
 
 	public void bind() {
 		GlStateTracker.assertProtected();

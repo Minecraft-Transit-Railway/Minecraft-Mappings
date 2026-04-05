@@ -65,7 +65,7 @@ public final class OptimizedModel extends DummyClass {
 		return new OptimizedModel(uploadedParts);
 	}
 
-	private OptimizedModel(List<VertexArray> uploadedParts) {
+	public OptimizedModel(List<VertexArray> uploadedParts) {
 		this.uploadedParts = uploadedParts;
 	}
 
@@ -75,6 +75,11 @@ public final class OptimizedModel extends DummyClass {
 		for (final OptimizedModel optimizedModel : optimizedModels) {
 			uploadedParts.addAll(optimizedModel.uploadedParts);
 		}
+	}
+	
+	@MappedMethod
+	public void close() {
+		uploadedParts.forEach(VertexArray::close);
 	}
 
 	public static final class MaterialGroup {

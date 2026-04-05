@@ -25,6 +25,10 @@ public final class OptimizedModel extends DummyClass {
 	@MappedMethod
 	public OptimizedModel(OptimizedModel... optimizedModels) {
 	}
+	
+	@MappedMethod
+	public void close() {
+	}
 
 	public static final class MaterialGroup {
 
