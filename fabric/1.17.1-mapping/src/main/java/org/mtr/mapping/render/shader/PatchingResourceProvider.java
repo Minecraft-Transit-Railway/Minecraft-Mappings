@@ -40,9 +40,11 @@ public final class PatchingResourceProvider implements ResourceFactory {
 				inputStream.close();
 				dataObject.addProperty("vertex", dataObject.get("vertex").getAsString() + "_modelmat");
 				final JsonArray attributeArray = dataObject.get("attributes").getAsJsonArray();
-				for (int i = 0; i < 6 - attributeArray.size(); i++) {
-					attributeArray.add("Dummy" + i);
-				}
+				int dummyIndex = 0;
+					while (attributeArray.size() < 6) {
+						attributeArray.add("Dummy" + dummyIndex);
+						dummyIndex++;
+					}
 				attributeArray.add("ModelMat");
 				returningContent = dataObject.toString();
 			} else if (newIdentifier.getPath().endsWith(".vsh")) {
