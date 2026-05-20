@@ -10,20 +10,49 @@ import org.mtr.mapping.render.tool.Utilities;
 import org.mtr.mapping.render.vertex.VertexAttributeState;
 import org.mtr.mapping.tool.DummyClass;
 
+import java.util.function.Supplier;
+
 public final class OptimizedRenderer extends DummyClass {
 
 	private final BatchManager batchManager = new BatchManager();
 	private final ShaderManager shaderManager = new ShaderManager();
+	private int protectedDepth;
+	private int reloadDepth;
 
 	@MappedMethod
 	public void beginReload() {
-		shaderManager.reloadShaders();
-		GlStateTracker.capture();
+		if (reloadDepth++ == 0) {
+			shaderManager.reloadShaders();
+		}
+		beginProtectedState();
 	}
 
 	@MappedMethod
 	public void finishReload() {
-		GlStateTracker.restore();
+		if (reloadDepth > 0) {
+			reloadDepth--;
+			finishProtectedState();
+		}
+	}
+
+	@MappedMethod
+	public void runWithProtectedState(Runnable runnable) {
+		beginProtectedState();
+		try {
+			runnable.run();
+		} finally {
+			finishProtectedState();
+		}
+	}
+
+	@MappedMethod
+	public <T> T runWithProtectedState(Supplier<T> supplier) {
+		beginProtectedState();
+		try {
+			return supplier.get();
+		} finally {
+			finishProtectedState();
+		}
 	}
 
 	@MappedMethod
@@ -36,9 +65,7 @@ public final class OptimizedRenderer extends DummyClass {
 	@MappedMethod
 	public void render(boolean renderTranslucent) {
 		if (shaderManager.isReady()) {
-			GlStateTracker.capture();
-			batchManager.drawAll(shaderManager, renderTranslucent);
-			GlStateTracker.restore();
+			runWithProtectedState(() -> batchManager.drawAll(shaderManager, renderTranslucent));
 		}
 	}
 
@@ -53,5 +80,17 @@ public final class OptimizedRenderer extends DummyClass {
 	@MappedMethod
 	public static boolean hasOptimizedRendering() {
 		return true;
+	}
+
+	private void beginProtectedState() {
+		if (protectedDepth++ == 0) {
+			GlStateTracker.capture();
+		}
+	}
+
+	private void finishProtectedState() {
+		if (protectedDepth > 0 && --protectedDepth == 0) {
+			GlStateTracker.restore();
+		}
 	}
 }
