@@ -12,4 +12,7 @@ public final class ShaderManager {
 
 	public void setupShaderBatchState(MaterialProperties materialProperties) {
 	}
+
+	public void cleanupShaderBatchState() {
+	}
 }
