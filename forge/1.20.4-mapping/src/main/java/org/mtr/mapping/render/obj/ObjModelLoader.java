@@ -50,7 +50,11 @@ public final class ObjModelLoader {
 	private static List<RawMesh> loadModel(Obj sourceObj, Map<String, Mtl> materials, Function<String, Identifier> textureResolver, AtlasManager atlasManager) {
 		final List<RawMesh> rawMeshes = new ArrayList<>();
 
-		ObjSplitting.splitByMaterialGroups(sourceObj).forEach((key, obj) -> {
+		final Map<String, Obj> materialGroups = ObjSplitting.splitByMaterialGroups(sourceObj);
+		if (materialGroups.isEmpty() && sourceObj.getNumFaces() > 0) {
+			materialGroups.put("", sourceObj);
+		}
+		materialGroups.forEach((key, obj) -> {
 			if (obj.getNumFaces() > 0) {
 				final Map<String, String> materialOptions = splitMaterialOptions(key);
 				final String materialGroupName = materialOptions.get("");
@@ -108,7 +112,9 @@ public final class ObjModelLoader {
 					mesh.faces.add(new Face(new int[]{face.getVertexIndex(0), face.getVertexIndex(1), face.getVertexIndex(2)}));
 				}
 
-				atlasManager.applyToMesh(mesh);
+				if (atlasManager != null) {
+					atlasManager.applyToMesh(mesh);
+				}
 				mesh.validateVertexIndex();
 				rawMeshes.add(mesh);
 			}

@@ -127,6 +127,11 @@ public final class GraphicsHolder extends DummyClass {
 	}
 
 	@MappedMethod
+	public org.mtr.mapping.holder.Matrix4f copyPositionMatrix() {
+		return matrixStack == null ? new org.mtr.mapping.holder.Matrix4f() : new org.mtr.mapping.holder.Matrix4f(matrixStack.peek().getPositionMatrix());
+	}
+
+	@MappedMethod
 	public void drawText(MutableText mutableText, int x, int y, int color, boolean shadow, int light) {
 		if (matrixStack != null) {
 			final VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(net.minecraft.client.render.Tessellator.getInstance().getBuffer());

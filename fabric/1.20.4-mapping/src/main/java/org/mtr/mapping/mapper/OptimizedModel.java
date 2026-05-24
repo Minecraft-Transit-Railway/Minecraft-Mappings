@@ -119,13 +119,10 @@ public final class OptimizedModel extends DummyClass {
 		private final RawModel rawModel = new RawModel();
 
 		private ObjModel(
-				List<RawMesh> rawMeshes, boolean flipTextureV,
+				List<RawMesh> rawMeshes,
 				float minX, float minY, float minZ,
 				float maxX, float maxY, float maxZ
 		) {
-			if (flipTextureV) {
-				rawMeshes.forEach(rawMesh -> rawMesh.applyUVMirror(false, true));
-			}
 			this.minX = minX;
 			this.minY = minY;
 			this.minZ = minZ;
@@ -143,9 +140,9 @@ public final class OptimizedModel extends DummyClass {
 
 			final Map<String, ObjModel> objModels = new HashMap<>();
 			ObjModelLoader.loadModel(objString, mtlResolver, textureResolver, ATLAS_MANAGER, splitModel).forEach((key, rawMeshes) -> {
+				prepareRawMeshes(rawMeshes, flipTextureV);
 				final float[] bounds = {Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE};
 				rawMeshes.forEach(rawMesh -> {
-					rawMesh.applyRotation(new Vector3f(1, 0, 0), 180);
 					rawMesh.vertices.forEach(vertex -> {
 						final float x = vertex.position.getX();
 						final float y = vertex.position.getY();
@@ -158,10 +155,21 @@ public final class OptimizedModel extends DummyClass {
 						bounds[5] = Math.max(bounds[5], z);
 					});
 				});
-				objModels.put(key, new ObjModel(rawMeshes, flipTextureV, bounds[0], bounds[1], bounds[2], bounds[3], bounds[4], bounds[5]));
+				objModels.put(key, new ObjModel(rawMeshes, bounds[0], bounds[1], bounds[2], bounds[3], bounds[4], bounds[5]));
 			});
 
 			return objModels;
+		}
+
+		@MappedMethod
+		public static Map<String, List<RawMesh>> loadRawModel(String objString, Function<String, String> mtlResolver, Function<String, Identifier> textureResolver, @Nullable Identifier atlasIndex, boolean splitModel, boolean flipTextureV) {
+			if (atlasIndex != null) {
+				ATLAS_MANAGER.load(atlasIndex);
+			}
+
+			final Map<String, List<RawMesh>> rawModels = ObjModelLoader.loadModel(objString, mtlResolver, textureResolver, ATLAS_MANAGER, splitModel);
+			rawModels.values().forEach(rawMeshes -> prepareRawMeshes(rawMeshes, flipTextureV));
+			return rawModels;
 		}
 
 		@MappedMethod
@@ -228,6 +236,15 @@ public final class OptimizedModel extends DummyClass {
 		@MappedMethod
 		public float getMaxZ() {
 			return maxZ;
+		}
+
+		private static void prepareRawMeshes(List<RawMesh> rawMeshes, boolean flipTextureV) {
+			rawMeshes.forEach(rawMesh -> {
+				rawMesh.applyRotation(new Vector3f(1, 0, 0), 180);
+				if (flipTextureV) {
+					rawMesh.applyUVMirror(false, true);
+				}
+			});
 		}
 	}
 
