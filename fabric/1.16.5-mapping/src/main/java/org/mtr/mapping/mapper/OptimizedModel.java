@@ -2,11 +2,13 @@ package org.mtr.mapping.mapper;
 
 import org.mtr.mapping.annotation.MappedMethod;
 import org.mtr.mapping.holder.Identifier;
+import org.mtr.mapping.render.model.RawMesh;
 import org.mtr.mapping.tool.DummyClass;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -42,6 +44,11 @@ public final class OptimizedModel extends DummyClass {
 	}
 
 	public static final class ObjModel {
+		
+		@MappedMethod
+		public static Map<String, ObjModel> createObjModel(Map<String, List<RawMesh>> rawMeshesMap, boolean flipTextureV){
+			return new HashMap<>();
+		}
 
 		@MappedMethod
 		public static Map<String, ObjModel> loadModel(String objString, Function<String, String> mtlResolver, Function<String, Identifier> textureResolver, @Nullable Identifier atlasIndex, boolean splitModel, boolean flipTextureV) {

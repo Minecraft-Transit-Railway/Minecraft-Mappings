@@ -13,6 +13,7 @@ import org.mtr.mapping.render.vertex.Vertex;
 import org.mtr.mapping.tool.DummyClass;
 
 import javax.annotation.Nullable;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.util.*;
@@ -24,12 +25,12 @@ public final class ObjModelLoader {
 		final Map<String, List<RawMesh>> result = new HashMap<>();
 
 		try {
-			final Obj sourceObj = ObjReader.read(IOUtils.toInputStream(objString, StandardCharsets.UTF_8));
+			final Obj sourceObj = ObjReader.read(new InputStreamReader(IOUtils.toInputStream(objString, StandardCharsets.UTF_8), StandardCharsets.UTF_8));
 
 			final Map<String, Mtl> materials = new HashMap<>();
 			sourceObj.getMtlFileNames().forEach(mtlFileName -> {
 				try {
-					MtlReader.read(IOUtils.toInputStream(mtlResolver.apply(mtlFileName.replace("\\\\", "/").replace("\\", "/")), StandardCharsets.UTF_8)).forEach(mtl -> materials.put(mtl.getName(), mtl));
+					MtlReader.read(new InputStreamReader(IOUtils.toInputStream(mtlResolver.apply(mtlFileName.replace("\\\\", "/").replace("\\", "/")), StandardCharsets.UTF_8), StandardCharsets.UTF_8)).forEach(mtl -> materials.put(mtl.getName(), mtl));
 				} catch (Exception e) {
 					DummyClass.logException(e);
 				}
