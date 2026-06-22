@@ -133,13 +133,9 @@ public final class OptimizedModel extends DummyClass {
 		}
 
 		@MappedMethod
-		public static Map<String, ObjModel> loadModel(String objString, Function<String, String> mtlResolver, Function<String, Identifier> textureResolver, @Nullable Identifier atlasIndex, boolean splitModel, boolean flipTextureV) {
-			if (atlasIndex != null) {
-				ATLAS_MANAGER.load(atlasIndex);
-			}
-
+		public static Map<String, ObjModel> createObjModel(Map<String, List<RawMesh>> rawMeshesMap, boolean flipTextureV) {
 			final Map<String, ObjModel> objModels = new HashMap<>();
-			ObjModelLoader.loadModel(objString, mtlResolver, textureResolver, ATLAS_MANAGER, splitModel).forEach((key, rawMeshes) -> {
+			rawMeshesMap.forEach((key, rawMeshes) -> {
 				prepareRawMeshes(rawMeshes, flipTextureV);
 				final float[] bounds = {Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE};
 				rawMeshes.forEach(rawMesh -> {
@@ -159,6 +155,15 @@ public final class OptimizedModel extends DummyClass {
 			});
 
 			return objModels;
+		}
+
+		@MappedMethod
+		public static Map<String, ObjModel> loadModel(String objString, Function<String, String> mtlResolver, Function<String, Identifier> textureResolver, @Nullable Identifier atlasIndex, boolean splitModel, boolean flipTextureV) {
+			if (atlasIndex != null) {
+				ATLAS_MANAGER.load(atlasIndex);
+			}
+
+			return createObjModel(ObjModelLoader.loadModel(objString, mtlResolver, textureResolver, ATLAS_MANAGER, splitModel), flipTextureV);
 		}
 
 		@MappedMethod
@@ -237,7 +242,6 @@ public final class OptimizedModel extends DummyClass {
 		public float getMaxZ() {
 			return maxZ;
 		}
-
 		private static void prepareRawMeshes(List<RawMesh> rawMeshes, boolean flipTextureV) {
 			rawMeshes.forEach(rawMesh -> {
 				rawMesh.applyRotation(new Vector3f(1, 0, 0), 180);
@@ -246,6 +250,7 @@ public final class OptimizedModel extends DummyClass {
 				}
 			});
 		}
+
 	}
 
 	public enum ShaderType {
